@@ -8,6 +8,7 @@ Configuration is read from environment variables (see .env.example).
 
 import os
 from contextlib import contextmanager
+from typing import Optional, Union
 
 import pymysql
 import pymysql.cursors
@@ -18,9 +19,11 @@ load_dotenv()
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "127.0.0.1"),
     "port": int(os.getenv("DB_PORT", "3306")),
-    "user": os.getenv("DB_USER", "root"),
+    # Support Laravel-style env names first, while keeping the older
+    # Python-specific fallbacks so local setups do not break.
+    "user": os.getenv("DB_USERNAME") or os.getenv("DB_USER", "root"),
     "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "research_warehouse"),
+    "database": os.getenv("DB_DATABASE") or os.getenv("DB_NAME", "research_warehouse"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
@@ -41,10 +44,12 @@ def get_connection():
         connection.close()
 
 
-def run_query(sql: str, params: tuple | dict | None = None) -> list[dict]:
+def run_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
     """
     Executes a SELECT statement and returns the rows as a list of dicts.
     """
+    # Keep annotations compatible with Python 3.9, which this project's
+    # local virtual environment is currently using.
     with get_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(sql, params)
