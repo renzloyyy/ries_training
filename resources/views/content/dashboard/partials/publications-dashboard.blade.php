@@ -22,7 +22,6 @@
         <div class="ra-kpi-card">
             <div class="ra-kpi-label">Completion rate</div>
             <div class="ra-kpi-value" id="kpiOutputCompletionRate">—</div>
-            <div class="ra-kpi-foot">completed ÷ total outputs</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">

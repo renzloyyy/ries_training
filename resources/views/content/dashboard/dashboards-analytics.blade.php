@@ -788,6 +788,33 @@
         <section id="proposalsDashboard" class="ra-dashboard-panel">
 
 
+            {{-- Proposal lead indicators are repeated here so the proposal
+                 detail page has its own quick summary before tail indicators. --}}
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="ra-kpi-card">
+                        <div class="ra-kpi-label">Total proposals</div>
+                        <div class="ra-kpi-value" id="proposalKpiTotal"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">across all campuses</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="ra-kpi-card">
+                        <div class="ra-kpi-label">Approval rate</div>
+                        <div class="ra-kpi-value" id="proposalKpiApprovalRate"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">completed ÷ submitted proposals</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="ra-kpi-card">
+                        <div class="ra-kpi-label">Campuses reporting</div>
+                        <div class="ra-kpi-value" id="proposalKpiCampuses"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">with at least one proposal</div>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="row g-3 mb-3">
                 {{-- Research format --}}
                 <div class="col-lg-4">
@@ -822,8 +849,58 @@
 
 
             <div class="row g-3 mb-3">
-                {{-- Signature element: approval signal bars by campus --}}
+                {{-- Quarterly trend --}}
                 <div class="col-lg-6">
+                    <div class="ra-card h-100">
+                        <div class="ra-card-head">
+                            <div>
+                                <h2 class="ra-card-title">Submissions over time</h2>
+                                <div class="ra-card-sub">by year and quarter</div>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <div id="chartQuarter" style="min-height:260px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Status distribution --}}
+                <div class="col-lg-6">
+                    <div class="ra-card h-100">
+                        <div class="ra-card-head">
+                            <div>
+                                <h2 class="ra-card-title">Status distribution</h2>
+                                <div class="ra-card-sub">where proposals sit in the pipeline</div>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <div id="chartStatus" style="min-height:260px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row g-3 mb-3">
+                {{-- SDG breakdown --}}
+                <div class="col-lg-5">
+                    <div class="ra-card h-100">
+                        <div class="ra-card-head">
+                            <div>
+                                <h2 class="ra-card-title">Sustainable Development Goals</h2>
+                                <div class="ra-card-sub">proposal alignment by SDG</div>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <div id="chartSdg" style="min-height:300px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Signature element: approval signal bars by campus --}}
+                <div class="col-lg-7">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -838,56 +915,6 @@
                             <span><i style="background:var(--ra-approved)"></i> Approved</span>
                             <span><i style="background:var(--ra-line); border:1px solid var(--ra-text-faint)"></i>
                                 Pending</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- SDG breakdown --}}
-                <div class="col-lg-6">
-                    <div class="ra-card h-100">
-                        <div class="ra-card-head">
-                            <div>
-                                <h2 class="ra-card-title">Sustainable Development Goals</h2>
-                                <div class="ra-card-sub">proposal alignment by SDG</div>
-                            </div>
-                        </div>
-                        <div class="px-3 pb-3">
-                            <div id="chartSdg" style="min-height:300px;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-            <div class="row g-3 mb-3">
-                {{-- Status distribution --}}
-                <div class="col-lg-5">
-                    <div class="ra-card h-100">
-                        <div class="ra-card-head">
-                            <div>
-                                <h2 class="ra-card-title">Status distribution</h2>
-                                <div class="ra-card-sub">where proposals sit in the pipeline</div>
-                            </div>
-                        </div>
-                        <div class="px-3 pb-3">
-                            <div id="chartStatus" style="min-height:260px;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Quarterly trend --}}
-                <div class="col-lg-7">
-                    <div class="ra-card h-100">
-                        <div class="ra-card-head">
-                            <div>
-                                <h2 class="ra-card-title">Submissions over time</h2>
-                                <div class="ra-card-sub">by year and quarter</div>
-                            </div>
-                        </div>
-                        <div class="px-3 pb-3">
-                            <div id="chartQuarter" style="min-height:260px;"></div>
                         </div>
                     </div>
                 </div>
@@ -1121,19 +1148,31 @@
                 });
             }
 
+            function setTextIfExists(id, value) {
+                // Some KPI values appear in both Overview and detail panels; this
+                // guard prevents errors if a card is removed from one panel later.
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+
             function renderKpis(data) {
                 const statusRows = data.status_distribution || [];
                 const totalProposals = statusRows.reduce((sum, r) => sum + Number(r.total_proposals || 0), 0);
-                document.getElementById('kpiTotal').textContent = fmtInt(totalProposals);
+                setTextIfExists('kpiTotal', fmtInt(totalProposals));
+                setTextIfExists('proposalKpiTotal', fmtInt(totalProposals));
 
                 const approvalRow = data.approval_rate_overall?.[0] ?? data.approval_rate_overall;
                 const approvalPct = Array.isArray(data.approval_rate_overall) ?
                     data.approval_rate_overall[0]?.approval_rate_percentage :
                     approvalRow?.approval_rate_percentage;
-                document.getElementById('kpiApprovalRate').textContent = fmtPct(approvalPct);
+                setTextIfExists('kpiApprovalRate', fmtPct(approvalPct));
+                setTextIfExists('proposalKpiApprovalRate', fmtPct(approvalPct));
 
                 const campusRows = data.proposals_by_campus || [];
-                document.getElementById('kpiCampuses').textContent = fmtInt(campusRows.length);
+                setTextIfExists('kpiCampuses', fmtInt(campusRows.length));
+                setTextIfExists('proposalKpiCampuses', fmtInt(campusRows.length));
 
             }
 
