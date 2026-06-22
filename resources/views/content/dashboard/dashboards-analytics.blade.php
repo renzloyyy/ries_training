@@ -780,31 +780,12 @@
         @include('content.dashboard.partials.dashboard-menu')
 
 
-        <section id="proposalsDashboard" class="ra-dashboard-panel is-active">
+        <section id="overviewDashboard" class="ra-dashboard-panel is-active">
+            {{-- Overview collects only lead indicators from each fact table. --}}
+            @include('content.dashboard.partials.overview-dashboard')
+        </section>
 
-            {{-- KPI strip --}}
-            <div class="row g-3 mb-3">
-                <div class="col-sm-6 col-lg-4">
-                    <div class="ra-kpi-card">
-                        <div class="ra-kpi-label">Total proposals</div>
-                        <div class="ra-kpi-value" id="kpiTotal"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">across all campuses</div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="ra-kpi-card">
-                        <div class="ra-kpi-label">Approval rate</div>
-                        <div class="ra-kpi-value" id="kpiApprovalRate"><span class="ra-skel"></span></div>
-
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="ra-kpi-card">
-                        <div class="ra-kpi-label">Campuses reporting</div>
-                        <div class="ra-kpi-value" id="kpiCampuses"><span class="ra-skel"></span></div>
-                    </div>
-                </div>
-            </div>
+        <section id="proposalsDashboard" class="ra-dashboard-panel">
 
 
             <div class="row g-3 mb-3">
@@ -956,11 +937,6 @@
         <section id="publicationsDashboard" class="ra-dashboard-panel">
             {{-- Publications is a full Blade panel, separate from the proposal dashboard. --}}
             @include('content.dashboard.partials.publications-dashboard')
-        </section>
-
-        <section id="completedDashboard" class="ra-dashboard-panel">
-            {{-- Completed Proposals is a full Blade panel, separate from the proposal dashboard. --}}
-            @include('content.dashboard.partials.completed-proposals-dashboard')
         </section>
 
         <section id="fundingsDashboard" class="ra-dashboard-panel">
@@ -1563,9 +1539,8 @@
 
             function setupRailMenu() {
                 const panelTargets = {
-                    overview: '#proposalsDashboard',
+                    overview: '#overviewDashboard',
                     proposals: '#proposalsDashboard',
-                    completed: '#completedDashboard',
                     fundings: '#fundingsDashboard',
                     publications: '#publicationsDashboard',
                 };
@@ -1592,6 +1567,12 @@
                         });
 
                         showDashboardPanel(tab.dataset.tab);
+
+                        if (tab.dataset.tab === 'proposals') {
+                            // Proposal charts are inside a hidden panel on first
+                            // load, so redraw them after the panel becomes visible.
+                            loadDashboard(activeYear);
+                        }
 
                         const target = document.querySelector(tabTargets[tab.dataset.tab]);
                         if (target) {

@@ -42,14 +42,6 @@
         Publications
     </button>
 
-    <button type="button" class="ra-tab" data-tab="completed">
-        <svg class="ra-tab-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4.5 12.5 9.5 17.5 19.5 6.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M4.5 20.5h15" stroke-width="1.7" stroke-linecap="round" />
-        </svg>
-        Completed Proposals
-    </button>
-
     <button type="button" class="ra-tab" data-tab="fundings">
         <svg class="ra-tab-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3.5v17M7.5 7.5h6.25a3.25 3.25 0 0 1 0 6.5H9.5" stroke-width="1.7"
