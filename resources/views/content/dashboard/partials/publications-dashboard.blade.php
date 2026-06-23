@@ -24,7 +24,7 @@
         <div class="ra-kpi-card">
             <div class="ra-kpi-label">Active campuses</div>
             <div class="ra-kpi-value" id="pubKpiCampuses"><span class="ra-skel"></span></div>
-            <div class="ra-kpi-foot">with at least one output</div>
+            <div class="ra-kpi-foot">with at least one published output</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
