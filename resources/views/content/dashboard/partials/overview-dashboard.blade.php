@@ -122,45 +122,70 @@
 
 <script>
     /**
-     * Overview panel — Publications lead indicators.
-     * Pulls a slim publications snapshot from /api/publications/dashboard
-     * so the Overview tab shows real numbers instead of static placeholders.
+     * Overview panel lead indicators.
+     * The overview cards intentionally fetch slim dashboard payloads for both
+     * publications and funding so this landing tab stays in sync with the
+     * detailed panels instead of leaving the funding KPIs as placeholders.
      */
     (function () {
         const API_BASE = window.RESEARCH_API_BASE ||
             '{{ rtrim(config('services.research_api.url', 'http://127.0.0.1:8001'), '/') }}';
 
-        let overviewPubLoaded = false;
+        let overviewLoaded = false;
 
         const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
         const fmtPct = (n) => (n === null || n === undefined) ? '—' : `${Number(n).toFixed(1)}%`;
+        const fmtCurrency = (n) => `₱${Number(n ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
         function setText(id, value) {
             const el = document.getElementById(id);
             if (el) el.textContent = value;
         }
 
-        function buildUrl(year) {
+        function buildPublicationsUrl(year) {
             const url = new URL(`${API_BASE}/api/publications/dashboard`);
             if (year) url.searchParams.set('year', year);
             return url.toString();
         }
 
-        async function loadOverviewPublications(year = '') {
+        function buildFundingUrl(year) {
+            const url = new URL(`${API_BASE}/api/funding/dashboard`);
+            if (year) url.searchParams.set('year', year);
+            return url.toString();
+        }
+
+        async function loadOverview(year = '') {
             try {
-                const res = await fetch(buildUrl(year), { headers: { Accept: 'application/json' } });
-                if (!res.ok) throw new Error(`Publications service responded with ${res.status}`);
-                const data = await res.json();
+                const [pubRes, fundRes] = await Promise.all([
+                    fetch(buildPublicationsUrl(year), { headers: { Accept: 'application/json' } }),
+                    fetch(buildFundingUrl(year), { headers: { Accept: 'application/json' } }),
+                ]);
+                if (!pubRes.ok) throw new Error(`Publications service responded with ${pubRes.status}`);
+                if (!fundRes.ok) throw new Error(`Funding service responded with ${fundRes.status}`);
+                const publications = await pubRes.json();
+                const funding = await fundRes.json();
 
-                setText('overviewTotalOutputs', fmtInt(data.total_outputs?.[0]?.total_outputs));
-                setText('overviewCompletedOutputs', fmtInt(data.completed_outputs?.[0]?.completed_outputs));
-                setText('overviewOutputCompletionRate', fmtPct(data.completion_rate?.[0]?.completion_rate_pct));
-                setText('overviewOutputCampuses', fmtInt(data.active_campuses?.[0]?.active_campuses));
+                setText('overviewTotalOutputs', fmtInt(publications.total_outputs?.[0]?.total_outputs));
+                setText('overviewCompletedOutputs', fmtInt(publications.completed_outputs?.[0]?.completed_outputs));
+                setText('overviewOutputCompletionRate', fmtPct(publications.completion_rate?.[0]?.completion_rate_pct));
+                setText('overviewOutputCampuses', fmtInt(publications.active_campuses?.[0]?.active_campuses));
 
-                overviewPubLoaded = true;
+                setText('overviewFundedProjects', fmtInt(funding.total_funded_projects?.[0]?.total_funded_projects));
+                setText('overviewAllocatedFund', fmtCurrency(funding.total_allocated_fund?.[0]?.total_allocated_fund));
+                setText('overviewFundedCampuses', fmtInt((funding.funding_by_campus || []).length));
+
+                overviewLoaded = true;
             } catch (err) {
                 console.error(err);
-                ['overviewTotalOutputs', 'overviewCompletedOutputs', 'overviewOutputCompletionRate', 'overviewOutputCampuses']
+                [
+                    'overviewTotalOutputs',
+                    'overviewCompletedOutputs',
+                    'overviewOutputCompletionRate',
+                    'overviewOutputCampuses',
+                    'overviewFundedProjects',
+                    'overviewAllocatedFund',
+                    'overviewFundedCampuses',
+                ]
                     .forEach((id) => setText(id, '—'));
             }
         }
@@ -168,8 +193,8 @@
         // Reload when the shared year filter changes, but only once this
         // panel has actually loaded the data at least once.
         document.getElementById('yearFilter')?.addEventListener('change', (e) => {
-            if (overviewPubLoaded) {
-                loadOverviewPublications(e.target.value);
+            if (overviewLoaded) {
+                loadOverview(e.target.value);
             }
         });
 
@@ -179,7 +204,7 @@
             tab.addEventListener('click', () => {
                 if (tab.dataset.tab === 'overview') {
                     const year = document.getElementById('yearFilter')?.value || '';
-                    loadOverviewPublications(year);
+                    loadOverview(year);
                 }
             });
         });
@@ -189,7 +214,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const panel = document.getElementById('overviewDashboard');
             if (panel && panel.classList.contains('is-active')) {
-                loadOverviewPublications('');
+                loadOverview('');
             }
         });
     })();
