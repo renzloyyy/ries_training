@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import run_query, check_connection, run_ries_query, check_ries_connection
 from queries import QUERIES
 from queries_ries import RIES_QUERIES
+from queries_funding import FUNDING_QUERIES 
 
 app = FastAPI(
     title="Research Proposal Analytics API",
@@ -47,8 +48,19 @@ def _execute(query_key: str, year: Optional[int] = None) -> list[dict]:
 
 
 def _execute_ries(query_key: str, year: Optional[int] = None) -> list[dict]:
-    """Shared helper: run a named query against the soulsuedu_ries database."""
+    """Shared helper: run a named query against the soulsuedu_ries database (publications)."""
     sql = RIES_QUERIES.get(query_key)
+    if sql is None:
+        raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
+    try:
+        return run_ries_query(sql, {"year": year})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Database error: {exc}")
+
+
+def _execute_funding(query_key: str, year: Optional[int] = None) -> list[dict]:
+    """Shared helper: run a named query against soulsuedu_ries (funding)."""
+    sql = FUNDING_QUERIES.get(query_key)
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
     try:
@@ -246,5 +258,84 @@ def publications_dashboard(year: Optional[int] = Query(default=None, ge=2000, le
     return {
         key: _execute_ries(key, year)
         for key in RIES_QUERIES.keys()
+        if key != "year_filter_options"
+    }
+
+
+# ------------------------------------------------------------------
+# Funding (soulsuedu_ries) endpoints
+# ------------------------------------------------------------------
+
+@app.get("/api/funding/total-projects")
+def funding_total_projects(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    rows = _execute_funding("total_funded_projects", year)
+    return rows[0] if rows else {"total_funded_projects": 0}
+
+
+@app.get("/api/funding/total-allocated")
+def funding_total_allocated(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    rows = _execute_funding("total_allocated_fund", year)
+    return rows[0] if rows else {"total_allocated_fund": 0}
+
+
+@app.get("/api/funding/by-campus")
+def funding_by_campus(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_by_campus", year)
+
+
+@app.get("/api/funding/by-category")
+def funding_by_category(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Category-only breakdown — used by the category donut chart."""
+    return _execute_funding("funding_by_category", year)
+
+
+@app.get("/api/funding/by-format")
+def funding_by_format(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Category + research-format breakdown — used by the format bar chart."""
+    return _execute_funding("funding_by_format", year)
+
+
+@app.get("/api/funding/by-department")
+def funding_by_department(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_by_department", year)
+
+
+@app.get("/api/funding/by-year")
+def funding_by_year(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_by_year", year)
+
+
+@app.get("/api/funding/by-quarter")
+def funding_by_quarter(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_by_quarter", year)
+
+
+@app.get("/api/funding/monthly-trend")
+def funding_monthly_trend(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_monthly_trend", year)
+
+
+@app.get("/api/funding/by-agency")
+def funding_by_agency(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    return _execute_funding("funding_by_agency", year)
+
+
+@app.get("/api/funding/years")
+def funding_years():
+    """Distinct fiscal years, for populating a year-filter dropdown."""
+    return _execute_funding("year_filter_options", None)
+
+
+@app.get("/api/funding/dashboard")
+def funding_dashboard(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """
+    Bundles every funding chart's data into a single response so the
+    Laravel controller can populate the whole Funding panel with one
+    HTTP call. Excludes year_filter_options since that one ignores the
+    year param and is meant to be fetched once via /api/funding/years.
+    """
+    return {
+        key: _execute_funding(key, year)
+        for key in FUNDING_QUERIES.keys()
         if key != "year_filter_options"
     }
