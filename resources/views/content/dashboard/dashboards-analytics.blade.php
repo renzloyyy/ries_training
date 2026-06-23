@@ -802,7 +802,6 @@
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Approval rate</div>
                         <div class="ra-kpi-value" id="proposalKpiApprovalRate"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">completed ÷ submitted proposals</div>
                     </div>
                 </div>
                 <div class="col-sm-6 col-lg-4">
