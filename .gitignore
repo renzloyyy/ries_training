@@ -7,6 +7,12 @@
 /storage/*.key
 /vendor
 
+# Python research environment and interpreter cache files are local-only.
+# Ignoring them keeps package installs and .pyc churn out of commits/pushes.
+/python_research/.venv
+**/__pycache__/
+*.py[cod]
+
 # .env
 .env.backup
 .env.production
