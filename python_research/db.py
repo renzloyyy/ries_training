@@ -1,11 +1,3 @@
-"""
-db.py
-Handles the MySQL connection (PyMySQL) and a small helper to run
-read-only SQL queries and return the results as a list of dicts.
-
-Configuration is read from environment variables (see .env.example).
-"""
-
 import os
 from contextlib import contextmanager
 from typing import Optional, Union
@@ -19,8 +11,6 @@ load_dotenv()
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "127.0.0.1"),
     "port": int(os.getenv("DB_PORT", "3306")),
-    # Support Laravel-style env names first, while keeping the older
-    # Python-specific fallbacks so local setups do not break.
     "user": os.getenv("DB_USERNAME") or os.getenv("DB_USER", "root"),
     "password": os.getenv("DB_PASSWORD", ""),
     "database": os.getenv("DB_DATABASE") or os.getenv("DB_NAME", "research_warehouse"),
@@ -28,15 +18,20 @@ DB_CONFIG = {
     "cursorclass": pymysql.cursors.DictCursor,
 }
 
+# Second connection: the RIES publications/outputs database
+RIES_DB_CONFIG = {
+    "host": os.getenv("RIES_DB_HOST", "127.0.0.1"),
+    "port": int(os.getenv("RIES_DB_PORT", "3306")),
+    "user": os.getenv("RIES_DB_USERNAME", "root"),
+    "password": os.getenv("RIES_DB_PASSWORD", ""),
+    "database": os.getenv("RIES_DB_DATABASE", "soulsuedu_ries"),
+    "charset": "utf8mb4",
+    "cursorclass": pymysql.cursors.DictCursor,
+}
+
 
 @contextmanager
 def get_connection():
-    """
-    Opens a new PyMySQL connection and guarantees it is closed afterwards.
-    Kept simple (one connection per request) since this API is read-only
-    and meant to be called occasionally by the Laravel backend. If traffic
-    grows, swap this for a DBUtils.PooledDB pool without changing callers.
-    """
     connection = pymysql.connect(**DB_CONFIG)
     try:
         yield connection
@@ -44,23 +39,44 @@ def get_connection():
         connection.close()
 
 
+@contextmanager
+def get_ries_connection():
+    connection = pymysql.connect(**RIES_DB_CONFIG)
+    try:
+        yield connection
+    finally:
+        connection.close()
+
+
 def run_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
-    """
-    Executes a SELECT statement and returns the rows as a list of dicts.
-    """
-    # Keep annotations compatible with Python 3.9, which this project's
-    # local virtual environment is currently using.
     with get_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(sql, params)
-            rows = cursor.fetchall()
-    return rows
+            return cursor.fetchall()
+
+
+def run_ries_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
+    """Same as run_query, but against the soulsuedu_ries database."""
+    with get_ries_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchall()
 
 
 def check_connection() -> bool:
-    """Used by the /api/health endpoint to confirm the DB is reachable."""
     try:
         with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+        return True
+    except Exception:
+        return False
+
+
+def check_ries_connection() -> bool:
+    try:
+        with get_ries_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 cursor.fetchone()

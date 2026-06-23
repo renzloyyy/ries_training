@@ -61,6 +61,19 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+         'ries' => [                           // ← new secondary connection
+        'driver'    => 'mysql',
+        'host'      => env('RIES_DB_HOST', '127.0.0.1'),
+        'port'      => env('RIES_DB_PORT', '3306'),
+        'database'  => env('RIES_DB_DATABASE', 'soulsuedu_ries'),
+        'username'  => env('RIES_DB_USERNAME', 'root'),
+        'password'  => env('RIES_DB_PASSWORD', ''),
+        'charset'   => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix'    => '',
+        'strict'    => true,
+        'engine'    => null,
+        ],
 
         'mariadb' => [
             'driver' => 'mariadb',
