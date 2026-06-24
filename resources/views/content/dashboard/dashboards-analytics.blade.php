@@ -526,6 +526,7 @@
             letter-spacing: .04em;
             text-transform: uppercase;
             cursor: pointer;
+            align-self: flex-end;
         }
 
         .ra-story-link:hover,
