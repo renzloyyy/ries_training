@@ -76,9 +76,6 @@ WHERE rs.deleted_at IS NULL
   AND (%(year)s IS NULL OR YEAR(rs.created_at) = %(year)s);
 """,
 
-# Kept as total vs. completed (NOT filtered) because this is the only
-# query that feeds a RATE widget (Completion rate by campus). The UI
-# only ever renders the resulting percentage, never a raw pending count.
 "outputs_by_campus": f"""
 SELECT
     ci.campus AS campus_name,
