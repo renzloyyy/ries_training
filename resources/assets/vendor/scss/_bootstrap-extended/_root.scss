@@ -43,6 +43,28 @@
   // TODO: CheckInBS6 - A new variable has been created because the `$link-color` SCSS  #{to-rgb($link-color)} variable was being used, and changing the color did not reflect the update. This new variable ensures that future color changes are applied correctly.
   --#{$prefix}custom-link-color: var(--#{$prefix}primary);
 
+  // Project theme aliases without the Bootstrap prefix, so custom views can
+  // consume the same palette using the shorter token names requested by the team.
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --success: #{$success};
+  --info: #{$info};
+  --warning: #{$warning};
+  --danger: #{$danger};
+  --light: #{$light};
+  --dark: #{$dark};
+  --gray: #{$gray};
+  --white: #{$white};
+  --muted: #5a6478;
+
+  --forest: #{$primary};
+  --emerald: #{$success};
+  --sea: #{$secondary};
+  --gold: #{$warning};
+  --coral: #{$info};
+  --cream: #{$light};
+  --ink: #{$dark};
+
   // Navbar
   --#{$prefix}navbar-bg: #{$navbar-bg};
   --#{$prefix}navbar-box-shadow: #{$navbar-box-shadow};

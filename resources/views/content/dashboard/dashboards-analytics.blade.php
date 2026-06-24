@@ -44,21 +44,21 @@
         }
 
         .ra-page[data-theme="light"] {
-            /* Shift the light theme from warm neutrals to the reference's
-               research-dashboard blue hierarchy so all text reads from one palette. */
-            --ra-bg: #F3EFE6;
-            --ra-panel: #FCFAF5;
-            --ra-panel-2: #F5F0E5;
-            --ra-line: #D9E2FF;
-            --ra-line-soft: #EAF0FF;
-            --ra-text: #060e40;
-            --ra-text-dim: #24306f;
-            --ra-text-faint: #56639a;
-            --ra-approved: #1E4ED8;
-            --ra-approved-dim: #DCE8FF;
-            --ra-pending: #4D7BFF;
-            --ra-pending-dim: #E4EEFF;
-            --ra-danger: #C45757;
+            /* Reuse the shared project palette so the dashboard inherits the
+               same theme language as the rest of the Laravel UI. */
+            --ra-bg: var(--cream, #F4F6FA);
+            --ra-panel: #FFFFFF;
+            --ra-panel-2: #F9FAFD;
+            --ra-line: #D8E1F3;
+            --ra-line-soft: #E8EDF8;
+            --ra-text: var(--ink, #071240);
+            --ra-text-dim: var(--muted, #5a6478);
+            --ra-text-faint: #7f8aa4;
+            --ra-approved: var(--secondary, #1E3FA8);
+            --ra-approved-dim: #DCE5FB;
+            --ra-pending: var(--info, #AFC8F3);
+            --ra-pending-dim: #EEF4FE;
+            --ra-danger: var(--danger, #e74c3c);
         }
 
         @font-face {
@@ -356,6 +356,12 @@
             box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
         }
 
+        .ra-story-kpi-body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
         .ra-story-kpi-icon,
         .ra-story-mini-icon,
         .ra-overview-insight-icon {
@@ -385,7 +391,6 @@
         }
 
         .ra-story-kpi-title,
-        .ra-story-conversion-title,
         .ra-overview-insight-label {
             font-family: var(--ra-serif);
             font-size: .98rem;
@@ -394,7 +399,6 @@
         }
 
         .ra-story-kpi-value,
-        .ra-story-conversion-value,
         .ra-overview-insight-value {
             font-family: var(--ra-serif);
             font-size: clamp(1.7rem, 2.7vw, 2.25rem);
@@ -406,34 +410,36 @@
         }
 
         .ra-story-kpi-copy,
-        .ra-story-conversion-copy,
         .ra-overview-insight-copy {
             font-size: .84rem;
             line-height: 1.4;
             color: var(--ra-text-dim);
         }
 
-        .ra-story-conversion {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0;
-            border: 1px solid var(--ra-line);
-            border-radius: .95rem;
-            background: #FFFDF9;
-            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
-            overflow: hidden;
+        .ra-story-link {
+            margin-top: auto;
+            padding: .95rem 0 0;
+            border: none;
+            background: transparent;
+            color: var(--ra-approved);
+            font-family: var(--ra-mono);
+            font-size: .76rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            cursor: pointer;
         }
 
-        .ra-story-conversion-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.2rem;
-            min-height: 100%;
+        .ra-story-link:hover,
+        .ra-story-link:focus {
+            color: var(--ra-text);
+            outline: none;
         }
 
-        .ra-story-conversion-item+.ra-story-conversion-item {
-            border-left: 1px dashed var(--ra-line);
+        .ra-story-link-inline {
+            margin-top: 0;
+            margin-left: auto;
+            align-self: flex-start;
         }
 
         .ra-story-mini-icon,
@@ -546,16 +552,6 @@
             background: rgba(186, 122, 17, .12);
         }
 
-        @media (max-width: 991.98px) {
-            .ra-story-conversion {
-                grid-template-columns: 1fr;
-            }
-
-            .ra-story-conversion-item+.ra-story-conversion-item {
-                border-left: none;
-                border-top: 1px dashed var(--ra-line);
-            }
-        }
 
         .ra-skel {
             display: inline-block;
@@ -1040,20 +1036,38 @@
             {{-- Proposal lead indicators are repeated here so the proposal
                  detail page has its own quick summary before tail indicators. --}}
             <div class="row g-3 mb-3">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6 col-xl">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Total proposals</div>
                         <div class="ra-kpi-value" id="proposalKpiTotal"><span class="ra-skel"></span></div>
                         <div class="ra-kpi-foot">across all campuses</div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6 col-xl">
+                    <div class="ra-kpi-card">
+                        {{-- Approved totals are rolled up from the same campus
+                             approval query that drives the proposal rate widgets. --}}
+                        <div class="ra-kpi-label">Approved</div>
+                        <div class="ra-kpi-value" id="proposalKpiApproved"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">approved research proposals</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl">
+                    <div class="ra-kpi-card">
+                        {{-- Pending totals come from the same query so approved
+                             and pending cards always stay in sync. --}}
+                        <div class="ra-kpi-label">Pending</div>
+                        <div class="ra-kpi-value" id="proposalKpiPending"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">still awaiting completion</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Approval rate</div>
                         <div class="ra-kpi-value" id="proposalKpiApprovalRate"><span class="ra-skel"></span></div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6 col-xl">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Campuses reporting</div>
                         <div class="ra-kpi-value" id="proposalKpiCampuses"><span class="ra-skel"></span></div>
@@ -1421,6 +1435,14 @@
                 const campusRows = data.proposals_by_campus || [];
                 setTextIfExists('kpiCampuses', fmtInt(campusRows.length));
                 setTextIfExists('proposalKpiCampuses', fmtInt(campusRows.length));
+
+                const approvalCampusRows = data.approval_rate_by_campus || [];
+                // Roll proposal approvals and pending counts up from the campus
+                // query so the KPI cards match the approval-rate breakdown.
+                const approvedTotal = approvalCampusRows.reduce((sum, row) => sum + Number(row.approved || 0), 0);
+                const pendingTotal = approvalCampusRows.reduce((sum, row) => sum + Number(row.pending || 0), 0);
+                setTextIfExists('proposalKpiApproved', fmtInt(approvedTotal));
+                setTextIfExists('proposalKpiPending', fmtInt(pendingTotal));
 
             }
 

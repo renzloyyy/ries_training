@@ -5,3 +5,16 @@
 
 // $font-size-root: 14px !default;
 // $success: #00ff00 !default;
+
+// Project theme palette.
+// These overrides feed the shared Bootstrap-extended theme map so buttons,
+// badges, links, utility classes, and CSS variables all inherit one palette.
+$primary: #0B1F5C;
+$secondary: #1E3FA8;
+$success: #2E7D32;
+$info: #AFC8F3;
+$warning: #ffc107;
+$danger: #e74c3c;
+$light: #F4F6FA;
+$dark: #071240;
+$gray: #000000;
