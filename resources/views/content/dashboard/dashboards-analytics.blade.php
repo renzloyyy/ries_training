@@ -44,19 +44,21 @@
         }
 
         .ra-page[data-theme="light"] {
+            /* Shift the light theme from warm neutrals to the reference's
+               research-dashboard blue hierarchy so all text reads from one palette. */
             --ra-bg: #F3EFE6;
             --ra-panel: #FCFAF5;
             --ra-panel-2: #F5F0E5;
-            --ra-line: #D8CFBF;
-            --ra-line-soft: #E7DED0;
-            --ra-text: #1C1E21;
-            --ra-text-dim: #5E645E;
-            --ra-text-faint: #7B827B;
-            --ra-approved: #4F8B68;
-            --ra-approved-dim: #CFE2D4;
-            --ra-pending: #B68139;
-            --ra-pending-dim: #E9D8C0;
-            --ra-danger: #B45844;
+            --ra-line: #D9E2FF;
+            --ra-line-soft: #EAF0FF;
+            --ra-text: #060e40;
+            --ra-text-dim: #24306f;
+            --ra-text-faint: #56639a;
+            --ra-approved: #1E4ED8;
+            --ra-approved-dim: #DCE8FF;
+            --ra-pending: #4D7BFF;
+            --ra-pending-dim: #E4EEFF;
+            --ra-danger: #C45757;
         }
 
         @font-face {
@@ -135,6 +137,8 @@
         }
 
         .ra-title {
+            /* The main title uses the deepest blue from the reference so it
+               stands out immediately above the lighter descriptive copy. */
             font-family: var(--ra-serif);
             font-size: clamp(1.7rem, 2.4vw, 2.15rem);
             font-weight: 600;
@@ -295,10 +299,12 @@
         }
 
         .ra-kpi-value {
+            /* KPI numbers are the strongest data accents, so give them the
+               brighter primary blue seen in the reference dashboard. */
             font-family: var(--ra-serif);
             font-size: 1.95rem;
             font-weight: 600;
-            color: var(--ra-text);
+            color: var(--ra-approved);
             line-height: 1;
             letter-spacing: -.01em;
         }
@@ -308,6 +314,247 @@
             font-size: .7rem;
             color: var(--ra-text-faint);
             margin-top: .6rem;
+        }
+
+        .ra-story-block {
+            margin-bottom: 1rem;
+        }
+
+        .ra-story-label {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: .7rem;
+            font-family: var(--ra-mono);
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--ra-text);
+        }
+
+        .ra-story-index {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-grid;
+            place-items: center;
+            border-radius: 999px;
+            background: #173A9B;
+            color: #FFF;
+            font-size: .68rem;
+        }
+
+        .ra-story-kpi {
+            display: grid;
+            grid-template-columns: 68px 1fr;
+            gap: 1rem;
+            height: 100%;
+            padding: 1.15rem 1.2rem;
+            border: 1px solid var(--ra-line);
+            border-radius: .95rem;
+            background: #FFFDF9;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
+        }
+
+        .ra-story-kpi-icon,
+        .ra-story-mini-icon,
+        .ra-overview-insight-icon {
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            color: #1E4ED8;
+            background: rgba(30, 78, 216, .1);
+        }
+
+        .ra-story-kpi-icon {
+            width: 3.9rem;
+            height: 3.9rem;
+        }
+
+        .ra-story-kpi-icon-solid {
+            background: linear-gradient(180deg, #1E4ED8, #153CA9);
+            color: #FFF;
+        }
+
+        .ra-story-kpi-icon svg,
+        .ra-story-mini-icon svg,
+        .ra-overview-insight-icon svg {
+            width: 1.9rem;
+            height: 1.9rem;
+            stroke: currentColor;
+        }
+
+        .ra-story-kpi-title,
+        .ra-story-conversion-title,
+        .ra-overview-insight-label {
+            font-family: var(--ra-serif);
+            font-size: .98rem;
+            font-weight: 600;
+            color: var(--ra-text);
+        }
+
+        .ra-story-kpi-value,
+        .ra-story-conversion-value,
+        .ra-overview-insight-value {
+            font-family: var(--ra-serif);
+            font-size: clamp(1.7rem, 2.7vw, 2.25rem);
+            font-weight: 700;
+            letter-spacing: -.03em;
+            line-height: 1;
+            color: var(--ra-approved);
+            margin: .55rem 0;
+        }
+
+        .ra-story-kpi-copy,
+        .ra-story-conversion-copy,
+        .ra-overview-insight-copy {
+            font-size: .84rem;
+            line-height: 1.4;
+            color: var(--ra-text-dim);
+        }
+
+        .ra-story-conversion {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border: 1px solid var(--ra-line);
+            border-radius: .95rem;
+            background: #FFFDF9;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
+            overflow: hidden;
+        }
+
+        .ra-story-conversion-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            min-height: 100%;
+        }
+
+        .ra-story-conversion-item+.ra-story-conversion-item {
+            border-left: 1px dashed var(--ra-line);
+        }
+
+        .ra-story-mini-icon,
+        .ra-overview-insight-icon {
+            width: 3.4rem;
+            height: 3.4rem;
+            flex: 0 0 auto;
+        }
+
+        .ra-overview-story-panel,
+        .ra-overview-insight {
+            border-radius: .95rem;
+            background: #FFFDF9;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
+        }
+
+        .ra-overview-trend-head {
+            align-items: center;
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: .75rem;
+        }
+
+        .ra-story-bar-row {
+            margin-bottom: .85rem;
+        }
+
+        .ra-story-bar-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ra-story-bar-meta {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: .75rem;
+            margin-bottom: .3rem;
+        }
+
+        .ra-story-bar-name,
+        .ra-overview-legend-name {
+            color: var(--ra-text-dim);
+            font-size: .82rem;
+        }
+
+        .ra-story-bar-value,
+        .ra-overview-legend-share {
+            color: var(--ra-text);
+            font-family: var(--ra-mono);
+            font-size: .78rem;
+        }
+
+        .ra-story-bar-track {
+            height: 8px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #E6EEFF;
+        }
+
+        .ra-story-bar-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #173A9B, #2D6AF6);
+        }
+
+        .ra-story-bar-fill.is-soft {
+            background: linear-gradient(90deg, #4E7CF0, #9ABBFF);
+        }
+
+        .ra-overview-legend {
+            display: grid;
+            gap: .45rem;
+            margin-top: .8rem;
+        }
+
+        .ra-overview-legend-row {
+            display: grid;
+            grid-template-columns: 10px 1fr auto;
+            align-items: center;
+            gap: .55rem;
+        }
+
+        .ra-overview-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .ra-overview-insight {
+            padding: 1rem 1.1rem;
+            border: 1px solid var(--ra-line);
+            height: 100%;
+        }
+
+        .ra-overview-insight-value {
+            font-size: 1.55rem;
+        }
+
+        .ra-overview-insight-alert .ra-overview-insight-value {
+            color: #D14343;
+        }
+
+        .ra-overview-insight-icon-green {
+            color: #2D8B57;
+            background: rgba(45, 139, 87, .12);
+        }
+
+        .ra-overview-insight-icon-amber {
+            color: #BA7A11;
+            background: rgba(186, 122, 17, .12);
+        }
+
+        @media (max-width: 991.98px) {
+            .ra-story-conversion {
+                grid-template-columns: 1fr;
+            }
+
+            .ra-story-conversion-item+.ra-story-conversion-item {
+                border-left: none;
+                border-top: 1px dashed var(--ra-line);
+            }
         }
 
         .ra-skel {
@@ -629,6 +876,8 @@
         }
 
         .ra-tabs-brand {
+            /* Keep the brand block stacked normally while the menu itself
+               stays vertical through .ra-tabs using flex-direction: column. */
             position: relative;
             z-index: 1;
             text-align: center;
