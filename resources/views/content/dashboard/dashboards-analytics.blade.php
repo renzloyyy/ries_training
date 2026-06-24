@@ -78,15 +78,7 @@
                 radial-gradient(circle at 88% 12%, rgba(217, 163, 92, 0.04), transparent 42%);
             color: var(--ra-text);
             min-height: 100vh;
-            padding: 1.75rem clamp(1rem, 3vw, 2.5rem) 3rem;
-        }
-
-        @media (min-width: 992px) {
-            .ra-page {
-                /* Reserve room for the fixed left-side menu so dashboard cards
-                                   do not sit underneath the navigation rail. */
-                padding-left: 15.5rem;
-            }
+            padding: .9rem clamp(1rem, 3vw, 2.5rem) 3rem;
         }
 
         .ra-page,
@@ -102,6 +94,102 @@
 
         .ra-dashboard-panel.is-active {
             display: block;
+        }
+
+        .ra-topnav {
+            /* Horizontal dashboard menu mirrors the left rail, giving users a
+               second navigation surface without changing the page structure. */
+            position: sticky;
+            top: 0;
+            z-index: 24;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: .9rem 1.1rem;
+            margin-bottom: 1.15rem;
+            border: 1px solid var(--ra-line);
+            border-radius: .95rem;
+            background: rgba(255, 255, 255, .9);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
+        }
+
+        .ra-topnav-brand {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            min-width: 0;
+        }
+
+        .ra-topnav-mark {
+            width: 2.3rem;
+            height: 2.3rem;
+            display: grid;
+            place-items: center;
+            border-radius: .75rem;
+            background: linear-gradient(180deg, var(--secondary, #1E3FA8), var(--primary, #0B1F5C));
+            color: #FFF;
+            flex: 0 0 auto;
+        }
+
+        .ra-topnav-mark svg {
+            width: 1.15rem;
+            height: 1.15rem;
+            stroke: currentColor;
+        }
+
+        .ra-topnav-copy {
+            min-width: 0;
+        }
+
+        .ra-topnav-title {
+            margin: 0;
+            font-family: var(--ra-serif);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ra-text);
+            line-height: 1.1;
+        }
+
+        .ra-topnav-subtitle {
+            margin-top: .18rem;
+            font-family: var(--ra-mono);
+            font-size: .68rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--ra-text-faint);
+        }
+
+        .ra-topnav-links {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .ra-topnav-link {
+            padding: .62rem .9rem;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--ra-text-dim);
+            font-family: var(--ra-mono);
+            font-size: .76rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+            cursor: pointer;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease;
+        }
+
+        .ra-topnav-link:hover,
+        .ra-topnav-link:focus,
+        .ra-topnav-link.is-active {
+            color: var(--ra-text);
+            background: rgba(11, 31, 92, .08);
+            border-color: rgba(11, 31, 92, .12);
+            outline: none;
         }
 
         /* ---------- Header ---------- */
@@ -174,6 +262,16 @@
         }
 
         @media (max-width: 767.98px) {
+            .ra-topnav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .ra-topnav-links {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
             .ra-toolbar {
                 width: 100%;
                 justify-content: flex-start;
@@ -871,43 +969,6 @@
             pointer-events: none;
         }
 
-        .ra-tabs-brand {
-            /* Keep the brand block stacked normally while the menu itself
-               stays vertical through .ra-tabs using flex-direction: column. */
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding-bottom: 1rem;
-            margin-bottom: .35rem;
-        }
-
-        .ra-tabs-mark {
-            width: 2.7rem;
-            height: 2.7rem;
-            margin: 0 auto .65rem;
-            display: grid;
-            place-items: center;
-            color: #FFFFFF;
-        }
-
-        .ra-tabs-title {
-            font-family: var(--ra-mono);
-            font-size: 1rem;
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-        }
-
-        .ra-tabs-subtitle {
-            margin-top: .55rem;
-            font-family: var(--ra-mono);
-            font-size: .63rem;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-            color: rgba(234, 244, 255, .72);
-        }
-
         .ra-tab {
             width: 100%;
             position: relative;
@@ -941,28 +1002,6 @@
             color: #FFFFFF;
         }
 
-        .ra-tabs-quote {
-            position: relative;
-            z-index: 1;
-            margin-top: auto;
-            padding: 1rem .65rem .5rem;
-            color: rgba(234, 244, 255, .78);
-            font-family: var(--ra-serif);
-            font-size: .78rem;
-            font-style: italic;
-            line-height: 1.65;
-        }
-
-        .ra-tabs-quote::before {
-            content: '"';
-            display: block;
-            margin-bottom: .45rem;
-            color: rgba(255, 255, 255, .9);
-            font-family: var(--ra-serif);
-            font-size: 2rem;
-            line-height: .8;
-        }
-
         @media (max-width: 991.98px) {
             .ra-funnel-row {
                 grid-template-columns: 96px 1fr 46px;
@@ -976,16 +1015,38 @@
                 min-height: auto;
                 margin-bottom: 1rem;
             }
-
-            .ra-tabs-quote {
-                display: none;
-            }
         }
     </style>
 @endsection
 
 @section('content')
     <div class="ra-page" id="raPage" data-theme="light">
+
+        <nav class="ra-topnav" aria-label="Dashboard sections">
+            <div class="ra-topnav-brand">
+                <div class="ra-topnav-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M4.5 6.5v11.2c2.2-.9 4.6-.7 7.5.8 2.9-1.5 5.3-1.7 7.5-.8V6.5c-2.2-.9-4.6-.7-7.5.8-2.9-1.5-5.3-1.7-7.5-.8Z"
+                            stroke-width="1.6" stroke-linejoin="round" />
+                        <path d="M12 7.3v11.2" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="ra-topnav-copy">
+                    <p class="ra-topnav-title">Research Analytics</p>
+                    <div class="ra-topnav-subtitle">Top Menu Navigation</div>
+                </div>
+            </div>
+
+            <div class="ra-topnav-links">
+                {{-- Mirror the dashboard panels in a horizontal navbar so users
+                     can switch sections from the top as well as the left rail. --}}
+                <button type="button" class="ra-topnav-link is-active" data-tab="overview">Overview</button>
+                <button type="button" class="ra-topnav-link" data-tab="proposals">Proposals</button>
+                <button type="button" class="ra-topnav-link" data-tab="publications">Publications</button>
+                <button type="button" class="ra-topnav-link" data-tab="fundings">Fundings</button>
+            </div>
+        </nav>
 
         <div class="ra-header">
             <div>
@@ -1020,11 +1081,6 @@
         </div>
 
         <div id="raGlobalError" style="display:none" class="ra-error"></div>
-
-        {{-- Keep the left navigation in a partial so menu items can be managed separately. --}}
-        @include('content.dashboard.partials.dashboard-menu')
-
-
         <section id="overviewDashboard" class="ra-dashboard-panel is-active">
             {{-- Overview collects only lead indicators from each fact table. --}}
             @include('content.dashboard.partials.overview-dashboard')
@@ -1867,29 +1923,42 @@
                     });
                 }
 
+                function activateDashboardTab(tabName) {
+                    // Keep the vertical rail and the new top navbar in sync so
+                    // either navigation surface reflects the active section.
+                    document.querySelectorAll('.ra-tab').forEach((item) => {
+                        item.classList.toggle('is-active', item.dataset.tab === tabName);
+                    });
+                    document.querySelectorAll('.ra-topnav-link').forEach((item) => {
+                        item.classList.toggle('is-active', item.dataset.tab === tabName);
+                    });
+
+                    showDashboardPanel(tabName);
+
+                    if (tabName === 'proposals') {
+                        // Proposal charts are inside a hidden panel on first
+                        // load, so redraw them after the panel becomes visible.
+                        loadDashboard(activeYear);
+                    }
+
+                    const target = document.querySelector(tabTargets[tabName]);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+
                 document.querySelectorAll('.ra-tab').forEach((tab) => {
                     tab.addEventListener('click', () => {
-                        // Selecting a left-menu item marks it active and decides
-                        // which full Blade dashboard panel should be visible.
-                        document.querySelectorAll('.ra-tab').forEach((item) => {
-                            item.classList.toggle('is-active', item === tab);
-                        });
+                        activateDashboardTab(tab.dataset.tab);
+                    });
+                });
 
-                        showDashboardPanel(tab.dataset.tab);
-
-                        if (tab.dataset.tab === 'proposals') {
-                            // Proposal charts are inside a hidden panel on first
-                            // load, so redraw them after the panel becomes visible.
-                            loadDashboard(activeYear);
-                        }
-
-                        const target = document.querySelector(tabTargets[tab.dataset.tab]);
-                        if (target) {
-                            target.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
+                document.querySelectorAll('.ra-topnav-link').forEach((tab) => {
+                    tab.addEventListener('click', () => {
+                        activateDashboardTab(tab.dataset.tab);
                     });
                 });
             }

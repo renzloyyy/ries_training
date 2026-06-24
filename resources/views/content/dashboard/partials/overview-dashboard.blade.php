@@ -242,9 +242,10 @@
         }
 
         function openDashboardTab(tabName) {
-            // Reuse the existing rail-menu click behavior so overview links
-            // open the same dashboard sections without duplicating tab logic.
-            const targetTab = document.querySelector(`.ra-tab[data-tab="${tabName}"]`);
+            // Reuse whichever dashboard navigation surface exists so the
+            // overview links keep working after removing the left rail menu.
+            const targetTab = document.querySelector(`.ra-topnav-link[data-tab="${tabName}"]`) ||
+                document.querySelector(`.ra-tab[data-tab="${tabName}"]`);
             if (targetTab) {
                 targetTab.click();
             }
