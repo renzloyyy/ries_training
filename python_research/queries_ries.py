@@ -200,4 +200,21 @@ GROUP BY YEAR(rs.completed_approved_at), MONTH(rs.completed_approved_at)
 ORDER BY yr, mo;
 """,
 
+# Year-level publication trend for the overview panel. This keeps both the
+# total submissions created in a year and the subset that reached the
+# completed/published state so the combined overview line chart can compare
+# proposal volume against publication completion over time.
+"yearly_trend": f"""
+SELECT
+    YEAR(rs.created_at) AS yr,
+    COUNT(rs.ID) AS total_outputs,
+    SUM(CASE WHEN {_COMPLETED_COND} THEN 1 ELSE 0 END) AS completed_outputs
+FROM ri_submission rs
+WHERE rs.deleted_at IS NULL
+  AND YEAR(rs.created_at) IS NOT NULL
+  AND (%(year)s IS NULL OR YEAR(rs.created_at) = %(year)s)
+GROUP BY YEAR(rs.created_at)
+ORDER BY yr;
+""",
+
 }

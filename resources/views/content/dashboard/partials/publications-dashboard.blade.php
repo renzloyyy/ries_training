@@ -29,7 +29,7 @@
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="ra-kpi-card">
-            <div class="ra-kpi-label">Completed outputs</div>
+            <div class="ra-kpi-label">Published outputs</div>
             <div class="ra-kpi-value" id="pubKpiCompleted"><span class="ra-skel"></span></div>
             <div class="ra-kpi-foot">based on complete count</div>
         </div>
@@ -121,7 +121,7 @@
         <div class="ra-card h-100">
             <div class="ra-card-head">
                 <div>
-                    <h2 class="ra-card-title">Completion rate by campus</h2>
+                    <h2 class="ra-card-title">Publication rate by campus</h2>
                     <div class="ra-card-sub"></div>
                 </div>
             </div>
@@ -184,7 +184,7 @@
      * ApexCharts instances, and a grouped campus/program table with its
      * own local search filter. Scoped to /api/publications/dashboard.
      */
-    (function () {
+    (function() {
         const API_BASE = window.RESEARCH_API_BASE ||
             '{{ rtrim(config('services.research_api.url', 'http://127.0.0.1:8001'), '/') }}';
 
@@ -197,8 +197,12 @@
         const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
         const fmtPct = (n) => (n === null || n === undefined) ? '—' : `${Number(n).toFixed(1)}%`;
         const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-        }[c]));
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        } [c]));
 
         function cssVar(name) {
             return getComputedStyle(pageEl).getPropertyValue(name).trim();
@@ -215,18 +219,44 @@
                 chart: {
                     fontFamily: 'Public Sans, sans-serif',
                     background: 'transparent',
-                    toolbar: { show: false },
-                    animations: { easing: 'easeinout', speed: 500 },
+                    toolbar: {
+                        show: false
+                    },
+                    animations: {
+                        easing: 'easeinout',
+                        speed: 500
+                    },
                 },
-                theme: { mode: currentTheme() },
+                theme: {
+                    mode: currentTheme()
+                },
                 colors: [cssVar('--ra-approved'), cssVar('--ra-pending'), '#6E84A8', '#A98FC4'],
-                dataLabels: { enabled: false },
-                grid: { borderColor: line, strokeDashArray: 3 },
-                tooltip: { theme: currentTheme() },
-                legend: { labels: { colors: textDim } },
+                dataLabels: {
+                    enabled: false
+                },
+                grid: {
+                    borderColor: line,
+                    strokeDashArray: 3
+                },
+                tooltip: {
+                    theme: currentTheme()
+                },
+                legend: {
+                    labels: {
+                        colors: textDim
+                    }
+                },
                 states: {
-                    hover: { filter: { type: 'none' } },
-                    active: { filter: { type: 'none' } },
+                    hover: {
+                        filter: {
+                            type: 'none'
+                        }
+                    },
+                    active: {
+                        filter: {
+                            type: 'none'
+                        }
+                    },
                 },
             }, overrides);
         }
@@ -239,7 +269,9 @@
 
         async function fetchPubDashboard(year = '') {
             const res = await fetch(buildPubDashboardUrl(year), {
-                headers: { Accept: 'application/json' },
+                headers: {
+                    Accept: 'application/json'
+                },
             });
             if (!res.ok) throw new Error(`Publications service responded with ${res.status}`);
             return res.json();
@@ -280,14 +312,22 @@
             }
             el.innerHTML = '';
             renderPubChart('category', 'chartPubCategory', baseChartOptions({
-                chart: { type: 'donut', height: 230 },
+                chart: {
+                    type: 'donut',
+                    height: 230
+                },
                 labels: rows.map((r) => r.category),
                 series: rows.map((r) => Number(r.total_outputs || 0)),
-                stroke: { colors: [cssVar('--ra-panel')], width: 2 },
+                stroke: {
+                    colors: [cssVar('--ra-panel')],
+                    width: 2
+                },
                 legend: {
                     position: 'bottom',
                     fontSize: '11px',
-                    labels: { colors: cssVar('--ra-text-dim') },
+                    labels: {
+                        colors: cssVar('--ra-text-dim')
+                    },
                 },
             }));
         }
@@ -301,19 +341,45 @@
             }
             el.innerHTML = '';
             renderPubChart('sdg', 'chartPubSdg', baseChartOptions({
-                chart: { type: 'bar', height: 230 },
-                plotOptions: { bar: { borderRadius: 2, columnWidth: '50%' } },
-                series: [{ name: 'Outputs', data: rows.map((r) => Number(r.total_outputs || 0)) }],
+                chart: {
+                    type: 'bar',
+                    height: 230
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 2,
+                        columnWidth: '50%'
+                    }
+                },
+                series: [{
+                    name: 'Outputs',
+                    data: rows.map((r) => Number(r.total_outputs || 0))
+                }],
                 xaxis: {
                     categories: rows.map((r) => r.sdg_name),
                     labels: {
-                        style: { fontSize: '9px', colors: cssVar('--ra-text-faint'), fontFamily: MONO },
+                        style: {
+                            fontSize: '9px',
+                            colors: cssVar('--ra-text-faint'),
+                            fontFamily: MONO
+                        },
                         rotate: -45,
                     },
-                    axisBorder: { color: cssVar('--ra-line') },
-                    axisTicks: { color: cssVar('--ra-line') },
+                    axisBorder: {
+                        color: cssVar('--ra-line')
+                    },
+                    axisTicks: {
+                        color: cssVar('--ra-line')
+                    },
                 },
-                yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: cssVar('--ra-text-faint'),
+                            fontFamily: MONO
+                        }
+                    }
+                },
                 colors: ['#6E84A8'],
             }));
         }
@@ -326,23 +392,56 @@
                 return;
             }
             el.innerHTML = '';
-            const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
+                'Dec'
+            ];
             const categories = rows.map((r) => `${monthNames[r.mo] || r.mo} ${r.yr}`);
             renderPubChart('trend', 'chartPubTrend', baseChartOptions({
-                chart: { type: 'area', height: 260 },
-                series: [{ name: 'Outputs', data: rows.map((r) => Number(r.total_outputs || 0)) }],
+                chart: {
+                    type: 'area',
+                    height: 260
+                },
+                series: [{
+                    name: 'Outputs',
+                    data: rows.map((r) => Number(r.total_outputs || 0))
+                }],
                 xaxis: {
                     categories,
                     tickAmount: 8,
-                    labels: { style: { fontSize: '10px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
-                    axisBorder: { color: cssVar('--ra-line') },
-                    axisTicks: { color: cssVar('--ra-line') },
+                    labels: {
+                        style: {
+                            fontSize: '10px',
+                            colors: cssVar('--ra-text-faint'),
+                            fontFamily: MONO
+                        }
+                    },
+                    axisBorder: {
+                        color: cssVar('--ra-line')
+                    },
+                    axisTicks: {
+                        color: cssVar('--ra-line')
+                    },
                 },
-                yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
-                stroke: { curve: 'smooth', width: 2 },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: cssVar('--ra-text-faint'),
+                            fontFamily: MONO
+                        }
+                    }
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
                 fill: {
                     type: 'gradient',
-                    gradient: { shadeIntensity: 1, opacityFrom: .35, opacityTo: 0, stops: [0, 95, 100] },
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: .35,
+                        opacityTo: 0,
+                        stops: [0, 95, 100]
+                    },
                 },
                 colors: [cssVar('--ra-approved')],
             }));
@@ -357,16 +456,45 @@
             }
             el.innerHTML = '';
             renderPubChart('format', 'chartPubFormat', baseChartOptions({
-                chart: { type: 'bar', height: 260 },
-                plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '55%' } },
-                series: [{ name: 'Outputs', data: rows.map((r) => Number(r.total_outputs || 0)) }],
+                chart: {
+                    type: 'bar',
+                    height: 260
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 2,
+                        barHeight: '55%'
+                    }
+                },
+                series: [{
+                    name: 'Outputs',
+                    data: rows.map((r) => Number(r.total_outputs || 0))
+                }],
                 xaxis: {
                     categories: rows.map((r) => r.research_format),
-                    labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO, fontSize: '10px' } },
-                    axisBorder: { color: cssVar('--ra-line') },
-                    axisTicks: { color: cssVar('--ra-line') },
+                    labels: {
+                        style: {
+                            colors: cssVar('--ra-text-faint'),
+                            fontFamily: MONO,
+                            fontSize: '10px'
+                        }
+                    },
+                    axisBorder: {
+                        color: cssVar('--ra-line')
+                    },
+                    axisTicks: {
+                        color: cssVar('--ra-line')
+                    },
                 },
-                yaxis: { labels: { style: { colors: cssVar('--ra-text-dim'), fontSize: '11px' } } },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: cssVar('--ra-text-dim'),
+                            fontSize: '11px'
+                        }
+                    }
+                },
                 colors: [cssVar('--ra-approved')],
             }));
         }
@@ -380,22 +508,37 @@
             }
             el.innerHTML = '';
             renderPubChart('paperStatus', 'chartPubPaperStatus', baseChartOptions({
-                chart: { type: 'donut', height: 300 },
+                chart: {
+                    type: 'donut',
+                    height: 300
+                },
                 labels: rows.map((r) => r.paper_status),
                 series: rows.map((r) => Number(r.total_outputs || 0)),
-                stroke: { colors: [cssVar('--ra-panel')], width: 2 },
+                stroke: {
+                    colors: [cssVar('--ra-panel')],
+                    width: 2
+                },
                 legend: {
                     position: 'bottom',
                     fontSize: '12px',
-                    labels: { colors: cssVar('--ra-text-dim') },
+                    labels: {
+                        colors: cssVar('--ra-text-dim')
+                    },
                 },
                 plotOptions: {
                     pie: {
                         donut: {
                             labels: {
                                 show: true,
-                                total: { show: true, label: 'Total', color: cssVar('--ra-text-dim') },
-                                value: { color: cssVar('--ra-text'), fontFamily: MONO },
+                                total: {
+                                    show: true,
+                                    label: 'Total',
+                                    color: cssVar('--ra-text-dim')
+                                },
+                                value: {
+                                    color: cssVar('--ra-text'),
+                                    fontFamily: MONO
+                                },
                             },
                         },
                     },
@@ -415,7 +558,10 @@
                 const total = Number(r.total_outputs || 0);
                 const completed = Number(r.completed_outputs || 0);
                 const rate = total > 0 ? (completed / total) * 100 : 0;
-                return { ...r, completion_rate: rate };
+                return {
+                    ...r,
+                    completion_rate: rate
+                };
             }).sort((a, b) => b.completion_rate - a.completion_rate);
 
             container.innerHTML = withRate.map((r) => `
@@ -526,7 +672,7 @@
                     globalError.style.display = 'block';
                 }
                 ['pubKpiTotal', 'pubKpiCompleted', 'pubKpiCompletionRate', 'pubKpiCampuses']
-                    .forEach((id) => setText(id, '—'));
+                .forEach((id) => setText(id, '—'));
             }
         }
 

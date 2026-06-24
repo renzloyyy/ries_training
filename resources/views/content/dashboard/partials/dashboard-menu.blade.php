@@ -14,6 +14,8 @@
                     stroke-linecap="round" />
             </svg>
         </div>
+        {{-- The sidebar menu is vertical because the container stacks each
+             block downward, so the title can stay in its normal two-line form. --}}
         <div class="ra-tabs-title">Research<br>Program</div>
         <div class="ra-tabs-subtitle">Analytics dashboard</div>
     </div>

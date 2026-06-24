@@ -44,19 +44,21 @@
         }
 
         .ra-page[data-theme="light"] {
+            /* Shift the light theme from warm neutrals to the reference's
+               research-dashboard blue hierarchy so all text reads from one palette. */
             --ra-bg: #F3EFE6;
             --ra-panel: #FCFAF5;
             --ra-panel-2: #F5F0E5;
-            --ra-line: #D8CFBF;
-            --ra-line-soft: #E7DED0;
-            --ra-text: #1C1E21;
-            --ra-text-dim: #5E645E;
-            --ra-text-faint: #7B827B;
-            --ra-approved: #4F8B68;
-            --ra-approved-dim: #CFE2D4;
-            --ra-pending: #B68139;
-            --ra-pending-dim: #E9D8C0;
-            --ra-danger: #B45844;
+            --ra-line: #D9E2FF;
+            --ra-line-soft: #EAF0FF;
+            --ra-text: #173A9B;
+            --ra-text-dim: #3552A3;
+            --ra-text-faint: #6C7DB0;
+            --ra-approved: #1E4ED8;
+            --ra-approved-dim: #DCE8FF;
+            --ra-pending: #4D7BFF;
+            --ra-pending-dim: #E4EEFF;
+            --ra-danger: #C45757;
         }
 
         @font-face {
@@ -135,6 +137,8 @@
         }
 
         .ra-title {
+            /* The main title uses the deepest blue from the reference so it
+               stands out immediately above the lighter descriptive copy. */
             font-family: var(--ra-serif);
             font-size: clamp(1.7rem, 2.4vw, 2.15rem);
             font-weight: 600;
@@ -295,10 +299,12 @@
         }
 
         .ra-kpi-value {
+            /* KPI numbers are the strongest data accents, so give them the
+               brighter primary blue seen in the reference dashboard. */
             font-family: var(--ra-serif);
             font-size: 1.95rem;
             font-weight: 600;
-            color: var(--ra-text);
+            color: var(--ra-approved);
             line-height: 1;
             letter-spacing: -.01em;
         }
@@ -308,6 +314,93 @@
             font-size: .7rem;
             color: var(--ra-text-faint);
             margin-top: .6rem;
+        }
+
+        .ra-overview-card {
+            /* The overview gets its own presentation layer so the landing tab
+               can match the user's four-card executive summary reference. */
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid var(--ra-line);
+            border-radius: .8rem;
+            background: #FFFDF9;
+            padding: 1.3rem 1.4rem 1.25rem;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .06);
+        }
+
+        .ra-overview-icon {
+            width: 4.1rem;
+            height: 4.1rem;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #1E4ED8, #153CA9);
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+
+        .ra-overview-icon svg,
+        .ra-overview-watermark svg {
+            width: 2rem;
+            height: 2rem;
+            stroke: currentColor;
+        }
+
+        .ra-overview-label {
+            position: relative;
+            z-index: 1;
+            font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+            font-size: .88rem;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--ra-text);
+            margin-bottom: .9rem;
+        }
+
+        .ra-overview-value {
+            position: relative;
+            z-index: 1;
+            font-family: var(--ra-serif);
+            font-size: clamp(2rem, 3vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -.03em;
+            color: var(--ra-approved);
+        }
+
+        .ra-overview-foot {
+            position: relative;
+            z-index: 1;
+            margin-top: .85rem;
+            font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+            font-size: .8rem;
+            color: var(--ra-text-dim);
+        }
+
+        .ra-overview-watermark {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            color: rgba(30, 78, 216, .16);
+        }
+
+        .ra-overview-watermark svg {
+            width: 4.3rem;
+            height: 4.3rem;
+        }
+
+        .ra-overview-trend-card {
+            border-radius: .95rem;
+            background: #FFFDF9;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
+        }
+
+        .ra-overview-trend-head {
+            align-items: center;
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: .75rem;
         }
 
         .ra-skel {
@@ -629,6 +722,8 @@
         }
 
         .ra-tabs-brand {
+            /* Keep the brand block stacked normally while the menu itself
+               stays vertical through .ra-tabs using flex-direction: column. */
             position: relative;
             z-index: 1;
             text-align: center;
