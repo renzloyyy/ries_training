@@ -78,58 +78,7 @@
 </div>
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">2</span> The Conversion Story</div>
-    <div class="ra-story-conversion">
-        <div class="ra-story-conversion-item">
-            <div class="ra-story-mini-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 19.5h16M5 17V7.5M5 17l4.2-4.2M19 7V17M19 7l-4.2 4.2" stroke-width="1.7"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </div>
-            <div>
-                <div class="ra-story-conversion-title">Publication Completion Rate</div>
-                <div class="ra-story-conversion-value" id="overviewCompletionRate"><span class="ra-skel"></span></div>
-                <div class="ra-story-conversion-copy">Completed papers out of total publication records.</div>
-            </div>
-        </div>
-
-        <div class="ra-story-conversion-item">
-            <div class="ra-story-mini-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M8 11.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                        stroke-width="1.7" />
-                    <path d="M3.5 19c0-2.7 2.2-4.8 4.9-4.8h-.8c2.7 0 4.9 2.1 4.9 4.8M10.6 19c0-2.3 1.9-4.1 4.2-4.1h.5c2.3 0 4.2 1.8 4.2 4.1"
-                        stroke-width="1.7" stroke-linecap="round" />
-                </svg>
-            </div>
-            <div>
-                <div class="ra-story-conversion-title">Funded Project Share</div>
-                <div class="ra-story-conversion-value" id="overviewFundedProjectShare"><span class="ra-skel"></span></div>
-                <div class="ra-story-conversion-copy">Proposals that received funding support.</div>
-            </div>
-        </div>
-
-        <div class="ra-story-conversion-item">
-            <div class="ra-story-mini-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 8.5h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-10Z" stroke-width="1.7"
-                        stroke-linejoin="round" />
-                    <path d="M7.5 8.5V6.8A2.8 2.8 0 0 1 10.3 4h3.4a2.8 2.8 0 0 1 2.8 2.8v1.7M8 13h4" stroke-width="1.7"
-                        stroke-linecap="round" />
-                </svg>
-            </div>
-            <div>
-                <div class="ra-story-conversion-title">Average Funding per Completed Output</div>
-                <div class="ra-story-conversion-value" id="overviewFundingPerOutput"><span class="ra-skel"></span></div>
-                <div class="ra-story-conversion-copy">Average fund allocation per completed paper.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">3</span> Trend Of Performance</div>
+    <div class="ra-story-label"><span class="ra-story-index">2</span> Trend Of Performance</div>
     <div class="ra-card ra-overview-story-panel">
         <div class="ra-card-head ra-overview-trend-head">
             <div>
@@ -152,7 +101,7 @@
 </div>
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">4</span> Who Drives The Results</div>
+    <div class="ra-story-label"><span class="ra-story-index">3</span> Who Drives The Results</div>
     <div class="row g-3 mb-4">
         <div class="col-lg-4">
             <div class="ra-card ra-overview-story-panel h-100">
@@ -196,7 +145,7 @@
 </div>
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">5</span> Key Insights</div>
+    <div class="ra-story-label"><span class="ra-story-index">4</span> Key Insights</div>
     <div class="row g-3">
         <div class="col-sm-6 col-xl-3">
             <div class="ra-overview-insight ra-overview-insight-alert">

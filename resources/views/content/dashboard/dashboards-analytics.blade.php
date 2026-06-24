@@ -385,7 +385,6 @@
         }
 
         .ra-story-kpi-title,
-        .ra-story-conversion-title,
         .ra-overview-insight-label {
             font-family: var(--ra-serif);
             font-size: .98rem;
@@ -394,7 +393,6 @@
         }
 
         .ra-story-kpi-value,
-        .ra-story-conversion-value,
         .ra-overview-insight-value {
             font-family: var(--ra-serif);
             font-size: clamp(1.7rem, 2.7vw, 2.25rem);
@@ -406,34 +404,10 @@
         }
 
         .ra-story-kpi-copy,
-        .ra-story-conversion-copy,
         .ra-overview-insight-copy {
             font-size: .84rem;
             line-height: 1.4;
             color: var(--ra-text-dim);
-        }
-
-        .ra-story-conversion {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0;
-            border: 1px solid var(--ra-line);
-            border-radius: .95rem;
-            background: #FFFDF9;
-            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
-            overflow: hidden;
-        }
-
-        .ra-story-conversion-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.2rem;
-            min-height: 100%;
-        }
-
-        .ra-story-conversion-item+.ra-story-conversion-item {
-            border-left: 1px dashed var(--ra-line);
         }
 
         .ra-story-mini-icon,
@@ -546,16 +520,6 @@
             background: rgba(186, 122, 17, .12);
         }
 
-        @media (max-width: 991.98px) {
-            .ra-story-conversion {
-                grid-template-columns: 1fr;
-            }
-
-            .ra-story-conversion-item+.ra-story-conversion-item {
-                border-left: none;
-                border-top: 1px dashed var(--ra-line);
-            }
-        }
 
         .ra-skel {
             display: inline-block;
