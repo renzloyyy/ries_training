@@ -20,6 +20,7 @@
                     <div class="ra-story-kpi-title">Total Proposals</div>
                     <div class="ra-story-kpi-value" id="overviewHeroProposals"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy" id="overviewProposalCopy">Total research proposals submitted across all years.</div>
+                    <button type="button" class="ra-story-link" data-target-tab="proposals">View more</button>
                 </div>
             </div>
         </div>
@@ -37,6 +38,7 @@
                     <div class="ra-story-kpi-title">Total Completed Papers</div>
                     <div class="ra-story-kpi-value" id="overviewHeroCompletedPapers"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy">Research papers completed through to full output.</div>
+                    <button type="button" class="ra-story-link" data-target-tab="publications">View more</button>
                 </div>
             </div>
         </div>
@@ -54,6 +56,7 @@
                     <div class="ra-story-kpi-title">Total Fund Allocation</div>
                     <div class="ra-story-kpi-value" id="overviewHeroFundAllocation"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy">Total funds allocated to support research and innovation.</div>
+                    <button type="button" class="ra-story-link" data-target-tab="fundings">View more</button>
                 </div>
             </div>
         </div>
@@ -71,6 +74,7 @@
                     <div class="ra-story-kpi-title">Proposal-to-Publication Rate</div>
                     <div class="ra-story-kpi-value" id="overviewHeroConversionRate"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy">Completed papers as a percentage of total proposals.</div>
+                    <button type="button" class="ra-story-link" data-target-tab="publications">View more</button>
                 </div>
             </div>
         </div>
@@ -110,6 +114,7 @@
                         <h2 class="ra-card-title">Top Campus by Outputs</h2>
                         <div class="ra-card-sub">by total completed papers</div>
                     </div>
+                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="publications">View more</button>
                 </div>
                 <div class="px-3 pb-3" id="overviewTopCampusOutputs"></div>
             </div>
@@ -122,6 +127,7 @@
                         <h2 class="ra-card-title">Completion Rate by Campus</h2>
                         <div class="ra-card-sub">completed papers as a percentage of publication records</div>
                     </div>
+                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="publications">View more</button>
                 </div>
                 <div class="px-3 pb-3" id="overviewCampusCompletion"></div>
             </div>
@@ -134,6 +140,7 @@
                         <h2 class="ra-card-title">Funding Share by Campus</h2>
                         <div class="ra-card-sub">share of total fund allocation</div>
                     </div>
+                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="fundings">View more</button>
                 </div>
                 <div class="px-3 pb-3">
                     <div id="overviewFundingShareChart" style="min-height:230px;"></div>
@@ -232,6 +239,15 @@
         function setText(id, value) {
             const el = document.getElementById(id);
             if (el) el.textContent = value;
+        }
+
+        function openDashboardTab(tabName) {
+            // Reuse the existing rail-menu click behavior so overview links
+            // open the same dashboard sections without duplicating tab logic.
+            const targetTab = document.querySelector(`.ra-tab[data-tab="${tabName}"]`);
+            if (targetTab) {
+                targetTab.click();
+            }
         }
 
         function escapeHtml(value) {
@@ -676,6 +692,12 @@
             if (overviewLoaded) {
                 loadOverview(e.target.value);
             }
+        });
+
+        document.querySelectorAll('.ra-story-link[data-target-tab]').forEach((button) => {
+            button.addEventListener('click', () => {
+                openDashboardTab(button.dataset.targetTab);
+            });
         });
 
         document.querySelectorAll('.ra-tab').forEach((tab) => {
