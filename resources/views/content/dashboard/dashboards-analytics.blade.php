@@ -414,6 +414,95 @@
             margin-top: .6rem;
         }
 
+        .ra-overview-card {
+            /* Restore the old overview presentation so the reverted Blade
+               markup renders as actual cards instead of plain stacked text. */
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid var(--ra-line);
+            border-radius: .8rem;
+            background: #FFFDF9;
+            padding: 1.3rem 1.4rem 1.25rem;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .06);
+        }
+
+        .ra-overview-icon {
+            width: 4.1rem;
+            height: 4.1rem;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #1E4ED8, #153CA9);
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+
+        .ra-overview-icon svg,
+        .ra-overview-watermark svg {
+            width: 2rem;
+            height: 2rem;
+            stroke: currentColor;
+        }
+
+        .ra-overview-label {
+            position: relative;
+            z-index: 1;
+            font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+            font-size: .88rem;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--ra-text);
+            margin-bottom: .9rem;
+        }
+
+        .ra-overview-value {
+            position: relative;
+            z-index: 1;
+            font-family: var(--ra-serif);
+            font-size: clamp(2rem, 3vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -.03em;
+            color: var(--ra-approved);
+        }
+
+        .ra-overview-foot {
+            position: relative;
+            z-index: 1;
+            margin-top: .85rem;
+            font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+            font-size: .8rem;
+            color: var(--ra-text-dim);
+        }
+
+        .ra-overview-watermark {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            color: rgba(30, 78, 216, .16);
+        }
+
+        .ra-overview-watermark svg {
+            width: 4.3rem;
+            height: 4.3rem;
+        }
+
+        .ra-overview-trend-card {
+            /* Keep the trend chart visually aligned with the restored
+               executive cards above it. */
+            border-radius: .95rem;
+            background: #FFFDF9;
+            box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
+        }
+
+        .ra-overview-trend-head {
+            align-items: center;
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: .75rem;
+        }
+
         .ra-story-block {
             margin-bottom: 1rem;
         }
