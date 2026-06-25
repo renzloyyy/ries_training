@@ -8,7 +8,7 @@
 <div class="ra-story-block">
     <div class="ra-story-label"><span class="ra-story-index">1</span> Start With The Big Picture</div>
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -20,12 +20,11 @@
                     <div class="ra-story-kpi-title">Total Proposals</div>
                     <div class="ra-story-kpi-value" id="overviewHeroProposals"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy" id="overviewProposalCopy">Total research proposals submitted across all years.</div>
-                    <button type="button" class="ra-story-link" data-target-tab="proposals">View more</button>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -38,12 +37,11 @@
                     <div class="ra-story-kpi-title">Total Completed Papers</div>
                     <div class="ra-story-kpi-value" id="overviewHeroCompletedPapers"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy">Research papers completed through to full output.</div>
-                    <button type="button" class="ra-story-link" data-target-tab="publications">View more</button>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -56,28 +54,11 @@
                     <div class="ra-story-kpi-title">Total Fund Allocation</div>
                     <div class="ra-story-kpi-value" id="overviewHeroFundAllocation"><span class="ra-skel"></span></div>
                     <div class="ra-story-kpi-copy">Total funds allocated to support research and innovation.</div>
-                    <button type="button" class="ra-story-link" data-target-tab="fundings">View more</button>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-3">
-            <div class="ra-story-kpi">
-                <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M7.5 6.5A4.5 4.5 0 0 1 12 2a4.5 4.5 0 0 1 0 9A4.5 4.5 0 0 1 7.5 6.5Z"
-                            stroke-width="1.7" />
-                        <path d="M12 13v8M8.5 16.5h7" stroke-width="1.7" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <div class="ra-story-kpi-body">
-                    <div class="ra-story-kpi-title">Proposal-to-Publication Rate</div>
-                    <div class="ra-story-kpi-value" id="overviewHeroConversionRate"><span class="ra-skel"></span></div>
-                    <div class="ra-story-kpi-copy">Completed papers as a percentage of total proposals.</div>
-                    <button type="button" class="ra-story-link" data-target-tab="publications">View more</button>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -114,7 +95,6 @@
                         <h2 class="ra-card-title">Top Campus by Outputs</h2>
                         <div class="ra-card-sub">by total completed papers</div>
                     </div>
-                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="publications">View more</button>
                 </div>
                 <div class="px-3 pb-3" id="overviewTopCampusOutputs"></div>
             </div>
@@ -127,7 +107,6 @@
                         <h2 class="ra-card-title">Completion Rate by Campus</h2>
                         <div class="ra-card-sub">completed papers as a percentage of publication records</div>
                     </div>
-                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="publications">View more</button>
                 </div>
                 <div class="px-3 pb-3" id="overviewCampusCompletion"></div>
             </div>
@@ -140,7 +119,6 @@
                         <h2 class="ra-card-title">Funding Share by Campus</h2>
                         <div class="ra-card-sub">share of total fund allocation</div>
                     </div>
-                    <button type="button" class="ra-story-link ra-story-link-inline" data-target-tab="fundings">View more</button>
                 </div>
                 <div class="px-3 pb-3">
                     <div id="overviewFundingShareChart" style="min-height:230px;"></div>
@@ -241,15 +219,6 @@
             if (el) el.textContent = value;
         }
 
-        function openDashboardTab(tabName) {
-            // Reuse the existing rail-menu click behavior so overview links
-            // open the same dashboard sections without duplicating tab logic.
-            const targetTab = document.querySelector(`.ra-tab[data-tab="${tabName}"]`);
-            if (targetTab) {
-                targetTab.click();
-            }
-        }
-
         function escapeHtml(value) {
             return String(value ?? '')
                 .replaceAll('&', '&amp;')
@@ -265,8 +234,22 @@
             return url.toString();
         }
 
-        function buildPublicationsUrl(year) {
-            const url = new URL(`${API_BASE}/api/publications/dashboard`);
+        function buildPublicationsSummaryUrl() {
+            return new URL(`${API_BASE}/api/publications/summary`).toString();
+        }
+
+        function buildPublicationsByYearUrl() {
+            return new URL(`${API_BASE}/api/publications/by-year`).toString();
+        }
+
+        function buildPublicationsByCampusUrl(year) {
+            const url = new URL(`${API_BASE}/api/publications/by-campus`);
+            if (year) url.searchParams.set('year', year);
+            return url.toString();
+        }
+
+        function buildPublicationsCampusContributionUrl(year) {
+            const url = new URL(`${API_BASE}/api/publications/campus-contribution`);
             if (year) url.searchParams.set('year', year);
             return url.toString();
         }
@@ -306,16 +289,19 @@
             select.value = years.includes(Number(current)) ? current : '';
         }
 
-        function mergeOverviewTrendData(proposals, publications) {
+        function mergeOverviewTrendData(proposals, publicationYears) {
             const proposalMap = new Map(
                 (proposals.proposals_by_year || []).map((row) => [Number(row.year), Number(row.total_proposals || 0)])
             );
             const publicationMap = new Map(
-                (publications.yearly_trend || []).map((row) => [
-                    Number(row.yr),
+                (publicationYears || []).map((row) => [
+                    Number(row.year_published),
                     {
-                        published_papers: Number(row.total_outputs || 0),
-                        completed_papers: Number(row.completed_outputs || 0),
+                        // clean_publications represents final published outputs,
+                        // so the overview reuses that same count for the
+                        // publication-completion and published-output series.
+                        published_papers: Number(row.total_publications || 0),
+                        completed_papers: Number(row.total_publications || 0),
                     }
                 ])
             );
@@ -528,14 +514,12 @@
             }).join('');
         }
 
-        function updateInsightCards(publicationCampusRows, fundingCategoryRows) {
-            const sortedByRate = publicationCampusRows
+        function updateInsightCards(publicationCampusRows, campusContributionRows, fundingCategoryRows) {
+            const sortedByRate = campusContributionRows
                 .map((row) => {
-                    const total = Number(row.total_outputs || 0);
-                    const completed = Number(row.completed_outputs || 0);
                     return {
                         campus_name: row.campus_name,
-                        completion_rate: total > 0 ? (completed / total) * 100 : 0,
+                        completion_rate: Number(row.completion_rate || 0),
                     };
                 })
                 .sort((a, b) => a.completion_rate - b.completion_rate);
@@ -593,54 +577,60 @@
 
         async function loadOverview(year = '') {
             try {
-                const [proposalRes, pubRes, fundRes] = await Promise.all([
+                const [proposalRes, pubSummaryRes, pubYearRes, pubCampusRes, pubContributionRes, fundRes] = await Promise.all([
                     fetch(buildProposalsUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsUrl(year), { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsSummaryUrl(), { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsByYearUrl(), { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsByCampusUrl(year), { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsCampusContributionUrl(year), { headers: { Accept: 'application/json' } }),
                     fetch(buildFundingUrl(year), { headers: { Accept: 'application/json' } }),
                 ]);
 
                 if (!proposalRes.ok) throw new Error(`Proposal service responded with ${proposalRes.status}`);
-                if (!pubRes.ok) throw new Error(`Publications service responded with ${pubRes.status}`);
+                if (!pubSummaryRes.ok) throw new Error(`Publications summary responded with ${pubSummaryRes.status}`);
+                if (!pubYearRes.ok) throw new Error(`Publications yearly trend responded with ${pubYearRes.status}`);
+                if (!pubCampusRes.ok) throw new Error(`Publications by-campus responded with ${pubCampusRes.status}`);
+                if (!pubContributionRes.ok) throw new Error(`Publications campus contribution responded with ${pubContributionRes.status}`);
                 if (!fundRes.ok) throw new Error(`Funding service responded with ${fundRes.status}`);
 
                 const proposals = await proposalRes.json();
-                const publications = await pubRes.json();
+                const publicationsSummary = await pubSummaryRes.json();
+                const publicationsByYear = await pubYearRes.json();
+                const publicationsByCampus = await pubCampusRes.json();
+                const publicationsCampusContribution = await pubContributionRes.json();
                 const funding = await fundRes.json();
 
                 const proposalTotal = (proposals.status_distribution || [])
                     .reduce((sum, row) => sum + Number(row.total_proposals || 0), 0);
-                const completedPapers = Number(publications.completed_outputs?.[0]?.completed_outputs || 0);
-                const publicationRecords = Number(publications.total_outputs?.[0]?.total_outputs || 0);
+                const completedPapers = Number(publicationsSummary.total_publications || 0);
                 const totalFund = Number(funding.total_allocated_fund?.[0]?.total_allocated_fund || 0);
-                const fundedProjects = Number(funding.total_funded_projects?.[0]?.total_funded_projects || 0);
-
                 const proposalToPublicationRate = proposalTotal > 0 ? (completedPapers / proposalTotal) * 100 : 0;
-                const publicationCompletionRate = publicationRecords > 0 ? (completedPapers / publicationRecords) * 100 : 0;
-                const fundedProjectShare = proposalTotal > 0 ? (fundedProjects / proposalTotal) * 100 : 0;
-                const averageFundingPerOutput = completedPapers > 0 ? totalFund / completedPapers : 0;
 
+                // The overview now skips the old conversion strip, so only the
+                // hero cards and lower storytelling sections are updated here.
                 setText('overviewHeroProposals', fmtInt(proposalTotal));
                 setText('overviewHeroCompletedPapers', fmtInt(completedPapers));
                 setText('overviewHeroFundAllocation', fmtCurrency(totalFund));
                 setText('overviewHeroConversionRate', fmtPct(proposalToPublicationRate));
-                setText('overviewCompletionRate', fmtPct(publicationCompletionRate));
-                setText('overviewFundedProjectShare', fmtPct(fundedProjectShare));
-                setText('overviewFundingPerOutput', fmtCurrency(averageFundingPerOutput));
                 setText('overviewProposalCopy', year ? `Total research proposals submitted for ${year}.` : 'Total research proposals submitted across all years.');
 
-                overviewTrendRows = mergeOverviewTrendData(proposals, publications);
+                overviewTrendRows = mergeOverviewTrendData(proposals, publicationsByYear);
                 setTrendYearOptions(overviewTrendRows.map((row) => row.year));
                 renderTrendChart(document.getElementById('overviewTrendYearFilter')?.value || '');
 
-                const outputCampusRows = (publications.outputs_by_campus || [])
+                const outputCampusRows = (publicationsByCampus || [])
                     .map((row) => ({
-                        campus_name: row.campus_name,
-                        completed_outputs: Number(row.completed_outputs || 0),
-                        completion_rate: Number(row.total_outputs || 0) > 0
-                            ? (Number(row.completed_outputs || 0) / Number(row.total_outputs || 0)) * 100
-                            : 0,
+                        campus_name: row.campus,
+                        completed_outputs: Number(row.total_publications || 0),
                     }))
                     .sort((a, b) => b.completed_outputs - a.completed_outputs);
+
+                const campusContributionRows = (publicationsCampusContribution || [])
+                    .map((row) => ({
+                        campus_name: row.campus,
+                        completion_rate: Number(row.contribution_percentage || 0),
+                    }))
+                    .sort((a, b) => b.completion_rate - a.completion_rate);
 
                 renderCampusBars(
                     'overviewTopCampusOutputs',
@@ -650,13 +640,13 @@
                 );
                 renderCampusBars(
                     'overviewCampusCompletion',
-                    [...outputCampusRows].sort((a, b) => b.completion_rate - a.completion_rate).slice(0, 6),
+                    campusContributionRows.slice(0, 6),
                     'completion_rate',
                     (value) => fmtPct(value),
                     'is-soft'
                 );
                 renderFundingShare(funding.funding_by_campus || []);
-                updateInsightCards(publications.outputs_by_campus || [], funding.funding_by_category || []);
+                updateInsightCards(outputCampusRows, campusContributionRows, funding.funding_by_category || []);
 
                 overviewLoaded = true;
             } catch (error) {
@@ -668,9 +658,6 @@
                     'overviewHeroCompletedPapers',
                     'overviewHeroFundAllocation',
                     'overviewHeroConversionRate',
-                    'overviewCompletionRate',
-                    'overviewFundedProjectShare',
-                    'overviewFundingPerOutput',
                     'overviewLowestCampus',
                     'overviewHighestCampus',
                     'overviewTopCategory',
@@ -692,12 +679,6 @@
             if (overviewLoaded) {
                 loadOverview(e.target.value);
             }
-        });
-
-        document.querySelectorAll('.ra-story-link[data-target-tab]').forEach((button) => {
-            button.addEventListener('click', () => {
-                openDashboardTab(button.dataset.targetTab);
-            });
         });
 
         document.querySelectorAll('.ra-tab').forEach((tab) => {
