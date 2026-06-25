@@ -75,6 +75,20 @@ return [
         'engine'    => null,
         ],
 
+         'publications' => [                           // ← new secondary connection
+        'driver'    => 'mysql',
+        'host'      => env('PUBLICATIONS_DB_HOST', '127.0.0.1'),
+        'port'      => env('PUBLICATIONS_DB_PORT', '3306'),
+        'database'  => env('PUBLICATIONS_DB_DATABASE', 'publications'),
+        'username'  => env('PUBLICATIONS_DB_USERNAME', 'root'),
+        'password'  => env('PUBLICATIONS_DB_PASSWORD', 'Mamolo_1993'),
+        'charset'   => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix'    => '',
+        'strict'    => true,
+        'engine'    => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
