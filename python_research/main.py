@@ -16,12 +16,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import run_query, check_connection, run_ries_query, check_ries_connection
 from queries import QUERIES
 from queries_ries import RIES_QUERIES
-from queries_funding import FUNDING_QUERIES 
+from queries_funding import FUNDING_QUERIES
 
 app = FastAPI(
-    title="Research Proposal Analytics API",
+    title="Research Analytics API",
     description="Read-only analytics endpoints backing the research dashboard.",
-    version="1.0.0",
+    version="2.0.0",
 )
 
 # Allow the Laravel app to call this API from the browser/server.
@@ -36,8 +36,12 @@ app.add_middleware(
 )
 
 
+# ---------------------------------------------------------------------------
+# Shared helpers
+# ---------------------------------------------------------------------------
+
 def _execute(query_key: str, year: Optional[int] = None) -> list[dict]:
-    """Shared helper: run a named query (proposals warehouse) and turn DB errors into HTTP 500s."""
+    """Run a named query against the proposals warehouse; map DB errors to HTTP 500."""
     sql = QUERIES.get(query_key)
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
@@ -48,7 +52,7 @@ def _execute(query_key: str, year: Optional[int] = None) -> list[dict]:
 
 
 def _execute_ries(query_key: str, year: Optional[int] = None) -> list[dict]:
-    """Shared helper: run a named query against the soulsuedu_ries database (publications)."""
+    """Run a named query against soulsuedu_ries; map DB errors to HTTP 500."""
     sql = RIES_QUERIES.get(query_key)
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
@@ -59,7 +63,7 @@ def _execute_ries(query_key: str, year: Optional[int] = None) -> list[dict]:
 
 
 def _execute_funding(query_key: str, year: Optional[int] = None) -> list[dict]:
-    """Shared helper: run a named query against soulsuedu_ries (funding)."""
+    """Run a named funding query against soulsuedu_ries; map DB errors to HTTP 500."""
     sql = FUNDING_QUERIES.get(query_key)
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
@@ -69,9 +73,13 @@ def _execute_funding(query_key: str, year: Optional[int] = None) -> list[dict]:
         raise HTTPException(status_code=500, detail=f"Database error: {exc}")
 
 
+# ---------------------------------------------------------------------------
+# Health check
+# ---------------------------------------------------------------------------
+
 @app.get("/api/health")
 def health():
-    """Simple health check, verifies both databases are reachable."""
+    """Simple health check — verifies both databases are reachable."""
     db_ok = check_connection()
     ries_ok = check_ries_connection()
     return {
@@ -81,9 +89,9 @@ def health():
     }
 
 
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Proposals (research_warehouse) endpoints
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 @app.get("/api/proposals/status-distribution")
 def status_distribution(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
@@ -167,104 +175,138 @@ def campus_sdg_breakdown(year: Optional[int] = Query(default=None, ge=2000, le=2
 @app.get("/api/proposals/dashboard")
 def dashboard_summary(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
     """
-    Convenience endpoint that bundles every proposals chart's data into a
-    single response, so the Laravel controller can populate a whole
-    dashboard page with one HTTP call instead of thirteen.
+    Bundles every proposals chart's data into a single response so the
+    Laravel controller can populate the whole Proposals panel with one HTTP call.
     """
     return {key: _execute(key, year) for key in QUERIES.keys()}
 
 
-# ------------------------------------------------------------------
-# Publications / Research Outputs (soulsuedu_ries) endpoints
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Publications — clean_publications dataset (new panel)
+# ---------------------------------------------------------------------------
 
-@app.get("/api/publications/total")
-def publications_total(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    rows = _execute_ries("total_outputs", year)
-    return rows[0] if rows else {"total_outputs": 0}
+# These endpoints all target the `clean_publications` table which holds the
+# curated, de-duplicated record of papers actually published by the university.
+# is_primary_record = 1 filtering is baked into every query in queries_ries.py.
 
-
-@app.get("/api/publications/completed")
-def publications_completed(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    rows = _execute_ries("completed_outputs", year)
-    return rows[0] if rows else {"completed_outputs": 0}
-
-
-@app.get("/api/publications/completion-rate")
-def publications_completion_rate(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    rows = _execute_ries("completion_rate", year)
-    return rows[0] if rows else {
-        "total_outputs": 0,
-        "completed_outputs": 0,
-        "completion_rate_pct": None,
-    }
+_PUB_KEYS = [
+    "pub_by_year",
+    "pub_monthly_trend",
+    "pub_by_campus",
+    "pub_by_indexing_tier",
+    "pub_campus_indexing",
+    "pub_year_campus",
+    "pub_top_journals",
+    "pub_average_pages",
+    "pub_data_quality",
+]
+"""Query keys bundled by the /dashboard endpoint (excludes year-filter and
+summary KPIs, which are fetched separately or ignore the year param)."""
 
 
-@app.get("/api/publications/active-campuses")
-def publications_active_campuses(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    rows = _execute_ries("active_campuses", year)
-    return rows[0] if rows else {"active_campuses": 0}
-
-
-@app.get("/api/publications/by-campus")
-def publications_by_campus(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_campus", year)
-
-
-@app.get("/api/publications/by-program")
-def publications_by_program(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_program", year)
-
-
-@app.get("/api/publications/by-category")
-def publications_by_category(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_category", year)
-
-
-@app.get("/api/publications/by-format")
-def publications_by_format(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_format", year)
-
-
-@app.get("/api/publications/by-paper-status")
-def publications_by_paper_status(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_paper_status", year)
-
-
-@app.get("/api/publications/by-sdg")
-def publications_by_sdg(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("outputs_by_sdg", year)
+@app.get("/api/publications/summary")
+def publications_summary():
+    """
+    Seven KPI chips: total publications, campuses, unique journals,
+    Scopus count, international count, valid-link count, average pages.
+    This query is unfiltered (all years) — it is the headline figure.
+    """
+    rows = _execute_ries("pub_summary_kpis", None)
+    return rows[0] if rows else {}
 
 
 @app.get("/api/publications/years")
 def publications_years():
-    """Distinct submission years, for populating a year-filter dropdown."""
-    return _execute_ries("year_filter_options", None)
+    """Distinct published years (DESC) — populates the year-filter dropdown."""
+    return _execute_ries("pub_year_filter_options", None)
+
+
+@app.get("/api/publications/by-year")
+def publications_by_year():
+    """
+    Annual publication counts across all years on record.
+    Used for the headline trend line; no year filter applied so the
+    full historical range is always visible.
+    """
+    return _execute_ries("pub_by_year", None)
 
 
 @app.get("/api/publications/monthly-trend")
 def publications_monthly_trend(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    return _execute_ries("monthly_trend", year)
+    """Monthly publication counts, optionally filtered to a single year."""
+    return _execute_ries("pub_monthly_trend", year)
+
+
+@app.get("/api/publications/by-campus")
+def publications_by_campus(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Publication counts per campus, descending."""
+    return _execute_ries("pub_by_campus", year)
+
+
+@app.get("/api/publications/by-indexing-tier")
+def publications_by_indexing_tier(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """
+    Publication counts + percentage share per indexing tier
+    (Scopus, International, Local, etc.).
+    """
+    return _execute_ries("pub_by_indexing_tier", year)
+
+
+@app.get("/api/publications/campus-indexing")
+def publications_campus_indexing(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Campus × indexing-tier cross-tab — drives the grouped/stacked bar chart."""
+    return _execute_ries("pub_campus_indexing", year)
+
+
+@app.get("/api/publications/year-campus")
+def publications_year_campus():
+    """
+    Year × campus cross-tab across the full date range.
+    Used for the multi-series stacked bar / heatmap.
+    No year filter — the full history is always shown.
+    """
+    return _execute_ries("pub_year_campus", None)
+
+
+@app.get("/api/publications/top-journals")
+def publications_top_journals(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Top 10 journals by publication count."""
+    return _execute_ries("pub_top_journals", year)
+
+
+@app.get("/api/publications/average-pages")
+def publications_average_pages(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
+    """Average page count of publications (rows where num_pages_int is not null)."""
+    rows = _execute_ries("pub_average_pages", year)
+    return rows[0] if rows else {"average_pages": None}
+
+
+@app.get("/api/publications/data-quality")
+def publications_data_quality():
+    """
+    Data-quality flag summary across the entire clean_publications table
+    (not filtered by year — gives a full-dataset audit view).
+    """
+    rows = _execute_ries("pub_data_quality", None)
+    return rows[0] if rows else {}
 
 
 @app.get("/api/publications/dashboard")
 def publications_dashboard(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
     """
-    Bundles every publications chart's data into a single response so the
-    Laravel controller can populate the whole Publications panel with one
-    HTTP call. Excludes year_filter_options since that one ignores the
-    year param and is meant to be fetched once via /api/publications/years.
+    Bundles all filterable publications chart data into one response.
+    Excludes: pub_summary_kpis, pub_by_year, pub_year_campus, pub_data_quality,
+    and pub_year_filter_options — those are either year-agnostic or fetched
+    separately. The Laravel controller should call /api/publications/summary
+    and /api/publications/by-year once on page load, then hit this endpoint
+    whenever the year filter changes.
     """
-    return {
-        key: _execute_ries(key, year)
-        for key in RIES_QUERIES.keys()
-        if key != "year_filter_options"
-    }
+    return {key: _execute_ries(key, year) for key in _PUB_KEYS}
 
 
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Funding (soulsuedu_ries) endpoints
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 @app.get("/api/funding/total-projects")
 def funding_total_projects(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
@@ -322,7 +364,7 @@ def funding_by_agency(year: Optional[int] = Query(default=None, ge=2000, le=2100
 
 @app.get("/api/funding/years")
 def funding_years():
-    """Distinct fiscal years, for populating a year-filter dropdown."""
+    """Distinct fiscal years — populates the year-filter dropdown."""
     return _execute_funding("year_filter_options", None)
 
 
@@ -330,9 +372,7 @@ def funding_years():
 def funding_dashboard(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
     """
     Bundles every funding chart's data into a single response so the
-    Laravel controller can populate the whole Funding panel with one
-    HTTP call. Excludes year_filter_options since that one ignores the
-    year param and is meant to be fetched once via /api/funding/years.
+    Laravel controller can populate the whole Funding panel with one HTTP call.
     """
     return {
         key: _execute_funding(key, year)

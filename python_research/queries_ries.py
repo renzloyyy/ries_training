@@ -1,39 +1,220 @@
 """
 queries_ries.py
-Named SQL queries against the soulsuedu_ries database (ri_submission etc.),
-used to populate the Publications/Research Outputs panel.
+Named SQL queries against the soulsuedu_ries database.
 
-IMPORTANT — completion logic:
-ri_submission stores BOTH the proposal lifecycle and the completed-report
-lifecycle in the same row. "Completed / Published" for this panel must be
-judged on the COMPLETED-REPORT columns, not the proposal-approval columns
-and not the generic Status flag:
+TWO SOURCES are in play:
+  1. ri_submission  — the proposal / research-output pipeline (legacy panel).
+  2. clean_publications — the curated, de-duplicated published-papers dataset
+     (new Publications Dashboard panel). All queries below that target
+     clean_publications use `is_primary_record = 1` to exclude duplicates
+     identified during data-cleaning.
 
-    Completed_RouteStatus = 6           -> completed report reached final approval step
-    completed_approved_at IS NOT NULL   -> completed-report approval timestamp stamped
-
-A row only counts as a completed output when BOTH are true.
-
-WHAT "PUBLICATIONS / RESEARCH OUTPUTS" SHOULD MEAN:
-This panel represents finished, published research — not the proposal
-pipeline. So every count-based breakdown here (category, format, SDG,
-program, active campuses) is scoped to ONLY completed rows. A
-still-pending/in-progress submission is not a "research output" yet —
-it lives on the Proposals panel — so it is excluded outright rather than
-counted alongside completed ones.
-
-The ONE deliberate exception is `outputs_by_campus`, which powers the
-"Completion rate by campus" signal-bar widget. A rate needs both a
-numerator (completed) and a denominator (total submissions for that
-campus) to mean anything, so that query keeps both. It never surfaces a
-raw "pending count" anywhere in the UI — only a percentage.
+CLEAN_PUBLICATIONS SCHEMA NOTES
+--------------------------------
+  - is_primary_record  : 1 = canonical record, 0 = duplicate — always filter to 1
+  - year_published     : INT  publication year
+  - month_published    : INT  1–12
+  - campus             : VARCHAR  campus name
+  - indexing_tier      : VARCHAR  'Scopus' | 'International' | 'Local' | etc.
+  - publication_name   : VARCHAR  journal / conference name
+  - num_pages_int      : INT nullable  parsed page count
+  - link_status        : VARCHAR  'Valid' | 'Broken' | NULL
+  - flag_duplicate_title : INT 0/1
+  - flag_bad_link        : INT 0/1
+  - flag_bad_date        : INT 0/1
+  - flag_null_date       : INT 0/1
+  - flag_null_indexing   : INT 0/1
 """
 
-# Reused in every query so the "completed" definition can't drift between
-# KPIs, charts, and the campus/program breakdown.
+# ---------------------------------------------------------------------------
+# Legacy ri_submission queries (kept intact for the old Publications panel
+# endpoints that still reference these keys).
+# ---------------------------------------------------------------------------
+
 _COMPLETED_COND = "rs.Completed_RouteStatus = 6 AND rs.completed_approved_at IS NOT NULL"
 
 RIES_QUERIES: dict[str, str] = {
+
+# ------------------------------------------------------------------
+# Summary / KPI  (clean_publications)
+# ------------------------------------------------------------------
+
+# Single-row summary card — feeds the 7 KPI chips across the top.
+"pub_summary_kpis": """
+SELECT
+    COUNT(*)                                      AS total_publications,
+    COUNT(DISTINCT campus)                        AS total_campuses,
+    COUNT(DISTINCT publication_name)              AS unique_journals,
+    SUM(indexing_tier = 'Scopus')                 AS scopus_publications,
+    SUM(indexing_tier = 'International')          AS international_publications,
+    SUM(link_status  = 'Valid')                   AS valid_links,
+    ROUND(AVG(num_pages_int), 2)                  AS average_pages
+FROM clean_publications
+WHERE is_primary_record = 1;
+""",
+
+# ------------------------------------------------------------------
+# Yearly trend  (clean_publications)
+# ------------------------------------------------------------------
+
+# One row per year — drives the main area/line trend chart.
+"pub_by_year": """
+SELECT
+    year_published,
+    COUNT(*) AS total_publications
+FROM clean_publications
+WHERE is_primary_record = 1
+GROUP BY year_published
+ORDER BY year_published;
+""",
+
+# ------------------------------------------------------------------
+# Monthly trend  (clean_publications)
+# ------------------------------------------------------------------
+
+# One row per year+month — drives the monthly breakdown area chart.
+"pub_monthly_trend": """
+SELECT
+    year_published,
+    month_published,
+    COUNT(*) AS total
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s)
+GROUP BY year_published, month_published
+ORDER BY year_published, month_published;
+""",
+
+# ------------------------------------------------------------------
+# By campus  (clean_publications)
+# ------------------------------------------------------------------
+
+"pub_by_campus": """
+SELECT
+    campus,
+    COUNT(*) AS total_publications
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s)
+GROUP BY campus
+ORDER BY total_publications DESC;
+""",
+
+# ------------------------------------------------------------------
+# Indexing tier  (clean_publications)
+# ------------------------------------------------------------------
+
+# Counts + percentage share — drives the donut chart and data table.
+"pub_by_indexing_tier": """
+SELECT
+    indexing_tier,
+    COUNT(*) AS total,
+    ROUND(
+        COUNT(*) * 100.0 /
+        (SELECT COUNT(*)
+         FROM clean_publications
+         WHERE is_primary_record = 1
+           AND (%(year)s IS NULL OR year_published = %(year)s)),
+        2
+    ) AS percentage
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s)
+GROUP BY indexing_tier
+ORDER BY total DESC;
+""",
+
+# ------------------------------------------------------------------
+# Campus × indexing tier grouped breakdown  (clean_publications)
+# ------------------------------------------------------------------
+
+"pub_campus_indexing": """
+SELECT
+    campus,
+    indexing_tier,
+    COUNT(*) AS total
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s)
+GROUP BY campus, indexing_tier
+ORDER BY campus, total DESC;
+""",
+
+# ------------------------------------------------------------------
+# Year × campus heatmap / stacked bar  (clean_publications)
+# ------------------------------------------------------------------
+
+"pub_year_campus": """
+SELECT
+    year_published,
+    campus,
+    COUNT(*) AS total
+FROM clean_publications
+WHERE is_primary_record = 1
+GROUP BY year_published, campus
+ORDER BY year_published, campus;
+""",
+
+# ------------------------------------------------------------------
+# Top 10 journals  (clean_publications)
+# ------------------------------------------------------------------
+
+"pub_top_journals": """
+SELECT
+    publication_name,
+    COUNT(*) AS total_publications
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s)
+GROUP BY publication_name
+ORDER BY total_publications DESC
+LIMIT 10;
+""",
+
+# ------------------------------------------------------------------
+# Average pages  (clean_publications)
+# ------------------------------------------------------------------
+
+"pub_average_pages": """
+SELECT
+    ROUND(AVG(num_pages_int), 2) AS average_pages
+FROM clean_publications
+WHERE num_pages_int  IS NOT NULL
+  AND is_primary_record = 1
+  AND (%(year)s IS NULL OR year_published = %(year)s);
+""",
+
+# ------------------------------------------------------------------
+# Data-quality flags  (clean_publications)
+# ------------------------------------------------------------------
+
+# Single-row flag summary — shown in a data-quality info strip.
+"pub_data_quality": """
+SELECT
+    SUM(flag_duplicate_title) AS duplicate_titles,
+    SUM(flag_bad_link)        AS bad_links,
+    SUM(flag_bad_date)        AS bad_dates,
+    SUM(flag_null_date)       AS missing_dates,
+    SUM(flag_null_indexing)   AS missing_indexing
+FROM clean_publications;
+""",
+
+# ------------------------------------------------------------------
+# Year filter options  (clean_publications)
+# ------------------------------------------------------------------
+
+# Distinct published years, descending — populates the year-filter dropdown.
+"pub_year_filter_options": """
+SELECT DISTINCT year_published AS publication_year
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND year_published IS NOT NULL
+ORDER BY year_published DESC;
+""",
+
+# ------------------------------------------------------------------
+# Legacy ri_submission queries (unchanged — used by old endpoints)
+# ------------------------------------------------------------------
 
 "total_outputs": """
 SELECT COUNT(*) AS total_outputs
@@ -64,9 +245,6 @@ WHERE rs.deleted_at IS NULL
   AND (%(year)s IS NULL OR YEAR(rs.created_at) = %(year)s);
 """,
 
-# "Active campuses" for a publications panel means campuses that have
-# actually produced a completed output — not just campuses with any
-# submission sitting in the pipeline.
 "active_campuses": f"""
 SELECT COUNT(DISTINCT rs.Campus) AS active_campuses
 FROM ri_submission rs
@@ -90,11 +268,6 @@ GROUP BY rs.Campus, ci.campus
 ORDER BY total_outputs DESC;
 """,
 
-# Campus & program breakdown table now counts ONLY completed outputs per
-# program — pending/in-progress submissions for that program are excluded
-# from both the "total" and "completed" figures, so the two numbers
-# describe finished work only (no pending submissions hiding inside the
-# "total" column anymore).
 "outputs_by_program": f"""
 SELECT
     d.department_name AS program_name,
@@ -112,7 +285,6 @@ GROUP BY rs.Department, d.department_name, rs.Campus, ci.campus
 ORDER BY total_outputs DESC;
 """,
 
-# Category mix of completed/published outputs only.
 "outputs_by_category": f"""
 SELECT
     COALESCE(rs.Category, 'Unspecified') AS category,
@@ -125,7 +297,6 @@ GROUP BY rs.Category
 ORDER BY total_outputs DESC;
 """,
 
-# Research-format mix of completed/published outputs only.
 "outputs_by_format": f"""
 SELECT
     COALESCE(rs.ResearchFormat, 'Unspecified') AS research_format,
@@ -138,8 +309,6 @@ GROUP BY rs.ResearchFormat
 ORDER BY total_outputs DESC;
 """,
 
-# Only meaningful for outputs that have actually completed — an
-# "in progress" proposal has no paper status yet.
 "outputs_by_paper_status": f"""
 SELECT
     CASE
@@ -156,11 +325,6 @@ GROUP BY paper_status
 ORDER BY total_outputs DESC;
 """,
 
-# SDG alignment of completed/published outputs only — previously this
-# counted every submitted SDG tag regardless of completion, which is why
-# a single bar (e.g. "Quality Education") could show 300+ while the
-# Completed-outputs KPI read 153. Now both numbers are drawn from the
-# same completed-only population.
 "outputs_by_sdg": f"""
 SELECT
     ss.sdg AS sdg_name,
@@ -181,9 +345,6 @@ WHERE deleted_at IS NULL
 ORDER BY submission_year DESC;
 """,
 
-# Trended on completed_approved_at, so the curve tracks when outputs
-# were actually finished/published, not when the original submission
-# row was first created.
 "monthly_trend": f"""
 SELECT
     YEAR(rs.completed_approved_at) AS yr,
@@ -197,10 +358,6 @@ GROUP BY YEAR(rs.completed_approved_at), MONTH(rs.completed_approved_at)
 ORDER BY yr, mo;
 """,
 
-# Year-level publication trend for the overview panel. This keeps both the
-# total submissions created in a year and the subset that reached the
-# completed/published state so the combined overview line chart can compare
-# proposal volume against publication completion over time.
 "yearly_trend": f"""
 SELECT
     YEAR(rs.created_at) AS yr,
