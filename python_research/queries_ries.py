@@ -3,19 +3,20 @@ queries_ries.py
 Named SQL queries against the soulsuedu_ries database.
 
 TWO SOURCES are in play:
-  1. ri_submission  — the proposal / research-output pipeline (legacy panel).
-  2. clean_publications — the curated, de-duplicated published-papers dataset
-     (new Publications Dashboard panel). All queries below that target
-     clean_publications use `is_primary_record = 1` to exclude duplicates
-     identified during data-cleaning.
+  1. ri_submission      — the proposal / research-output pipeline (legacy panel).
+  2. clean_publications — the curated, de-duplicated published-papers dataset.
+     All queries that target clean_publications use `is_primary_record = 1`
+     to exclude duplicates identified during data-cleaning.
+     Year-0 / NULL year_published rows are also filtered out everywhere.
 
 CLEAN_PUBLICATIONS SCHEMA NOTES
 --------------------------------
-  - is_primary_record  : 1 = canonical record, 0 = duplicate — always filter to 1
-  - year_published     : INT  publication year
+  - is_primary_record  : 1 = canonical record, 0 = duplicate
+  - year_published     : INT  publication year (may be 0/NULL for bad data)
   - month_published    : INT  1–12
   - campus             : VARCHAR  campus name
-  - indexing_tier      : VARCHAR  'Scopus' | 'International' | 'Local' | etc.
+  - indexing_tier      : VARCHAR  'Scopus' | 'International' | 'ACI' |
+                                   'Thomson Reuters/WOS' | 'Local/Regional' | etc.
   - publication_name   : VARCHAR  journal / conference name
   - num_pages_int      : INT nullable  parsed page count
   - link_status        : VARCHAR  'Valid' | 'Broken' | NULL
@@ -26,169 +27,180 @@ CLEAN_PUBLICATIONS SCHEMA NOTES
   - flag_null_indexing   : INT 0/1
 """
 
-# ---------------------------------------------------------------------------
-# Legacy ri_submission queries (kept intact for the old Publications panel
-# endpoints that still reference these keys).
-# ---------------------------------------------------------------------------
-
 _COMPLETED_COND = "rs.Completed_RouteStatus = 6 AND rs.completed_approved_at IS NOT NULL"
+
+# Reusable guard that skips bad year values (year=0, NULL) in every query.
+_VALID_YEAR = "year_published IS NOT NULL AND year_published > 0"
 
 RIES_QUERIES: dict[str, str] = {
 
-# ------------------------------------------------------------------
-# Summary / KPI  (clean_publications)
-# ------------------------------------------------------------------
+# ══════════════════════════════════════════════════════════════════════
+# NEW — clean_publications queries (unfiltered, no year param)
+# ══════════════════════════════════════════════════════════════════════
 
-# Single-row summary card — feeds the 7 KPI chips across the top.
+# ── Summary KPI row ────────────────────────────────────────────────────
+# Returns one row with headline counts for the KPI strip.
+# Added scopus_percentage and international_percentage for the sub-labels.
 "pub_summary_kpis": """
-SELECT
-    COUNT(*)                                      AS total_publications,
-    COUNT(DISTINCT campus)                        AS total_campuses,
-    COUNT(DISTINCT publication_name)              AS unique_journals,
-    SUM(indexing_tier = 'Scopus')                 AS scopus_publications,
-    SUM(indexing_tier = 'International')          AS international_publications,
-    SUM(link_status  = 'Valid')                   AS valid_links,
-    ROUND(AVG(num_pages_int), 2)                  AS average_pages
-FROM clean_publications
-WHERE is_primary_record = 1;
+  SELECT
+      COUNT(*)                                            AS total_publications,
+      COUNT(DISTINCT campus)                              AS total_campuses,
+      SUM(indexing_tier = 'Scopus')                       AS scopus_publications,
+      ROUND(
+          100.0 * SUM(indexing_tier = 'Scopus') / COUNT(*), 2
+      )                                                   AS scopus_percentage,
+      SUM(indexing_tier = 'International')                AS international_publications,
+      ROUND(
+          100.0 * SUM(indexing_tier = 'International') / COUNT(*), 2
+      )                                                   AS international_percentage
+  FROM clean_publications
+  WHERE is_primary_record = 1;
 """,
 
-# ------------------------------------------------------------------
-# Yearly trend  (clean_publications)
-# ------------------------------------------------------------------
-
-# One row per year — drives the main area/line trend chart.
-"pub_by_year": """
+# ── Annual publication counts (year-0/NULL excluded) ───────────────────
+"pub_by_year_clean": """
 SELECT
     year_published,
     COUNT(*) AS total_publications
 FROM clean_publications
 WHERE is_primary_record = 1
+  AND year_published IS NOT NULL
+  AND year_published > 0
 GROUP BY year_published
 ORDER BY year_published;
 """,
 
-# ------------------------------------------------------------------
-# Monthly trend  (clean_publications)
-# ------------------------------------------------------------------
+# ── Year-over-year growth ───────────────────────────────────────────────
+"pub_yoy_growth": """
+SELECT
+    current.year_published,
+    current.total_publications  AS current_year_total,
+    previous.total_publications AS previous_year_total,
+    ROUND(
+        (current.total_publications - previous.total_publications)
+        * 100.0 / NULLIF(previous.total_publications, 0),
+        2
+    ) AS growth_percentage
+FROM (
+    SELECT year_published, COUNT(*) AS total_publications
+    FROM clean_publications
+    WHERE is_primary_record = 1
+      AND year_published IS NOT NULL AND year_published > 0
+    GROUP BY year_published
+) current
+JOIN (
+    SELECT year_published, COUNT(*) AS total_publications
+    FROM clean_publications
+    WHERE is_primary_record = 1
+      AND year_published IS NOT NULL AND year_published > 0
+    GROUP BY year_published
+) previous
+  ON current.year_published = previous.year_published + 1
+ORDER BY current.year_published;
+""",
 
-# One row per year+month — drives the monthly breakdown area chart.
-"pub_monthly_trend": """
+# ── Campus publication totals with contribution % ──────────────────────
+"pub_campus_contribution": """
+SELECT
+    campus,
+    COUNT(*) AS publications,
+    ROUND(
+        COUNT(*) * 100.0 /
+        (SELECT COUNT(*) FROM clean_publications WHERE is_primary_record = 1),
+        2
+    ) AS contribution_percentage
+FROM clean_publications
+WHERE is_primary_record = 1
+GROUP BY campus
+ORDER BY publications DESC;
+""",
+
+# ── Monthly totals (all years, no filter) ─────────────────────────────
+"pub_monthly_all": """
 SELECT
     year_published,
     month_published,
     COUNT(*) AS total
 FROM clean_publications
 WHERE is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s)
+  AND year_published IS NOT NULL AND year_published > 0
+  AND month_published IS NOT NULL
 GROUP BY year_published, month_published
 ORDER BY year_published, month_published;
 """,
 
-# ------------------------------------------------------------------
-# By campus  (clean_publications)
-# ------------------------------------------------------------------
-
-"pub_by_campus": """
-SELECT
-    campus,
-    COUNT(*) AS total_publications
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s)
-GROUP BY campus
-ORDER BY total_publications DESC;
-""",
-
-# ------------------------------------------------------------------
-# Indexing tier  (clean_publications)
-# ------------------------------------------------------------------
-
-# Counts + percentage share — drives the donut chart and data table.
-"pub_by_indexing_tier": """
-SELECT
-    indexing_tier,
-    COUNT(*) AS total,
-    ROUND(
-        COUNT(*) * 100.0 /
-        (SELECT COUNT(*)
-         FROM clean_publications
-         WHERE is_primary_record = 1
-           AND (%(year)s IS NULL OR year_published = %(year)s)),
-        2
-    ) AS percentage
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s)
-GROUP BY indexing_tier
-ORDER BY total DESC;
-""",
-
-# ------------------------------------------------------------------
-# Campus × indexing tier grouped breakdown  (clean_publications)
-# ------------------------------------------------------------------
-
-"pub_campus_indexing": """
+# ── Campus × indexing tier cross-tab ──────────────────────────────────
+"pub_campus_indexing_clean": """
 SELECT
     campus,
     indexing_tier,
     COUNT(*) AS total
 FROM clean_publications
 WHERE is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s)
 GROUP BY campus, indexing_tier
 ORDER BY campus, total DESC;
 """,
 
-# ------------------------------------------------------------------
-# Year × campus heatmap / stacked bar  (clean_publications)
-# ------------------------------------------------------------------
-
-"pub_year_campus": """
-SELECT
-    year_published,
-    campus,
-    COUNT(*) AS total
-FROM clean_publications
-WHERE is_primary_record = 1
-GROUP BY year_published, campus
-ORDER BY year_published, campus;
-""",
-
-# ------------------------------------------------------------------
-# Top 10 journals  (clean_publications)
-# ------------------------------------------------------------------
-
-"pub_top_journals": """
+# ── Top 10 journals ───────────────────────────────────────────────────
+"pub_top_journals_clean": """
 SELECT
     publication_name,
     COUNT(*) AS total_publications
 FROM clean_publications
 WHERE is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s)
 GROUP BY publication_name
 ORDER BY total_publications DESC
 LIMIT 10;
 """,
 
-# ------------------------------------------------------------------
-# Average pages  (clean_publications)
-# ------------------------------------------------------------------
-
-"pub_average_pages": """
+# ── Indexing tier distribution with % ────────────────────────────────
+"pub_by_indexing_clean": """
 SELECT
-    ROUND(AVG(num_pages_int), 2) AS average_pages
+    indexing_tier,
+    COUNT(*) AS total,
+    ROUND(
+        COUNT(*) * 100.0 /
+        (SELECT COUNT(*) FROM clean_publications WHERE is_primary_record = 1),
+        2
+    ) AS percentage
 FROM clean_publications
-WHERE num_pages_int  IS NOT NULL
-  AND is_primary_record = 1
-  AND (%(year)s IS NULL OR year_published = %(year)s);
+WHERE is_primary_record = 1
+GROUP BY indexing_tier
+ORDER BY total DESC;
 """,
 
-# ------------------------------------------------------------------
-# Data-quality flags  (clean_publications)
-# ------------------------------------------------------------------
+# ── Year × campus (for stacked bar, year-0 excluded) ─────────────────
+"pub_year_campus_clean": """
+SELECT
+    year_published,
+    campus,
+    COUNT(*) AS publications
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND year_published IS NOT NULL AND year_published > 0
+GROUP BY year_published, campus
+ORDER BY campus, year_published;
+""",
 
-# Single-row flag summary — shown in a data-quality info strip.
+# ── Quarterly breakdown 2020–2026 ─────────────────────────────────────
+"pub_quarterly_clean": """
+SELECT
+    year_published,
+    CASE
+        WHEN month_published BETWEEN 1 AND 3 THEN 'Q1'
+        WHEN month_published BETWEEN 4 AND 6 THEN 'Q2'
+        WHEN month_published BETWEEN 7 AND 9 THEN 'Q3'
+        ELSE 'Q4'
+    END AS quarter,
+    COUNT(*) AS publications
+FROM clean_publications
+WHERE is_primary_record = 1
+  AND year_published BETWEEN 2020 AND 2026
+GROUP BY year_published, quarter
+ORDER BY year_published, quarter;
+""",
+
+# ── Data-quality flags (full table, not filtered by year) ─────────────
 "pub_data_quality": """
 SELECT
     SUM(flag_duplicate_title) AS duplicate_titles,
@@ -199,22 +211,9 @@ SELECT
 FROM clean_publications;
 """,
 
-# ------------------------------------------------------------------
-# Year filter options  (clean_publications)
-# ------------------------------------------------------------------
-
-# Distinct published years, descending — populates the year-filter dropdown.
-"pub_year_filter_options": """
-SELECT DISTINCT year_published AS publication_year
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND year_published IS NOT NULL
-ORDER BY year_published DESC;
-""",
-
-# ------------------------------------------------------------------
-# Legacy ri_submission queries (unchanged — used by old endpoints)
-# ------------------------------------------------------------------
+# ══════════════════════════════════════════════════════════════════════
+# LEGACY — ri_submission queries (unchanged, kept for old endpoints)
+# ══════════════════════════════════════════════════════════════════════
 
 "total_outputs": """
 SELECT COUNT(*) AS total_outputs
@@ -237,8 +236,7 @@ SELECT
     SUM(CASE WHEN {_COMPLETED_COND} THEN 1 ELSE 0 END) AS completed_outputs,
     ROUND(
         SUM(CASE WHEN {_COMPLETED_COND} THEN 1 ELSE 0 END) * 100.0
-        / NULLIF(COUNT(*), 0),
-        2
+        / NULLIF(COUNT(*), 0), 2
     ) AS completion_rate_pct
 FROM ri_submission rs
 WHERE rs.deleted_at IS NULL
@@ -347,7 +345,7 @@ ORDER BY submission_year DESC;
 
 "monthly_trend": f"""
 SELECT
-    YEAR(rs.completed_approved_at) AS yr,
+    YEAR(rs.completed_approved_at)  AS yr,
     MONTH(rs.completed_approved_at) AS mo,
     COUNT(rs.ID) AS total_outputs
 FROM ri_submission rs

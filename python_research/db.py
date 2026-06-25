@@ -24,7 +24,18 @@ RIES_DB_CONFIG = {
     "port": int(os.getenv("RIES_DB_PORT", "3306")),
     "user": os.getenv("RIES_DB_USERNAME", "root"),
     "password": os.getenv("RIES_DB_PASSWORD", ""),
-    "database": os.getenv("RIES_DB_DATABASE", "soulsuedu_ries"),
+    "database": os.getenv("RIES_DB_DATABASE", "published_paper"),
+    "charset": "utf8mb4",
+    "cursorclass": pymysql.cursors.DictCursor,
+}
+
+# Third connection: the funding database (soulsuedu_ries)
+FUNDING_DB_CONFIG = {
+    "host": os.getenv("FUNDING_DB_HOST", "127.0.0.1"),
+    "port": int(os.getenv("FUNDING_DB_PORT", "3306")),
+    "user": os.getenv("FUNDING_DB_USERNAME", "root"),
+    "password": os.getenv("FUNDING_DB_PASSWORD", ""),
+    "database": os.getenv("FUNDING_DB_DATABASE", "soulsuedu_ries"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
@@ -48,6 +59,15 @@ def get_ries_connection():
         connection.close()
 
 
+@contextmanager
+def get_funding_connection():
+    connection = pymysql.connect(**FUNDING_DB_CONFIG)
+    try:
+        yield connection
+    finally:
+        connection.close()
+
+
 def run_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
     with get_connection() as conn:
         with conn.cursor() as cursor:
@@ -56,8 +76,16 @@ def run_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dic
 
 
 def run_ries_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
-    """Same as run_query, but against the soulsuedu_ries database."""
+    """Same as run_query, but against the published_paper database."""
     with get_ries_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchall()
+
+
+def run_funding_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
+    """Same as run_query, but against the soulsuedu_ries (funding) database."""
+    with get_funding_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(sql, params)
             return cursor.fetchall()
@@ -77,6 +105,17 @@ def check_connection() -> bool:
 def check_ries_connection() -> bool:
     try:
         with get_ries_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+        return True
+    except Exception:
+        return False
+
+
+def check_funding_connection() -> bool:
+    try:
+        with get_funding_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 cursor.fetchone()

@@ -44,8 +44,6 @@
         }
 
         .ra-page[data-theme="light"] {
-            /* Shift the light theme from warm neutrals to the reference's
-               research-dashboard blue hierarchy so all text reads from one palette. */
             --ra-bg: #F3EFE6;
             --ra-panel: #FCFAF5;
             --ra-panel-2: #F5F0E5;
@@ -87,8 +85,6 @@
         }
 
         .ra-dashboard-panel {
-            /* Dashboard panels let the left menu switch between full Blade
-                       sections instead of only scrolling to cards on one long page. */
             display: none;
         }
 
@@ -97,8 +93,6 @@
         }
 
         .ra-topnav {
-            /* Horizontal dashboard menu mirrors the left rail, giving users a
-               second navigation surface without changing the page structure. */
             position: sticky;
             top: 0;
             z-index: 24;
@@ -225,8 +219,6 @@
         }
 
         .ra-title {
-            /* The main title uses the deepest blue from the reference so it
-               stands out immediately above the lighter descriptive copy. */
             font-family: var(--ra-serif);
             font-size: clamp(1.7rem, 2.4vw, 2.15rem);
             font-weight: 600;
@@ -355,17 +347,9 @@
         }
 
         @keyframes ra-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(127, 179, 154, .45), 0 0 6px 1px rgba(127, 179, 154, .45);
-            }
-
-            70% {
-                box-shadow: 0 0 0 7px rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, .3);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, 0);
-            }
+            0% { box-shadow: 0 0 0 0 rgba(127, 179, 154, .45), 0 0 6px 1px rgba(127, 179, 154, .45); }
+            70% { box-shadow: 0 0 0 7px rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, .3); }
+            100% { box-shadow: 0 0 0 0 rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, 0); }
         }
 
         /* ---------- KPI strip ---------- */
@@ -387,6 +371,19 @@
             background: linear-gradient(90deg, rgba(127, 179, 154, .5), transparent 60%);
         }
 
+        /* Status-specific top-border accents */
+        .ra-kpi-card.is-completed::after {
+            background: linear-gradient(90deg, var(--ra-approved), transparent 60%);
+        }
+
+        .ra-kpi-card.is-pending::after {
+            background: linear-gradient(90deg, var(--ra-pending), transparent 60%);
+        }
+
+        .ra-kpi-card.is-inprogress::after {
+            background: linear-gradient(90deg, #6E84A8, transparent 60%);
+        }
+
         .ra-kpi-label {
             font-family: var(--ra-mono);
             font-size: .68rem;
@@ -397,8 +394,6 @@
         }
 
         .ra-kpi-value {
-            /* KPI numbers are the strongest data accents, so give them the
-               brighter primary blue seen in the reference dashboard. */
             font-family: var(--ra-serif);
             font-size: 1.95rem;
             font-weight: 600;
@@ -406,6 +401,9 @@
             line-height: 1;
             letter-spacing: -.01em;
         }
+
+        .ra-kpi-value.is-pending-val  { color: var(--ra-pending); }
+        .ra-kpi-value.is-inprogress-val { color: #6E84A8; }
 
         .ra-kpi-foot {
             font-family: var(--ra-mono);
@@ -415,8 +413,6 @@
         }
 
         .ra-overview-card {
-            /* Restore the old overview presentation so the reverted Blade
-               markup renders as actual cards instead of plain stacked text. */
             position: relative;
             height: 100%;
             overflow: hidden;
@@ -489,8 +485,6 @@
         }
 
         .ra-overview-trend-card {
-            /* Keep the trend chart visually aligned with the restored
-               executive cards above it. */
             border-radius: .95rem;
             background: #FFFDF9;
             box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .05);
@@ -640,13 +634,6 @@
             box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
         }
 
-        .ra-overview-trend-head {
-            align-items: center;
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: .75rem;
-        }
-
         .ra-story-bar-row {
             margin-bottom: .85rem;
         }
@@ -758,13 +745,8 @@
         }
 
         @keyframes ra-shimmer {
-            0% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0 50%;
-            }
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
         }
 
         /* ---------- Panels ---------- */
@@ -925,7 +907,6 @@
             color: #8EBB99;
         }
 
-
         .ra-table .ra-campus-summary td {
             padding-top: 1rem;
             padding-bottom: .75rem;
@@ -964,8 +945,6 @@
         }
 
         #chartAgenda .apexcharts-toolbar {
-            /* Hide the chart menu at the display layer because ApexCharts can
-                                       still inject the toolbar node even when show:false is set. */
             display: none !important;
         }
 
@@ -1030,8 +1009,6 @@
         }
 
         .ra-tabs {
-            /* Fixed left rail follows the reference menu while keeping the
-                               existing data-tab buttons available for dashboard section logic. */
             display: flex;
             flex-direction: column;
             gap: .4rem;
@@ -1104,8 +1081,6 @@
             }
 
             .ra-tabs {
-                /* On tablet/mobile widths the fixed left rail becomes a normal
-                                   top block so it cannot cover the dashboard cards. */
                 position: static;
                 width: 100%;
                 min-height: auto;
@@ -1135,8 +1110,6 @@
             </div>
 
             <div class="ra-topnav-links">
-                {{-- Mirror the dashboard panels in a horizontal navbar so users
-                     can switch sections from the top as well as the left rail. --}}
                 <button type="button" class="ra-topnav-link is-active" data-tab="overview">Overview</button>
                 <button type="button" class="ra-topnav-link" data-tab="proposals">Proposals</button>
                 <button type="button" class="ra-topnav-link" data-tab="publications">Publications</button>
@@ -1147,12 +1120,10 @@
         <div class="ra-header">
             <div>
                 <div class="ra-eyebrow">Research &amp; Development Office</div>
-                <h1 class="ra-title">Research Progam Dashboard</h1>
-                <div class="ra-subtitle">Submission volume, approval velocity, and reach across campuses, programs, and SDGs.
-                </div>
+                <h1 class="ra-title">Research Program Dashboard</h1>
+                <div class="ra-subtitle">Submission volume, approval velocity, and reach across campuses, programs, and SDGs.</div>
             </div>
             <div class="ra-toolbar">
-
                 <div class="ra-filter">
                     <label class="ra-filter-label" for="yearFilter">Filter by year</label>
                     <select id="yearFilter" class="ra-select">
@@ -1165,7 +1136,6 @@
                 </div>
                 <button type="button" id="themeToggle" class="ra-theme-toggle" aria-label="Switch to dark mode"
                     title="Switch to dark mode">
-                    {{-- Eye icon marks the visual display mode control while keeping the button compact. --}}
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M2.25 12s3.5-6.25 9.75-6.25S21.75 12 21.75 12s-3.5 6.25-9.75 6.25S2.25 12 2.25 12Z"
                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -1173,34 +1143,50 @@
                     </svg>
                 </button>
             </div>
-
         </div>
 
         <div id="raGlobalError" style="display:none" class="ra-error"></div>
+
         <section id="overviewDashboard" class="ra-dashboard-panel is-active">
-            {{-- Overview collects only lead indicators from each fact table. --}}
             @include('content.dashboard.partials.overview-dashboard')
         </section>
 
         <section id="proposalsDashboard" class="ra-dashboard-panel">
 
-
-            {{-- Proposal lead indicators are repeated here so the proposal
-                 detail page has its own quick summary before tail indicators. --}}
+            {{-- KPI strip: Total + status breakdown (replaces redundant status chart) --}}
             <div class="row g-3 mb-3">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6 col-lg-3">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Total proposals</div>
                         <div class="ra-kpi-value" id="proposalKpiTotal"><span class="ra-skel"></span></div>
                         <div class="ra-kpi-foot">across all campuses</div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="ra-kpi-card">
-                        <div class="ra-kpi-label">Approval rate</div>
-                        <div class="ra-kpi-value" id="proposalKpiApprovalRate"><span class="ra-skel"></span></div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="ra-kpi-card is-completed">
+                        <div class="ra-kpi-label">Completed</div>
+                        <div class="ra-kpi-value" id="proposalKpiCompleted"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">status: C</div>
                     </div>
                 </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="ra-kpi-card is-pending">
+                        <div class="ra-kpi-label">Pending</div>
+                        <div class="ra-kpi-value is-pending-val" id="proposalKpiPending"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">status: P</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="ra-kpi-card is-inprogress">
+                        <div class="ra-kpi-label">In Progress</div>
+                        <div class="ra-kpi-value is-inprogress-val" id="proposalKpiInProgress"><span class="ra-skel"></span></div>
+                        <div class="ra-kpi-foot">status: PG</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Second row: campuses reporting --}}
+            <div class="row g-3 mb-3">
                 <div class="col-sm-6 col-lg-4">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Campuses reporting</div>
@@ -1210,14 +1196,13 @@
                 </div>
             </div>
 
-
             <div class="row g-3 mb-3">
                 {{-- Research format --}}
                 <div class="col-lg-4">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
-                                <h2 class="ra-card-title">Research format</h2>
+                                <h2 class="ra-card-title">Research Type</h2>
                                 <div class="ra-card-sub">mix of study types</div>
                             </div>
                         </div>
@@ -1243,10 +1228,9 @@
                 </div>
             </div>
 
-
             <div class="row g-3 mb-3">
                 {{-- Quarterly trend --}}
-                <div class="col-lg-6">
+                <div class="col-lg-12">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -1259,25 +1243,8 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Status distribution --}}
-                <div class="col-lg-6">
-                    <div class="ra-card h-100">
-                        <div class="ra-card-head">
-                            <div>
-                                <h2 class="ra-card-title">Status distribution</h2>
-                                <div class="ra-card-sub">where proposals sit in the pipeline</div>
-                            </div>
-                        </div>
-                        <div class="px-3 pb-3">
-                            <div id="chartStatus" style="min-height:260px;"></div>
-                        </div>
-                    </div>
-                </div>
+                {{-- Status distribution chart removed — data now surfaced in KPI strip above --}}
             </div>
-
-
-
 
             <div class="row g-3 mb-3">
                 {{-- SDG breakdown --}}
@@ -1295,7 +1262,7 @@
                     </div>
                 </div>
 
-                {{-- Signature element: approval signal bars by campus --}}
+                {{-- Approval signal bars by campus --}}
                 <div class="col-lg-7">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
@@ -1309,8 +1276,7 @@
                         </div>
                         <div class="ra-legend">
                             <span><i style="background:var(--ra-approved)"></i> Approved</span>
-                            <span><i style="background:var(--ra-line); border:1px solid var(--ra-text-faint)"></i>
-                                Pending</span>
+                            <span><i style="background:var(--ra-line); border:1px solid var(--ra-text-faint)"></i> Pending</span>
                         </div>
                     </div>
                 </div>
@@ -1335,12 +1301,10 @@
                                         <th>Campus</th>
                                         <th>Program</th>
                                         <th class="text-end ra-metric-head ra-head-total">
-                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Total
-                                                proposals</span>
+                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Total proposals</span>
                                         </th>
                                         <th class="text-end ra-metric-head ra-head-completed">
-                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Approved
-                                                proposals</span>
+                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Approved proposals</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -1358,12 +1322,10 @@
         </section>
 
         <section id="publicationsDashboard" class="ra-dashboard-panel">
-            {{-- Publications is a full Blade panel, separate from the proposal dashboard. --}}
             @include('content.dashboard.partials.publications-dashboard')
         </section>
 
         <section id="fundingsDashboard" class="ra-dashboard-panel">
-            {{-- Fundings is a full Blade panel, separate from the proposal dashboard. --}}
             @include('content.dashboard.partials.fundings-dashboard')
         </section>
 
@@ -1376,16 +1338,6 @@
 
 @section('page-script')
     <script>
-        /**
-         * Research Analytics dashboard.
-         * Pulls data client-side from the FastAPI analytics service
-         * (see main.py / queries.py) via the /api/proposals/dashboard
-         * endpoint, which bundles all 13 named queries into one response.
-         *
-         * Configure the base URL via Laravel: pass it from a controller as
-         * config('services.research_api.url') or set window.RESEARCH_API_BASE
-         * in a small inline script before this view renders.
-         */
         (function() {
             const API_BASE = window.RESEARCH_API_BASE ||
                 '{{ rtrim(config('services.research_api.url', 'http://127.0.0.1:8001'), '/') }}';
@@ -1401,12 +1353,8 @@
             const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
             const fmtPct = (n) => (n === null || n === undefined) ? '—' : `${Number(n).toFixed(1)}%`;
             const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;',
-            } [c]));
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+            }[c]));
 
             function showGlobalError(message) {
                 const el = document.getElementById('raGlobalError');
@@ -1419,8 +1367,6 @@
             }
 
             function palette() {
-                // Read colors from CSS variables so charts follow the same theme
-                // toggle as the surrounding cards, tables, and labels.
                 return [
                     cssVar('--ra-approved'),
                     cssVar('--ra-pending'),
@@ -1444,72 +1390,37 @@
             }
 
             function baseChartOptions(overrides) {
-                const text = cssVar('--ra-text');
                 const textDim = cssVar('--ra-text-dim');
                 const line = cssVar('--ra-line');
                 return Object.assign({
                     chart: {
                         fontFamily: 'Public Sans, sans-serif',
                         background: 'transparent',
-                        toolbar: {
-                            show: false
-                        },
-                        animations: {
-                            easing: 'easeinout',
-                            speed: 500
-                        },
+                        toolbar: { show: false },
+                        animations: { easing: 'easeinout', speed: 500 },
                     },
-                    theme: {
-                        mode: currentTheme()
-                    },
+                    theme: { mode: currentTheme() },
                     colors: palette(),
-                    dataLabels: {
-                        enabled: false
-                    },
-                    grid: {
-                        borderColor: line,
-                        strokeDashArray: 3
-                    },
-                    tooltip: {
-                        theme: currentTheme()
-                    },
-                    legend: {
-                        labels: {
-                            colors: textDim
-                        }
-                    },
+                    dataLabels: { enabled: false },
+                    grid: { borderColor: line, strokeDashArray: 3 },
+                    tooltip: { theme: currentTheme() },
+                    legend: { labels: { colors: textDim } },
                     states: {
-                        hover: {
-                            filter: {
-                                type: 'none'
-                            }
-                        },
-                        active: {
-                            filter: {
-                                type: 'none'
-                            }
-                        }
+                        hover: { filter: { type: 'none' } },
+                        active: { filter: { type: 'none' } },
                     }
                 }, overrides);
             }
 
             function buildDashboardUrl(year) {
                 const url = new URL(`${API_BASE}/api/proposals/dashboard`);
-                if (year) {
-                    url.searchParams.set('year', year);
-                }
+                if (year) url.searchParams.set('year', year);
                 return url.toString();
             }
 
             async function fetchDashboard(year = '') {
-                const res = await fetch(buildDashboardUrl(year), {
-                    headers: {
-                        Accept: 'application/json'
-                    },
-                });
-                if (!res.ok) {
-                    throw new Error(`Analytics service responded with ${res.status}`);
-                }
+                const res = await fetch(buildDashboardUrl(year), { headers: { Accept: 'application/json' } });
+                if (!res.ok) throw new Error(`Analytics service responded with ${res.status}`);
                 return res.json();
             }
 
@@ -1522,17 +1433,13 @@
 
             function renderChart(chartKey, elementId, options) {
                 destroyChart(chartKey);
-                // Recreating each chart instance keeps ApexCharts from stacking
-                // old canvases when the dashboard refetches for a new year.
                 const chart = new ApexCharts(document.getElementById(elementId), options);
                 chartInstances[chartKey] = chart;
                 chart.render();
             }
 
             function setYearOptions(yearRows) {
-                if (availableYears.length) {
-                    return;
-                }
+                if (availableYears.length) return;
                 availableYears = (yearRows || []).map((row) => Number(row.year)).filter(Boolean);
                 const select = document.getElementById('yearFilter');
                 select.innerHTML = '<option value="">All years</option>';
@@ -1545,86 +1452,30 @@
             }
 
             function setTextIfExists(id, value) {
-                // Some KPI values appear in both Overview and detail panels; this
-                // guard prevents errors if a card is removed from one panel later.
                 const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = value;
-                }
+                if (element) element.textContent = value;
             }
 
+            // ---------------------------------------------------------------------------
+            // KPI strip — Total + Completed / Pending / In Progress from status_distribution
+            // ---------------------------------------------------------------------------
             function renderKpis(data) {
                 const statusRows = data.status_distribution || [];
-                const totalProposals = statusRows.reduce((sum, r) => sum + Number(r.total_proposals || 0), 0);
-                setTextIfExists('kpiTotal', fmtInt(totalProposals));
-                setTextIfExists('proposalKpiTotal', fmtInt(totalProposals));
+                const statusMap = {};
+                let total = 0;
+                statusRows.forEach((r) => {
+                    const count = Number(r.total_proposals || 0);
+                    statusMap[r.status_code] = count;
+                    total += count;
+                });
 
-                const approvalRow = data.approval_rate_overall?.[0] ?? data.approval_rate_overall;
-                const approvalPct = Array.isArray(data.approval_rate_overall) ?
-                    data.approval_rate_overall[0]?.approval_rate_percentage :
-                    approvalRow?.approval_rate_percentage;
-                setTextIfExists('kpiApprovalRate', fmtPct(approvalPct));
-                setTextIfExists('proposalKpiApprovalRate', fmtPct(approvalPct));
+                setTextIfExists('proposalKpiTotal',      fmtInt(total));
+                setTextIfExists('proposalKpiCompleted',  fmtInt(statusMap['C']  ?? 0));
+                setTextIfExists('proposalKpiPending',    fmtInt(statusMap['P']  ?? 0));
+                setTextIfExists('proposalKpiInProgress', fmtInt(statusMap['PG'] ?? 0));
 
                 const campusRows = data.proposals_by_campus || [];
-                setTextIfExists('kpiCampuses', fmtInt(campusRows.length));
                 setTextIfExists('proposalKpiCampuses', fmtInt(campusRows.length));
-
-            }
-
-            function renderStatusChart(rows) {
-                destroyChart('status');
-                if (!rows.length) {
-                    document.getElementById('chartStatus').innerHTML = '<div class="ra-empty">no status data yet</div>';
-                    return;
-                }
-                document.getElementById('chartStatus').innerHTML = '';
-                // Translate raw status codes into reader-friendly labels so
-                // the donut legend matches how the office describes statuses.
-                const statusLabelMap = {
-                    C: 'Complete',
-                    P: 'Pending',
-                    PG: 'In Progress',
-                };
-                const labels = rows.map((r) => statusLabelMap[r.status_code] || r.status_code || 'Unknown');
-                const series = rows.map((r) => Number(r.total_proposals || 0));
-                renderChart('status', 'chartStatus', baseChartOptions({
-                    chart: {
-                        type: 'donut',
-                        height: 260
-                    },
-                    labels,
-                    series,
-                    stroke: {
-                        colors: [cssVar('--ra-panel')],
-                        width: 2
-                    },
-                    legend: {
-                        position: 'bottom',
-                        fontSize: '12px',
-                        labels: {
-                            colors: cssVar('--ra-text-dim')
-                        }
-                    },
-                    plotOptions: {
-                        pie: {
-                            donut: {
-                                labels: {
-                                    show: true,
-                                    total: {
-                                        show: true,
-                                        label: 'Total',
-                                        color: cssVar('--ra-text-dim')
-                                    },
-                                    value: {
-                                        color: cssVar('--ra-text'),
-                                        fontFamily: MONO
-                                    },
-                                },
-                            },
-                        },
-                    },
-                }));
             }
 
             function renderQuarterChart(rows) {
@@ -1635,54 +1486,21 @@
                     return;
                 }
                 document.getElementById('chartQuarter').innerHTML = '';
-                const categories = rows.map((r) => `${r.year} Q${r.quarter}`);
-                const series = [{
-                    name: 'Proposals',
-                    data: rows.map((r) => Number(r.total_proposals || 0))
-                }];
                 renderChart('quarter', 'chartQuarter', baseChartOptions({
-                    chart: {
-                        type: 'area',
-                        height: 260
-                    },
-                    series,
+                    chart: { type: 'area', height: 260 },
+                    series: [{ name: 'Proposals', data: rows.map((r) => Number(r.total_proposals || 0)) }],
                     xaxis: {
-                        categories,
+                        categories: rows.map((r) => `${r.year} Q${r.quarter}`),
                         tickAmount: 8,
-                        labels: {
-                            style: {
-                                fontSize: '10px',
-                                colors: cssVar('--ra-text-faint'),
-                                fontFamily: MONO
-                            }
-                        },
-                        axisBorder: {
-                            color: cssVar('--ra-line')
-                        },
-                        axisTicks: {
-                            color: cssVar('--ra-line')
-                        },
+                        labels: { style: { fontSize: '10px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
+                        axisBorder: { color: cssVar('--ra-line') },
+                        axisTicks: { color: cssVar('--ra-line') },
                     },
-                    yaxis: {
-                        labels: {
-                            style: {
-                                colors: cssVar('--ra-text-faint'),
-                                fontFamily: MONO
-                            }
-                        }
-                    },
-                    stroke: {
-                        curve: 'smooth',
-                        width: 2
-                    },
+                    yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
+                    stroke: { curve: 'smooth', width: 2 },
                     fill: {
                         type: 'gradient',
-                        gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: .35,
-                            opacityTo: 0,
-                            stops: [0, 95, 100]
-                        },
+                        gradient: { shadeIntensity: 1, opacityFrom: .35, opacityTo: 0, stops: [0, 95, 100] },
                     },
                     colors: [cssVar('--ra-approved')],
                 }));
@@ -1697,45 +1515,16 @@
                 document.getElementById('chartSdg').innerHTML = '';
                 const top = rows.slice(0, 17);
                 renderChart('sdg', 'chartSdg', baseChartOptions({
-                    chart: {
-                        type: 'bar',
-                        height: 300
-                    },
-                    plotOptions: {
-                        bar: {
-                            horizontal: true,
-                            borderRadius: 2,
-                            barHeight: '52%'
-                        }
-                    },
-                    series: [{
-                        name: 'Proposals',
-                        data: top.map((r) => Number(r.total_proposals || 0))
-                    }],
+                    chart: { type: 'bar', height: 300 },
+                    plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '52%' } },
+                    series: [{ name: 'Proposals', data: top.map((r) => Number(r.total_proposals || 0)) }],
                     xaxis: {
                         categories: top.map((r) => r.sdg_code || r.sdg_name),
-                        labels: {
-                            style: {
-                                colors: cssVar('--ra-text-faint'),
-                                fontFamily: MONO,
-                                fontSize: '10px'
-                            }
-                        },
-                        axisBorder: {
-                            color: cssVar('--ra-line')
-                        },
-                        axisTicks: {
-                            color: cssVar('--ra-line')
-                        },
+                        labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO, fontSize: '10px' } },
+                        axisBorder: { color: cssVar('--ra-line') },
+                        axisTicks: { color: cssVar('--ra-line') },
                     },
-                    yaxis: {
-                        labels: {
-                            style: {
-                                colors: cssVar('--ra-text-dim'),
-                                fontSize: '11px'
-                            }
-                        }
-                    },
+                    yaxis: { labels: { style: { colors: cssVar('--ra-text-dim'), fontSize: '11px' } } },
                     colors: [cssVar('--ra-approved')],
                 }));
             }
@@ -1748,23 +1537,11 @@
                 }
                 document.getElementById('chartFormat').innerHTML = '';
                 renderChart('format', 'chartFormat', baseChartOptions({
-                    chart: {
-                        type: 'donut',
-                        height: 230
-                    },
+                    chart: { type: 'donut', height: 230 },
                     labels: rows.map((r) => r.research_format_name),
                     series: rows.map((r) => Number(r.total_proposals || 0)),
-                    stroke: {
-                        colors: [cssVar('--ra-panel')],
-                        width: 2
-                    },
-                    legend: {
-                        position: 'bottom',
-                        fontSize: '11px',
-                        labels: {
-                            colors: cssVar('--ra-text-dim')
-                        }
-                    },
+                    stroke: { colors: [cssVar('--ra-panel')], width: 2 },
+                    legend: { position: 'bottom', fontSize: '11px', labels: { colors: cssVar('--ra-text-dim') } },
                 }));
             }
 
@@ -1776,49 +1553,16 @@
                 }
                 document.getElementById('chartAgenda').innerHTML = '';
                 renderChart('agenda', 'chartAgenda', baseChartOptions({
-                    chart: {
-                        type: 'bar',
-                        height: 230,
-                        // Hide the ApexCharts toolbar/menu on this panel even
-                        // if a later override changes the shared chart config.
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    plotOptions: {
-                        bar: {
-                            borderRadius: 2,
-                            columnWidth: '50%'
-                        }
-                    },
-                    series: [{
-                        name: 'Proposals',
-                        data: rows.map((r) => Number(r.total_proposals || 0))
-                    }],
+                    chart: { type: 'bar', height: 230, toolbar: { show: false } },
+                    plotOptions: { bar: { borderRadius: 2, columnWidth: '50%' } },
+                    series: [{ name: 'Proposals', data: rows.map((r) => Number(r.total_proposals || 0)) }],
                     xaxis: {
                         categories: rows.map((r) => r.agenda_label),
-                        labels: {
-                            style: {
-                                fontSize: '9px',
-                                colors: cssVar('--ra-text-faint'),
-                                fontFamily: MONO
-                            }
-                        },
-                        axisBorder: {
-                            color: cssVar('--ra-line')
-                        },
-                        axisTicks: {
-                            color: cssVar('--ra-line')
-                        },
+                        labels: { style: { fontSize: '9px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
+                        axisBorder: { color: cssVar('--ra-line') },
+                        axisTicks: { color: cssVar('--ra-line') },
                     },
-                    yaxis: {
-                        labels: {
-                            style: {
-                                colors: cssVar('--ra-text-faint'),
-                                fontFamily: MONO
-                            }
-                        }
-                    },
+                    yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
                     colors: ['#6E84A8'],
                 }));
             }
@@ -1830,14 +1574,14 @@
                     return;
                 }
                 container.innerHTML = rows.map((r) => `
-          <div class="ra-funnel-row">
-            <div class="ra-funnel-name" title="${escapeHtml(r.campus_name)}">${escapeHtml(r.campus_name)}</div>
-            <div class="ra-funnel-track">
-              <div class="ra-funnel-fill" data-pct="${Number(r.approval_rate || 0)}"></div>
-            </div>
-            <div class="ra-funnel-pct">${fmtPct(r.approval_rate)}</div>
-          </div>
-        `).join('');
+                    <div class="ra-funnel-row">
+                        <div class="ra-funnel-name" title="${escapeHtml(r.campus_name)}">${escapeHtml(r.campus_name)}</div>
+                        <div class="ra-funnel-track">
+                            <div class="ra-funnel-fill" data-pct="${Number(r.approval_rate || 0)}"></div>
+                        </div>
+                        <div class="ra-funnel-pct">${fmtPct(r.approval_rate)}</div>
+                    </div>
+                `).join('');
                 requestAnimationFrame(() => {
                     container.querySelectorAll('.ra-funnel-fill').forEach((el) => {
                         el.style.width = `${el.dataset.pct}%`;
@@ -1853,26 +1597,17 @@
             }
 
             function groupProgramsByCampus(rows) {
-                // Grouping in the view layer lets the search box keep working on
-                // the filtered subset while campus totals update automatically.
                 const campusMap = new Map();
                 rows.forEach((row) => {
                     const campusName = row.campus_name || 'Unknown campus';
                     if (!campusMap.has(campusName)) {
-                        campusMap.set(campusName, {
-                            campus_name: campusName,
-                            total_proposals: 0,
-                            completed_proposals: 0,
-                            programs: []
-                        });
+                        campusMap.set(campusName, { campus_name: campusName, total_proposals: 0, completed_proposals: 0, programs: [] });
                     }
                     const group = campusMap.get(campusName);
                     group.total_proposals += Number(row.total_proposals || 0);
                     group.completed_proposals += Number(row.completed_proposals || 0);
                     group.programs.push(row);
                 });
-                // Pin MAIN CAMPUS first so the primary campus stays at the top even
-                // when the API returns other campuses ahead of it.
                 return Array.from(campusMap.values()).sort((a, b) => {
                     if (a.campus_name === 'MAIN CAMPUS') return -1;
                     if (b.campus_name === 'MAIN CAMPUS') return 1;
@@ -1886,10 +1621,7 @@
                     tbody.innerHTML = '<tr><td colspan="4" class="ra-empty">no matching programs</td></tr>';
                     return;
                 }
-                const groupedRows = groupProgramsByCampus(rows);
-                // Render one summary row per campus, followed by its programs, so
-                // the table reads like a real breakdown instead of flat duplicates.
-                tbody.innerHTML = groupedRows.map((group) => `
+                tbody.innerHTML = groupProgramsByCampus(rows).map((group) => `
                     <tr class="ra-campus-summary">
                         <td>
                             <div class="ra-campus-name">${escapeHtml(group.campus_name)}</div>
@@ -1900,23 +1632,19 @@
                         <td class="ra-campus-total">${fmtInt(group.completed_proposals)}</td>
                     </tr>
                     ${group.programs.map((program) => `
-                                    <tr class="ra-program-row">
-                                        <td>Program</td>
-                                        <td class="ra-program-name">${escapeHtml(program.program_name)}</td>
-                                        <td class="ra-metric ra-metric-total">${fmtInt(program.total_proposals)}</td>
-                                        <td class="ra-metric ra-metric-completed">${fmtInt(program.completed_proposals)}</td>
-                                    </tr>
-                                `).join('')}
+                        <tr class="ra-program-row">
+                            <td>Program</td>
+                            <td class="ra-program-name">${escapeHtml(program.program_name)}</td>
+                            <td class="ra-metric ra-metric-total">${fmtInt(program.total_proposals)}</td>
+                            <td class="ra-metric ra-metric-completed">${fmtInt(program.completed_proposals)}</td>
+                        </tr>
+                    `).join('')}
                 `).join('');
             }
 
             document.getElementById('programFilter').addEventListener('input', (e) => {
                 const q = e.target.value.trim().toLowerCase();
-                if (!q) {
-                    paintProgramTable(programRowsCache);
-                    return;
-                }
-                paintProgramTable(programRowsCache.filter((r) =>
+                paintProgramTable(!q ? programRowsCache : programRowsCache.filter((r) =>
                     r.campus_name.toLowerCase().includes(q) || r.program_name.toLowerCase().includes(q)
                 ));
             });
@@ -1925,14 +1653,13 @@
                 try {
                     activeYear = year;
                     document.getElementById('raGlobalError').style.display = 'none';
-                    document.getElementById('raLastUpdated').textContent = year ? `loading ${year}...` :
-                        'loading all years...';
+                    document.getElementById('raLastUpdated').textContent = year ? `loading ${year}...` : 'loading all years...';
+
                     const data = await fetchDashboard(year);
                     setYearOptions(data.proposals_by_year || []);
                     document.getElementById('yearFilter').value = year;
 
                     renderKpis(data);
-                    renderStatusChart(data.status_distribution || []);
                     renderQuarterChart(data.proposals_by_quarter || []);
                     renderSdgChart(data.proposals_by_sdg || []);
                     renderFormatChart(data.proposals_by_format || []);
@@ -1950,92 +1677,52 @@
                     );
                     document.getElementById('raLastUpdated').textContent = 'offline';
                     document.querySelector('.ra-dot').style.background = '#C2705E';
-                    [
-                        'kpiTotal', 'kpiApprovalRate', 'kpiCampuses',
-                    ].forEach((id) => {
-                        document.getElementById(id).textContent = '—';
-                    });
+                    ['proposalKpiTotal', 'proposalKpiCompleted', 'proposalKpiPending',
+                     'proposalKpiInProgress', 'proposalKpiCampuses'].forEach((id) => setTextIfExists(id, '—'));
                 }
             }
 
             document.getElementById('yearFilter').addEventListener('change', (e) => {
-                // The dropdown simply reuses the same dashboard endpoint with an
-                // optional ?year=... parameter, so the frontend stays thin.
                 loadDashboard(e.target.value);
             });
 
             themeToggleEl.addEventListener('click', () => {
-                const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
-                // Re-fetching is unnecessary here; we just redraw against the
-                // existing state so the charts pick up the new CSS-variable palette.
-                applyTheme(nextTheme);
+                applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
                 loadDashboard(activeYear);
             });
 
             function setupRailMenu() {
                 const panelTargets = {
-                    overview: '#overviewDashboard',
-                    proposals: '#proposalsDashboard',
-                    fundings: '#fundingsDashboard',
-                    publications: '#publicationsDashboard',
-                };
-                const tabTargets = {
-                    overview: '.ra-header',
-                    proposals: '#chartStatus',
+                    overview:      '#overviewDashboard',
+                    proposals:     '#proposalsDashboard',
+                    fundings:      '#fundingsDashboard',
+                    publications:  '#publicationsDashboard',
                 };
 
                 function showDashboardPanel(tabName) {
-                    // Switch the full dashboard Blade panel first, then optional
-                    // scrolling can happen inside the active proposal panel.
-                    const activePanelSelector = panelTargets[tabName] || '#proposalsDashboard';
+                    const activeSel = panelTargets[tabName] || '#proposalsDashboard';
                     document.querySelectorAll('.ra-dashboard-panel').forEach((panel) => {
-                        panel.classList.toggle('is-active', `#${panel.id}` === activePanelSelector);
+                        panel.classList.toggle('is-active', `#${panel.id}` === activeSel);
                     });
                 }
 
                 function activateDashboardTab(tabName) {
-                    // Keep the vertical rail and the new top navbar in sync so
-                    // either navigation surface reflects the active section.
                     document.querySelectorAll('.ra-tab').forEach((item) => {
                         item.classList.toggle('is-active', item.dataset.tab === tabName);
                     });
                     document.querySelectorAll('.ra-topnav-link').forEach((item) => {
                         item.classList.toggle('is-active', item.dataset.tab === tabName);
                     });
-
                     showDashboardPanel(tabName);
-
-                    if (tabName === 'proposals') {
-                        // Proposal charts are inside a hidden panel on first
-                        // load, so redraw them after the panel becomes visible.
-                        loadDashboard(activeYear);
-                    }
-
-                    const target = document.querySelector(tabTargets[tabName]);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
+                    if (tabName === 'proposals') loadDashboard(activeYear);
                 }
 
-                document.querySelectorAll('.ra-tab').forEach((tab) => {
-                    tab.addEventListener('click', () => {
-                        activateDashboardTab(tab.dataset.tab);
-                    });
-                });
-
-                document.querySelectorAll('.ra-topnav-link').forEach((tab) => {
-                    tab.addEventListener('click', () => {
-                        activateDashboardTab(tab.dataset.tab);
-                    });
+                document.querySelectorAll('.ra-tab, .ra-topnav-link').forEach((tab) => {
+                    tab.addEventListener('click', () => activateDashboardTab(tab.dataset.tab));
                 });
             }
 
             async function init() {
-                // Persist the user's theme choice across refreshes so the dashboard
-                // behaves like an application setting rather than a one-off demo.
                 applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'light');
                 setupRailMenu();
                 await loadDashboard(activeYear);

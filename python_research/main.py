@@ -13,7 +13,11 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from db import run_query, check_connection, run_ries_query, check_ries_connection
+from db import (
+    run_query, check_connection,
+    run_ries_query, check_ries_connection,
+    run_funding_query, check_funding_connection,
+)
 from queries import QUERIES
 from queries_ries import RIES_QUERIES
 from queries_funding import FUNDING_QUERIES
@@ -52,7 +56,7 @@ def _execute(query_key: str, year: Optional[int] = None) -> list[dict]:
 
 
 def _execute_ries(query_key: str, year: Optional[int] = None) -> list[dict]:
-    """Run a named query against soulsuedu_ries; map DB errors to HTTP 500."""
+    """Run a named query against published_paper; map DB errors to HTTP 500."""
     sql = RIES_QUERIES.get(query_key)
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
@@ -68,7 +72,7 @@ def _execute_funding(query_key: str, year: Optional[int] = None) -> list[dict]:
     if sql is None:
         raise HTTPException(status_code=404, detail=f"Unknown query '{query_key}'")
     try:
-        return run_ries_query(sql, {"year": year})
+        return run_funding_query(sql, {"year": year})
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Database error: {exc}")
 
@@ -79,13 +83,15 @@ def _execute_funding(query_key: str, year: Optional[int] = None) -> list[dict]:
 
 @app.get("/api/health")
 def health():
-    """Simple health check — verifies both databases are reachable."""
+    """Simple health check — verifies all three databases are reachable."""
     db_ok = check_connection()
     ries_ok = check_ries_connection()
+    funding_ok = check_funding_connection()
     return {
-        "status": "ok" if (db_ok and ries_ok) else "db_unreachable",
+        "status": "ok" if (db_ok and ries_ok and funding_ok) else "db_unreachable",
         "research_warehouse": db_ok,
         "ries": ries_ok,
+        "funding": funding_ok,
     }
 
 
@@ -182,7 +188,7 @@ def dashboard_summary(year: Optional[int] = Query(default=None, ge=2000, le=2100
 
 
 # ---------------------------------------------------------------------------
-# Publications — clean_publications dataset (new panel)
+# Publications — clean_publications dataset (published_paper database)
 # ---------------------------------------------------------------------------
 
 # These endpoints all target the `clean_publications` table which holds the
@@ -206,87 +212,68 @@ summary KPIs, which are fetched separately or ignore the year param)."""
 
 @app.get("/api/publications/summary")
 def publications_summary():
-    """
-    Seven KPI chips: total publications, campuses, unique journals,
-    Scopus count, international count, valid-link count, average pages.
-    This query is unfiltered (all years) — it is the headline figure.
-    """
+    """Headline KPI row: total, campuses, Scopus %, International %."""
     rows = _execute_ries("pub_summary_kpis", None)
     return rows[0] if rows else {}
 
 
-@app.get("/api/publications/years")
-def publications_years():
-    """Distinct published years (DESC) — populates the year-filter dropdown."""
-    return _execute_ries("pub_year_filter_options", None)
-
-
 @app.get("/api/publications/by-year")
 def publications_by_year():
-    """
-    Annual publication counts across all years on record.
-    Used for the headline trend line; no year filter applied so the
-    full historical range is always visible.
-    """
-    return _execute_ries("pub_by_year", None)
+    """Annual totals — year-0/NULL excluded."""
+    return _execute_ries("pub_by_year_clean", None)
 
 
-@app.get("/api/publications/monthly-trend")
-def publications_monthly_trend(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """Monthly publication counts, optionally filtered to a single year."""
-    return _execute_ries("pub_monthly_trend", year)
+@app.get("/api/publications/yoy-growth")
+def publications_yoy_growth():
+    """Year-over-year growth percentage per year."""
+    return _execute_ries("pub_yoy_growth", None)
 
 
-@app.get("/api/publications/by-campus")
-def publications_by_campus(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """Publication counts per campus, descending."""
-    return _execute_ries("pub_by_campus", year)
+@app.get("/api/publications/campus-contribution")
+def publications_campus_contribution():
+    """Campus totals with contribution % of grand total."""
+    return _execute_ries("pub_campus_contribution", None)
 
 
-@app.get("/api/publications/by-indexing-tier")
-def publications_by_indexing_tier(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """
-    Publication counts + percentage share per indexing tier
-    (Scopus, International, Local, etc.).
-    """
-    return _execute_ries("pub_by_indexing_tier", year)
+@app.get("/api/publications/monthly-all")
+def publications_monthly_all():
+    """Monthly counts across all years (no year filter)."""
+    return _execute_ries("pub_monthly_all", None)
 
 
 @app.get("/api/publications/campus-indexing")
-def publications_campus_indexing(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """Campus × indexing-tier cross-tab — drives the grouped/stacked bar chart."""
-    return _execute_ries("pub_campus_indexing", year)
+def publications_campus_indexing():
+    """Campus × indexing-tier cross-tab."""
+    return _execute_ries("pub_campus_indexing_clean", None)
+
+
+@app.get("/api/publications/top-journals")
+def publications_top_journals():
+    """Top 10 journals by paper count."""
+    return _execute_ries("pub_top_journals_clean", None)
+
+
+@app.get("/api/publications/by-indexing-tier")
+def publications_by_indexing_tier():
+    """Indexing tier counts + % share."""
+    return _execute_ries("pub_by_indexing_clean", None)
 
 
 @app.get("/api/publications/year-campus")
 def publications_year_campus():
-    """
-    Year × campus cross-tab across the full date range.
-    Used for the multi-series stacked bar / heatmap.
-    No year filter — the full history is always shown.
-    """
-    return _execute_ries("pub_year_campus", None)
+    """Year × campus for stacked bar (year-0 excluded)."""
+    return _execute_ries("pub_year_campus_clean", None)
 
 
-@app.get("/api/publications/top-journals")
-def publications_top_journals(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """Top 10 journals by publication count."""
-    return _execute_ries("pub_top_journals", year)
-
-
-@app.get("/api/publications/average-pages")
-def publications_average_pages(year: Optional[int] = Query(default=None, ge=2000, le=2100)):
-    """Average page count of publications (rows where num_pages_int is not null)."""
-    rows = _execute_ries("pub_average_pages", year)
-    return rows[0] if rows else {"average_pages": None}
+@app.get("/api/publications/quarterly")
+def publications_quarterly():
+    """Quarterly breakdown 2020–2026."""
+    return _execute_ries("pub_quarterly_clean", None)
 
 
 @app.get("/api/publications/data-quality")
 def publications_data_quality():
-    """
-    Data-quality flag summary across the entire clean_publications table
-    (not filtered by year — gives a full-dataset audit view).
-    """
+    """Data-quality flag counts from the full clean_publications table."""
     rows = _execute_ries("pub_data_quality", None)
     return rows[0] if rows else {}
 

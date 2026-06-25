@@ -57,8 +57,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
@@ -71,8 +69,6 @@
                 <div class="ra-card-sub">yearly movement across pipeline input, completed outputs, and publication records</div>
             </div>
             <div class="ra-filter">
-                {{-- This local filter only reshapes the trend window, leaving the
-                     top summary cards tied to the shared dashboard year filter. --}}
                 <label class="ra-filter-label" for="overviewTrendYearFilter">Trend range</label>
                 <select id="overviewTrendYearFilter" class="ra-select">
                     <option value="">All years</option>
@@ -151,8 +147,8 @@
             <div class="ra-overview-insight">
                 <div class="ra-overview-insight-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M7 4.5h10v4.2a5 5 0 0 1-3.4 4.7L12 14l-1.6-.6A5 5 0 0 1 7 8.7V4.5Z" stroke-width="1.7"
-                            stroke-linejoin="round" />
+                        <path d="M7 4.5h10v4.2a5 5 0 0 1-3.4 4.7L12 14l-1.6-.6A5 5 0 0 1 7 8.7V4.5Z"
+                            stroke-width="1.7" stroke-linejoin="round" />
                         <path d="M12 14v5.5M9 20.5h6" stroke-width="1.7" stroke-linecap="round" />
                     </svg>
                 </div>
@@ -195,23 +191,17 @@
 </div>
 
 <script>
-    /**
-     * Storytelling Overview.
-     * The overview intentionally reuses the three dashboard payloads and
-     * computes narrative metrics client-side so the landing page stays aligned
-     * with the detailed panels while speaking in executive language.
-     */
     (function () {
         const API_BASE = window.RESEARCH_API_BASE ||
             '{{ rtrim(config('services.research_api.url', 'http://127.0.0.1:8001'), '/') }}';
 
-        let overviewTrendChart = null;
+        let overviewTrendChart     = null;
         let overviewFundingShareChart = null;
-        let overviewTrendRows = [];
-        let overviewLoaded = false;
+        let overviewTrendRows      = [];
+        let overviewLoaded         = false;
 
-        const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
-        const fmtPct = (n) => (n === null || n === undefined || Number.isNaN(Number(n))) ? '—' : `${Number(n).toFixed(1)}%`;
+        const fmtInt      = (n) => Number(n ?? 0).toLocaleString('en-US');
+        const fmtPct      = (n) => (n === null || n === undefined || Number.isNaN(Number(n))) ? '—' : `${Number(n).toFixed(1)}%`;
         const fmtCurrency = (n) => `₱${Number(n ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
         function setText(id, value) {
@@ -221,12 +211,13 @@
 
         function escapeHtml(value) {
             return String(value ?? '')
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#39;');
+                .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
         }
+
+        // ---------------------------------------------------------------------------
+        // URL builders — every endpoint verified against main.py
+        // ---------------------------------------------------------------------------
 
         function buildProposalsUrl(year) {
             const url = new URL(`${API_BASE}/api/proposals/dashboard`);
@@ -235,91 +226,90 @@
         }
 
         function buildPublicationsSummaryUrl() {
-            return new URL(`${API_BASE}/api/publications/summary`).toString();
+            // Returns a single object: { total_publications, ... }
+            return `${API_BASE}/api/publications/summary`;
         }
 
         function buildPublicationsByYearUrl() {
-            return new URL(`${API_BASE}/api/publications/by-year`).toString();
+            // Returns array of { year_published, total_publications }
+            return `${API_BASE}/api/publications/by-year`;
         }
 
-        function buildPublicationsByCampusUrl(year) {
-            const url = new URL(`${API_BASE}/api/publications/by-campus`);
+        function buildPublicationsCampusContributionUrl() {
+            // Returns array of { campus, contribution_percentage, total_publications }
+            // NOTE: this endpoint ignores the year param — it always covers all years.
+            return `${API_BASE}/api/publications/campus-contribution`;
+        }
+
+        function buildFundingTotalUrl(year) {
+            // Dedicated single-row endpoint — avoids parsing the dashboard bundle.
+            const url = new URL(`${API_BASE}/api/funding/total-allocated`);
             if (year) url.searchParams.set('year', year);
             return url.toString();
         }
 
-        function buildPublicationsCampusContributionUrl(year) {
-            const url = new URL(`${API_BASE}/api/publications/campus-contribution`);
+        function buildFundingCampusUrl(year) {
+            // Returns array of { campus_name, funded_projects, total_allocated_fund }
+            const url = new URL(`${API_BASE}/api/funding/by-campus`);
             if (year) url.searchParams.set('year', year);
             return url.toString();
         }
 
-        function buildFundingUrl(year) {
-            const url = new URL(`${API_BASE}/api/funding/dashboard`);
+        function buildFundingCategoryUrl(year) {
+            // Returns array of { program_category, funded_projects, total_allocated_fund }
+            const url = new URL(`${API_BASE}/api/funding/by-category`);
             if (year) url.searchParams.set('year', year);
             return url.toString();
         }
+
+        // ---------------------------------------------------------------------------
+        // Chart helpers
+        // ---------------------------------------------------------------------------
 
         function destroyTrendChart() {
-            if (overviewTrendChart) {
-                overviewTrendChart.destroy();
-                overviewTrendChart = null;
-            }
+            if (overviewTrendChart) { overviewTrendChart.destroy(); overviewTrendChart = null; }
         }
 
         function destroyFundingShareChart() {
-            if (overviewFundingShareChart) {
-                overviewFundingShareChart.destroy();
-                overviewFundingShareChart = null;
-            }
+            if (overviewFundingShareChart) { overviewFundingShareChart.destroy(); overviewFundingShareChart = null; }
         }
 
         function setTrendYearOptions(years) {
             const select = document.getElementById('overviewTrendYearFilter');
             if (!select) return;
-
             const current = select.value;
             select.innerHTML = '<option value="">All years</option>';
             years.forEach((year) => {
-                const option = document.createElement('option');
-                option.value = String(year);
-                option.textContent = String(year);
-                select.appendChild(option);
+                const opt = document.createElement('option');
+                opt.value = String(year);
+                opt.textContent = String(year);
+                select.appendChild(opt);
             });
             select.value = years.includes(Number(current)) ? current : '';
         }
 
         function mergeOverviewTrendData(proposals, publicationYears) {
             const proposalMap = new Map(
-                (proposals.proposals_by_year || []).map((row) => [Number(row.year), Number(row.total_proposals || 0)])
+                (proposals.proposals_by_year || []).map((r) => [Number(r.year), Number(r.total_proposals || 0)])
             );
+            // /api/publications/by-year returns { year_published, total_publications }
             const publicationMap = new Map(
-                (publicationYears || []).map((row) => [
-                    Number(row.year_published),
-                    {
-                        // clean_publications represents final published outputs,
-                        // so the overview reuses that same count for the
-                        // publication-completion and published-output series.
-                        published_papers: Number(row.total_publications || 0),
-                        completed_papers: Number(row.total_publications || 0),
-                    }
+                (publicationYears || []).map((r) => [
+                    Number(r.year_published),
+                    Number(r.total_publications || 0),
                 ])
             );
 
             const yearSet = new Set([...proposalMap.keys(), ...publicationMap.keys()]);
-
             return Array.from(yearSet)
                 .filter(Boolean)
                 .sort((a, b) => a - b)
-                .map((year) => {
-                    const pub = publicationMap.get(year) || { published_papers: 0, completed_papers: 0 };
-                    return {
-                        year,
-                        proposals: proposalMap.get(year) || 0,
-                        completed_papers: pub.completed_papers,
-                        published_papers: pub.published_papers,
-                    };
-                });
+                .map((year) => ({
+                    year,
+                    proposals:       proposalMap.get(year)    || 0,
+                    completed_papers: publicationMap.get(year) || 0,
+                    published_papers: publicationMap.get(year) || 0,
+                }));
         }
 
         function renderTrendChart(selectedYear = '') {
@@ -327,7 +317,7 @@
             if (!chartEl) return;
 
             const rows = selectedYear
-                ? overviewTrendRows.filter((row) => String(row.year) === String(selectedYear))
+                ? overviewTrendRows.filter((r) => String(r.year) === String(selectedYear))
                 : overviewTrendRows;
 
             destroyTrendChart();
@@ -340,85 +330,39 @@
             chartEl.innerHTML = '';
             setText(
                 'overviewTrendTitle',
-                `Proposals vs Completed Papers vs Published Papers Over Time (${rows[0].year}-${rows[rows.length - 1].year})`
+                `Proposals vs Completed Papers vs Published Papers Over Time (${rows[0].year}–${rows[rows.length - 1].year})`
             );
 
             overviewTrendChart = new ApexCharts(chartEl, {
-                chart: {
-                    type: 'line',
-                    height: 340,
-                    toolbar: { show: false },
-                    zoom: { enabled: false }
-                },
-                series: [{
-                    name: 'Proposals',
-                    data: rows.map((row) => row.proposals),
-                }, {
-                    name: 'Completed Papers',
-                    data: rows.map((row) => row.completed_papers),
-                }, {
-                    name: 'Published Papers',
-                    data: rows.map((row) => row.published_papers),
-                }],
+                chart: { type: 'line', height: 340, toolbar: { show: false }, zoom: { enabled: false } },
+                series: [
+                    { name: 'Proposals',        data: rows.map((r) => r.proposals) },
+                    { name: 'Completed Papers',  data: rows.map((r) => r.completed_papers) },
+                    { name: 'Published Papers',  data: rows.map((r) => r.published_papers) },
+                ],
                 colors: ['#173A9B', '#2D6AF6', '#8AB5FF'],
-                stroke: {
-                    curve: 'smooth',
-                    width: 3
-                },
-                markers: {
-                    size: 5,
-                    hover: { size: 6 }
-                },
+                stroke: { curve: 'smooth', width: 3 },
+                markers: { size: 5, hover: { size: 6 } },
                 dataLabels: {
                     enabled: true,
                     offsetY: -10,
                     background: { enabled: false },
-                    style: {
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        colors: ['#1E4ED8']
-                    },
-                    formatter: (value) => fmtInt(value),
+                    style: { fontSize: '11px', fontWeight: '700', colors: ['#1E4ED8'] },
+                    formatter: (v) => fmtInt(v),
                 },
-                legend: {
-                    position: 'top',
-                    horizontalAlign: 'left',
-                    fontSize: '13px',
-                    labels: { colors: '#3552A3' }
-                },
-                grid: {
-                    borderColor: '#E5EDFF',
-                    strokeDashArray: 4,
-                },
+                legend: { position: 'top', horizontalAlign: 'left', fontSize: '13px', labels: { colors: '#3552A3' } },
+                grid: { borderColor: '#E5EDFF', strokeDashArray: 4 },
                 xaxis: {
-                    categories: rows.map((row) => String(row.year)),
-                    labels: {
-                        style: {
-                            colors: '#3552A3',
-                            fontSize: '12px'
-                        }
-                    }
+                    categories: rows.map((r) => String(r.year)),
+                    labels: { style: { colors: '#3552A3', fontSize: '12px' } },
                 },
                 yaxis: {
                     min: 0,
                     forceNiceScale: true,
-                    labels: {
-                        formatter: (value) => fmtInt(value),
-                        style: {
-                            colors: '#3552A3',
-                            fontSize: '12px'
-                        }
-                    }
+                    labels: { formatter: (v) => fmtInt(v), style: { colors: '#3552A3', fontSize: '12px' } },
                 },
-                tooltip: {
-                    shared: true,
-                    intersect: false,
-                    y: {
-                        formatter: (value) => fmtInt(value),
-                    }
-                }
+                tooltip: { shared: true, intersect: false, y: { formatter: (v) => fmtInt(v) } },
             });
-
             overviewTrendChart.render();
         }
 
@@ -429,27 +373,25 @@
                 container.innerHTML = '<div class="ra-empty">no campus data yet</div>';
                 return;
             }
-
-            const maxValue = Math.max(...rows.map((row) => Number(row[valueKey] || 0)), 1);
-            container.innerHTML = rows.map((row) => {
-                const value = Number(row[valueKey] || 0);
+            const maxValue = Math.max(...rows.map((r) => Number(r[valueKey] || 0)), 1);
+            container.innerHTML = rows.map((r) => {
+                const value = Number(r[valueKey] || 0);
                 const width = (value / maxValue) * 100;
                 return `
                     <div class="ra-story-bar-row">
                         <div class="ra-story-bar-meta">
-                            <div class="ra-story-bar-name">${escapeHtml(row.campus_name)}</div>
+                            <div class="ra-story-bar-name">${escapeHtml(r.campus_name)}</div>
                             <div class="ra-story-bar-value">${formatter(value)}</div>
                         </div>
                         <div class="ra-story-bar-track">
                             <div class="ra-story-bar-fill ${toneClass}" style="width:${width}%"></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
         function renderFundingShare(rows) {
-            const chartEl = document.getElementById('overviewFundingShareChart');
+            const chartEl  = document.getElementById('overviewFundingShareChart');
             const legendEl = document.getElementById('overviewFundingLegend');
             if (!chartEl || !legendEl) return;
 
@@ -459,242 +401,263 @@
                 return;
             }
 
-            const total = rows.reduce((sum, row) => sum + Number(row.total_allocated_fund || 0), 0);
+            const total   = rows.reduce((s, r) => s + Number(r.total_allocated_fund || 0), 0);
             const palette = ['#173A9B', '#1E4ED8', '#4E7CF0', '#7F9FF8', '#4BB7C3', '#8B5CF6', '#F59E0B'];
             const topRows = rows.slice(0, 6);
 
             chartEl.innerHTML = '';
             destroyFundingShareChart();
             overviewFundingShareChart = new ApexCharts(chartEl, {
-                chart: {
-                    type: 'donut',
-                    height: 220,
-                    toolbar: { show: false }
-                },
-                series: topRows.map((row) => Number(row.total_allocated_fund || 0)),
-                labels: topRows.map((row) => row.campus_name),
-                colors: palette,
-                legend: { show: false },
-                stroke: {
-                    colors: ['#FFFDF9'],
-                    width: 2
-                },
+                chart: { type: 'donut', height: 220, toolbar: { show: false } },
+                series: topRows.map((r) => Number(r.total_allocated_fund || 0)),
+                labels:  topRows.map((r) => r.campus_name),
+                colors:  palette,
+                legend:  { show: false },
+                stroke:  { colors: ['#FFFDF9'], width: 2 },
                 plotOptions: {
                     pie: {
                         donut: {
                             size: '68%',
                             labels: {
                                 show: true,
-                                total: {
-                                    show: true,
-                                    label: 'Total Funds',
-                                    color: '#6C7DB0'
-                                },
-                                value: {
-                                    color: '#173A9B',
-                                    formatter: () => fmtCurrency(total)
-                                }
-                            }
-                        }
-                    }
-                }
+                                total: { show: true, label: 'Total Funds', color: '#6C7DB0' },
+                                value: { color: '#173A9B', formatter: () => fmtCurrency(total) },
+                            },
+                        },
+                    },
+                },
             });
             overviewFundingShareChart.render();
 
-            legendEl.innerHTML = topRows.map((row, index) => {
-                const amount = Number(row.total_allocated_fund || 0);
-                const share = total > 0 ? (amount / total) * 100 : 0;
+            legendEl.innerHTML = topRows.map((r, i) => {
+                const amount = Number(r.total_allocated_fund || 0);
+                const share  = total > 0 ? (amount / total) * 100 : 0;
                 return `
                     <div class="ra-overview-legend-row">
-                        <span class="ra-overview-legend-dot" style="background:${palette[index]}"></span>
-                        <span class="ra-overview-legend-name">${escapeHtml(row.campus_name)}</span>
+                        <span class="ra-overview-legend-dot" style="background:${palette[i]}"></span>
+                        <span class="ra-overview-legend-name">${escapeHtml(r.campus_name)}</span>
                         <span class="ra-overview-legend-share">${fmtPct(share)}</span>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
-        function updateInsightCards(publicationCampusRows, campusContributionRows, fundingCategoryRows) {
-            const sortedByRate = campusContributionRows
-                .map((row) => {
-                    return {
-                        campus_name: row.campus_name,
-                        completion_rate: Number(row.completion_rate || 0),
-                    };
-                })
+        function updateInsightCards(pubCampusRows, campusContributionRows, fundingCategoryRows) {
+            // Lowest completion — sort ascending by contribution_percentage
+            const sortedByRate = [...campusContributionRows]
                 .sort((a, b) => a.completion_rate - b.completion_rate);
 
-            const sortedByOutput = publicationCampusRows
-                .map((row) => ({
-                    campus_name: row.campus_name,
-                    completed_outputs: Number(row.completed_outputs || 0),
-                }))
+            // Highest output — sort descending by completed_outputs
+            const sortedByOutput = [...pubCampusRows]
                 .sort((a, b) => b.completed_outputs - a.completed_outputs);
 
+            // Most funded category
             const topCategory = [...fundingCategoryRows]
                 .sort((a, b) => Number(b.total_allocated_fund || 0) - Number(a.total_allocated_fund || 0))[0];
 
+            // Best growth year (combined proposals + papers delta)
             const growthRows = overviewTrendRows
-                .map((row, index, list) => {
-                    if (index === 0) return null;
-                    const prev = list[index - 1];
+                .map((r, i, list) => {
+                    if (i === 0) return null;
+                    const prev = list[i - 1];
                     return {
-                        year: row.year,
-                        growth_score: (row.proposals - prev.proposals) + (row.completed_papers - prev.completed_papers),
+                        year: r.year,
+                        growth_score: (r.proposals - prev.proposals) + (r.completed_papers - prev.completed_papers),
                     };
                 })
                 .filter(Boolean)
                 .sort((a, b) => b.growth_score - a.growth_score);
 
-            const lowest = sortedByRate[0];
-            const highest = sortedByOutput[0];
+            const lowest    = sortedByRate[0];
+            const highest   = sortedByOutput[0];
             const bestGrowth = growthRows[0];
 
             setText('overviewLowestCampus', lowest?.campus_name || '—');
-            setText(
-                'overviewLowestCampusCopy',
-                lowest ? `${fmtPct(lowest.completion_rate)} completion rate across publication records.` : 'Needs support to convert proposals into outputs.'
-            );
+            setText('overviewLowestCampusCopy',
+                lowest ? `${fmtPct(lowest.completion_rate)} completion rate across publication records.`
+                       : 'Needs support to convert proposals into outputs.');
 
             setText('overviewHighestCampus', highest?.campus_name || '—');
-            setText(
-                'overviewHighestCampusCopy',
-                highest ? `${fmtInt(highest.completed_outputs)} completed papers lead overall output.` : 'Leads in completed papers and drives overall performance.'
-            );
+            setText('overviewHighestCampusCopy',
+                highest ? `${fmtInt(highest.completed_outputs)} completed papers lead overall output.`
+                        : 'Leads in completed papers and drives overall performance.');
 
             setText('overviewTopCategory', topCategory?.program_category || '—');
-            setText(
-                'overviewTopCategoryCopy',
-                topCategory ? `${fmtCurrency(topCategory.total_allocated_fund)} allocated to this category.` : 'Receives the largest share of funding across categories.'
-            );
+            setText('overviewTopCategoryCopy',
+                topCategory ? `${fmtCurrency(topCategory.total_allocated_fund)} allocated to this category.`
+                            : 'Receives the largest share of funding across categories.');
 
             setText('overviewBestGrowthYear', bestGrowth?.year || '—');
-            setText(
-                'overviewBestGrowthYearCopy',
-                bestGrowth ? `Strongest combined rise in proposals and completed papers.` : 'Showed the strongest growth across proposals and outputs.'
-            );
+            setText('overviewBestGrowthYearCopy',
+                bestGrowth ? 'Strongest combined rise in proposals and completed papers.'
+                           : 'Showed the strongest growth across proposals and outputs.');
         }
+
+        // ---------------------------------------------------------------------------
+        // Main loader
+        // ---------------------------------------------------------------------------
 
         async function loadOverview(year = '') {
             try {
-                const [proposalRes, pubSummaryRes, pubYearRes, pubCampusRes, pubContributionRes, fundRes] = await Promise.all([
-                    fetch(buildProposalsUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsSummaryUrl(), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsByYearUrl(), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsByCampusUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsCampusContributionUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildFundingUrl(year), { headers: { Accept: 'application/json' } }),
+                // Fire all requests in parallel — each targets a real, verified endpoint.
+                const [
+                    proposalRes,
+                    pubSummaryRes,
+                    pubYearRes,
+                    pubContributionRes,
+                    fundTotalRes,
+                    fundCampusRes,
+                    fundCategoryRes,
+                ] = await Promise.all([
+                    fetch(buildProposalsUrl(year),                    { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsSummaryUrl(),              { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsByYearUrl(),               { headers: { Accept: 'application/json' } }),
+                    fetch(buildPublicationsCampusContributionUrl(),   { headers: { Accept: 'application/json' } }),
+                    fetch(buildFundingTotalUrl(year),                 { headers: { Accept: 'application/json' } }),
+                    fetch(buildFundingCampusUrl(year),                { headers: { Accept: 'application/json' } }),
+                    fetch(buildFundingCategoryUrl(year),              { headers: { Accept: 'application/json' } }),
                 ]);
 
-                if (!proposalRes.ok) throw new Error(`Proposal service responded with ${proposalRes.status}`);
-                if (!pubSummaryRes.ok) throw new Error(`Publications summary responded with ${pubSummaryRes.status}`);
-                if (!pubYearRes.ok) throw new Error(`Publications yearly trend responded with ${pubYearRes.status}`);
-                if (!pubCampusRes.ok) throw new Error(`Publications by-campus responded with ${pubCampusRes.status}`);
-                if (!pubContributionRes.ok) throw new Error(`Publications campus contribution responded with ${pubContributionRes.status}`);
-                if (!fundRes.ok) throw new Error(`Funding service responded with ${fundRes.status}`);
+                if (!proposalRes.ok)      throw new Error(`Proposals: ${proposalRes.status}`);
+                if (!pubSummaryRes.ok)    throw new Error(`Publications summary: ${pubSummaryRes.status}`);
+                if (!pubYearRes.ok)       throw new Error(`Publications by-year: ${pubYearRes.status}`);
+                if (!pubContributionRes.ok) throw new Error(`Publications campus-contribution: ${pubContributionRes.status}`);
+                if (!fundTotalRes.ok)     throw new Error(`Funding total: ${fundTotalRes.status}`);
+                if (!fundCampusRes.ok)    throw new Error(`Funding by-campus: ${fundCampusRes.status}`);
+                if (!fundCategoryRes.ok)  throw new Error(`Funding by-category: ${fundCategoryRes.status}`);
 
-                const proposals = await proposalRes.json();
-                const publicationsSummary = await pubSummaryRes.json();
-                const publicationsByYear = await pubYearRes.json();
-                const publicationsByCampus = await pubCampusRes.json();
-                const publicationsCampusContribution = await pubContributionRes.json();
-                const funding = await fundRes.json();
+                const proposals              = await proposalRes.json();
+                const publicationsSummary    = await pubSummaryRes.json();
+                const publicationsByYear     = await pubYearRes.json();
+                const pubContribution        = await pubContributionRes.json();
+                // /api/funding/total-allocated returns { total_allocated_fund: <number> }
+                const fundTotal              = await fundTotalRes.json();
+                const fundCampus             = await fundCampusRes.json();
+                const fundCategory           = await fundCategoryRes.json();
 
+                // ---------------------------------------------------------------------------
+                // Hero KPIs
+                // ---------------------------------------------------------------------------
                 const proposalTotal = (proposals.status_distribution || [])
-                    .reduce((sum, row) => sum + Number(row.total_proposals || 0), 0);
+                    .reduce((sum, r) => sum + Number(r.total_proposals || 0), 0);
+
                 const completedPapers = Number(publicationsSummary.total_publications || 0);
-                const totalFund = Number(funding.total_allocated_fund?.[0]?.total_allocated_fund || 0);
-                const proposalToPublicationRate = proposalTotal > 0 ? (completedPapers / proposalTotal) * 100 : 0;
 
-                // The overview now skips the old conversion strip, so only the
-                // hero cards and lower storytelling sections are updated here.
-                setText('overviewHeroProposals', fmtInt(proposalTotal));
+                // /api/funding/total-allocated returns a single object, not an array
+                const totalFund = Number(fundTotal.total_allocated_fund || 0);
+
+                setText('overviewHeroProposals',      fmtInt(proposalTotal));
                 setText('overviewHeroCompletedPapers', fmtInt(completedPapers));
-                setText('overviewHeroFundAllocation', fmtCurrency(totalFund));
-                setText('overviewHeroConversionRate', fmtPct(proposalToPublicationRate));
-                setText('overviewProposalCopy', year ? `Total research proposals submitted for ${year}.` : 'Total research proposals submitted across all years.');
+                setText('overviewHeroFundAllocation',  fmtCurrency(totalFund));
+                setText('overviewProposalCopy',
+                    year ? `Total research proposals submitted for ${year}.`
+                         : 'Total research proposals submitted across all years.');
 
+                // ---------------------------------------------------------------------------
+                // Trend chart
+                // ---------------------------------------------------------------------------
                 overviewTrendRows = mergeOverviewTrendData(proposals, publicationsByYear);
-                setTrendYearOptions(overviewTrendRows.map((row) => row.year));
+                setTrendYearOptions(overviewTrendRows.map((r) => r.year));
                 renderTrendChart(document.getElementById('overviewTrendYearFilter')?.value || '');
 
-                const outputCampusRows = (publicationsByCampus || [])
-                    .map((row) => ({
-                        campus_name: row.campus,
-                        completed_outputs: Number(row.total_publications || 0),
+                // ---------------------------------------------------------------------------
+                // Campus bars
+                // Section 3 — Who Drives The Results
+                // pubContribution rows: { campus, contribution_percentage, total_publications }
+                // ---------------------------------------------------------------------------
+                const outputCampusRows = (pubContribution || [])
+                    .map((r) => ({
+                        campus_name:      r.campus,
+                        completed_outputs: Number(r.total_publications || 0),
                     }))
                     .sort((a, b) => b.completed_outputs - a.completed_outputs);
 
-                const campusContributionRows = (publicationsCampusContribution || [])
-                    .map((row) => ({
-                        campus_name: row.campus,
-                        completion_rate: Number(row.contribution_percentage || 0),
+                const campusContributionRows = (pubContribution || [])
+                    .map((r) => ({
+                        campus_name:    r.campus,
+                        completion_rate: Number(r.contribution_percentage || 0),
                     }))
                     .sort((a, b) => b.completion_rate - a.completion_rate);
 
-                renderCampusBars(
-                    'overviewTopCampusOutputs',
-                    outputCampusRows.slice(0, 6),
-                    'completed_outputs',
-                    (value) => fmtInt(value)
-                );
-                renderCampusBars(
-                    'overviewCampusCompletion',
-                    campusContributionRows.slice(0, 6),
-                    'completion_rate',
-                    (value) => fmtPct(value),
-                    'is-soft'
-                );
-                renderFundingShare(funding.funding_by_campus || []);
-                updateInsightCards(outputCampusRows, campusContributionRows, funding.funding_by_category || []);
+                renderCampusBars('overviewTopCampusOutputs', outputCampusRows.slice(0, 6),
+                    'completed_outputs', (v) => fmtInt(v));
+
+                renderCampusBars('overviewCampusCompletion', campusContributionRows.slice(0, 6),
+                    'completion_rate', (v) => fmtPct(v), 'is-soft');
+
+                // fundCampus rows: { campus_name, funded_projects, total_allocated_fund }
+                renderFundingShare(fundCampus || []);
+
+                // ---------------------------------------------------------------------------
+                // Insight cards
+                // ---------------------------------------------------------------------------
+                updateInsightCards(outputCampusRows, campusContributionRows, fundCategory || []);
 
                 overviewLoaded = true;
+
             } catch (error) {
-                console.error(error);
+                console.error('[Overview]', error);
+
                 destroyTrendChart();
                 destroyFundingShareChart();
+
                 [
-                    'overviewHeroProposals',
-                    'overviewHeroCompletedPapers',
-                    'overviewHeroFundAllocation',
-                    'overviewHeroConversionRate',
-                    'overviewLowestCampus',
-                    'overviewHighestCampus',
-                    'overviewTopCategory',
-                    'overviewBestGrowthYear',
+                    'overviewHeroProposals', 'overviewHeroCompletedPapers',
+                    'overviewHeroFundAllocation', 'overviewLowestCampus',
+                    'overviewHighestCampus', 'overviewTopCategory', 'overviewBestGrowthYear',
                 ].forEach((id) => setText(id, '—'));
-                document.getElementById('overviewTrendChart').innerHTML = '<div class="ra-empty">could not load trend data</div>';
-                document.getElementById('overviewTopCampusOutputs').innerHTML = '<div class="ra-empty">could not load campus output data</div>';
-                document.getElementById('overviewCampusCompletion').innerHTML = '<div class="ra-empty">could not load campus completion data</div>';
-                document.getElementById('overviewFundingShareChart').innerHTML = '<div class="ra-empty">could not load funding share data</div>';
-                document.getElementById('overviewFundingLegend').innerHTML = '';
+
+                const safe = (id, msg) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = `<div class="ra-empty">${msg}</div>`;
+                };
+                safe('overviewTrendChart',       'could not load trend data');
+                safe('overviewTopCampusOutputs', 'could not load campus output data');
+                safe('overviewCampusCompletion', 'could not load campus completion data');
+                safe('overviewFundingShareChart','could not load funding share data');
+                setText('overviewFundingLegend', '');
             }
         }
+
+        // ---------------------------------------------------------------------------
+        // Event listeners
+        // ---------------------------------------------------------------------------
 
         document.getElementById('overviewTrendYearFilter')?.addEventListener('change', (e) => {
             renderTrendChart(e.target.value);
         });
 
+        // Re-load whenever the global year filter changes while Overview is visible.
         document.getElementById('yearFilter')?.addEventListener('change', (e) => {
-            if (overviewLoaded) {
+            const panel = document.getElementById('overviewDashboard');
+            if (panel && panel.classList.contains('is-active')) {
                 loadOverview(e.target.value);
             }
         });
 
-        document.querySelectorAll('.ra-tab').forEach((tab) => {
-            tab.addEventListener('click', () => {
-                if (tab.dataset.tab === 'overview') {
-                    const year = document.getElementById('yearFilter')?.value || '';
-                    loadOverview(year);
-                }
-            });
+        // Both the left-rail tabs AND the top-nav links can activate Overview.
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-tab]');
+            if (btn && btn.dataset.tab === 'overview') {
+                const year = document.getElementById('yearFilter')?.value || '';
+                loadOverview(year);
+            }
         });
 
+        // Initial load when the panel is already active on page load.
         document.addEventListener('DOMContentLoaded', () => {
             const panel = document.getElementById('overviewDashboard');
             if (panel && panel.classList.contains('is-active')) {
                 loadOverview('');
             }
         });
+
+        // Guard for scripts that run after DOMContentLoaded has already fired.
+        if (document.readyState !== 'loading') {
+            const panel = document.getElementById('overviewDashboard');
+            if (panel && panel.classList.contains('is-active')) {
+                loadOverview('');
+            }
+        }
+
     })();
 </script>
