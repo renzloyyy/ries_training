@@ -17,6 +17,8 @@ FROM fact_research_proposal f
 JOIN dim_date d
 ON f.dim_date_submission_id = d.date_id
 WHERE (%(year)s IS NULL OR d.year = %(year)s)
+OR
+(%(year)s IS NULL OR d.year >= YEAR(CURRENT_DATE())-4)
 GROUP BY f.status_code
 ORDER BY total_proposals DESC;
 """,
@@ -61,6 +63,28 @@ GROUP BY d.year
 ORDER BY d.year;
 """,
 
+"completed_outputs_by_year": """
+SELECT
+-- Use the approval year when it exists, but fall back to the submission
+-- year for completed records whose approval-date dimension is missing.
+-- This keeps the overview trend aligned with the warehouse trace query and
+-- avoids undercounting earlier completed proposals.
+COALESCE(da.year, ds.year) AS year,
+COUNT(*) AS completed_outputs
+FROM fact_research_proposal f
+LEFT JOIN dim_date da
+ON f.dim_date_approval_id = da.date_id
+LEFT JOIN dim_date ds
+ON f.dim_date_submission_id = ds.date_id
+WHERE f.status_code = 'C'
+AND (
+    %(year)s IS NULL
+    OR COALESCE(da.year, ds.year) = %(year)s
+)
+GROUP BY COALESCE(da.year, ds.year)
+ORDER BY year;
+""",
+
 "proposals_by_quarter": """
 SELECT
 d.year,
@@ -89,7 +113,9 @@ ORDER BY d.year, d.month;
 
 "proposals_by_format": """
 SELECT
-rf.research_format_name,
+-- Group blank or missing format names into a readable "Other" bucket so the
+-- research-type chart still shows uncategorized records.
+COALESCE(NULLIF(TRIM(rf.research_format_name), ''), 'Other Research Type') AS research_format_name,
 COUNT(*) AS total_proposals
 FROM fact_research_proposal f
 JOIN dim_research_format rf
@@ -97,7 +123,7 @@ ON f.dim_research_format_id = rf.research_format_id
 JOIN dim_date d
 ON f.dim_date_submission_id = d.date_id
 WHERE (%(year)s IS NULL OR d.year = %(year)s)
-GROUP BY rf.research_format_name
+GROUP BY COALESCE(NULLIF(TRIM(rf.research_format_name), ''), 'Other Research Type')
 ORDER BY total_proposals DESC;
 """,
 

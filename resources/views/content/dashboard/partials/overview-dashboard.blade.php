@@ -6,9 +6,9 @@
 --}}
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">1</span> Start With The Big Picture</div>
+    {{-- <div class="ra-story-label"><span class="ra-story-index">1</span> Start With The Big Picture</div> --}}
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -17,14 +17,15 @@
                     </svg>
                 </div>
                 <div class="ra-story-kpi-body">
-                    <div class="ra-story-kpi-title">Total Proposals</div>
+                    <div class="ra-story-kpi-title">Total Proposals <span
+                            id="overviewProposalYearLabel">(2017-present)</span></div>
                     <div class="ra-story-kpi-value" id="overviewHeroProposals"><span class="ra-skel"></span></div>
-                    <div class="ra-story-kpi-copy" id="overviewProposalCopy">Total research proposals submitted across all years.</div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -34,14 +35,33 @@
                     </svg>
                 </div>
                 <div class="ra-story-kpi-body">
-                    <div class="ra-story-kpi-title">Total Completed Papers</div>
+                    <div class="ra-story-kpi-title">Total Completed Research <span
+                            id="overviewCompletedYearLabel">(2017-present)</span></div>
                     <div class="ra-story-kpi-value" id="overviewHeroCompletedPapers"><span class="ra-skel"></span></div>
-                    <div class="ra-story-kpi-copy">Research papers completed through to full output.</div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="ra-story-kpi">
+                <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M5.5 5.5h5a2.5 2.5 0 0 1 2 1 2.5 2.5 0 0 1 2-1h4v13h-4a2.5 2.5 0 0 0-2 1 2.5 2.5 0 0 0-2-1h-5v-13Z"
+                            stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M12.5 7v12" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="ra-story-kpi-body">
+                    <div class="ra-story-kpi-title">Total Published Papers <span
+                            id="overviewPublishedYearLabel">(2017-present)</span></div>
+                    <div class="ra-story-kpi-value" id="overviewHeroPublishedPapers"><span class="ra-skel"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
             <div class="ra-story-kpi">
                 <div class="ra-story-kpi-icon ra-story-kpi-icon-solid" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -51,9 +71,9 @@
                     </svg>
                 </div>
                 <div class="ra-story-kpi-body">
-                    <div class="ra-story-kpi-title">Total Fund Allocation</div>
+                    <div class="ra-story-kpi-title">Total Fund Allocation <span
+                            id="overviewFundingYearLabel">(2017-present)</span></div>
                     <div class="ra-story-kpi-value" id="overviewHeroFundAllocation"><span class="ra-skel"></span></div>
-                    <div class="ra-story-kpi-copy">Total funds allocated to support research and innovation.</div>
                 </div>
             </div>
         </div>
@@ -63,20 +83,11 @@
 </div>
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">2</span> Trend Of Performance</div>
+    {{-- <div class="ra-story-label"><span class="ra-story-index">2</span> Trend Of Performance</div> --}}
     <div class="ra-card ra-overview-story-panel">
         <div class="ra-card-head ra-overview-trend-head">
             <div>
-                <h2 class="ra-card-title" id="overviewTrendTitle">Proposals vs Completed Papers vs Published Papers Over Time</h2>
-                <div class="ra-card-sub">yearly movement across pipeline input, completed outputs, and publication records</div>
-            </div>
-            <div class="ra-filter">
-                {{-- This local filter only reshapes the trend window, leaving the
-                     top summary cards tied to the shared dashboard year filter. --}}
-                <label class="ra-filter-label" for="overviewTrendYearFilter">Trend range</label>
-                <select id="overviewTrendYearFilter" class="ra-select">
-                    <option value="">All years</option>
-                </select>
+                <h2 class="ra-card-title" id="overviewTrendTitle">Total Research Activity Over Time</h2>
             </div>
         </div>
         <div class="px-3 pb-3">
@@ -86,14 +97,14 @@
 </div>
 
 <div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">3</span> Who Drives The Results</div>
+    {{-- <div class="ra-story-label"><span class="ra-story-index">3</span> Who Drives The Results</div> --}}
     <div class="row g-3 mb-4">
         <div class="col-lg-4">
             <div class="ra-card ra-overview-story-panel h-100">
                 <div class="ra-card-head">
                     <div>
-                        <h2 class="ra-card-title">Top Campus by Outputs</h2>
-                        <div class="ra-card-sub">by total completed papers</div>
+                        <h2 class="ra-card-title">Leading Campus in Outputs</h2>
+
                     </div>
                 </div>
                 <div class="px-3 pb-3" id="overviewTopCampusOutputs"></div>
@@ -105,7 +116,7 @@
                 <div class="ra-card-head">
                     <div>
                         <h2 class="ra-card-title">Completion Rate by Campus</h2>
-                        <div class="ra-card-sub">completed papers as a percentage of publication records</div>
+
                     </div>
                 </div>
                 <div class="px-3 pb-3" id="overviewCampusCompletion"></div>
@@ -117,78 +128,16 @@
                 <div class="ra-card-head">
                     <div>
                         <h2 class="ra-card-title">Funding Share by Campus</h2>
-                        <div class="ra-card-sub">share of total fund allocation</div>
                     </div>
                 </div>
                 <div class="px-3 pb-3">
-                    <div id="overviewFundingShareChart" style="min-height:230px;"></div>
-                    <div class="ra-overview-legend" id="overviewFundingLegend"></div>
+                    {{-- Keep the donut and its callout labels side-by-side so the
+                         category names live beside the chart instead of on top of it. --}}
+                    <div class="ra-overview-donut-wrap">
+                        <div id="overviewFundingShareChart" style="min-height:230px;"></div>
+                        <div class="ra-overview-legend" id="overviewFundingLegend"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="ra-story-block">
-    <div class="ra-story-label"><span class="ra-story-index">4</span> Key Insights</div>
-    <div class="row g-3">
-        <div class="col-sm-6 col-xl-3">
-            <div class="ra-overview-insight ra-overview-insight-alert">
-                <div class="ra-overview-insight-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M5 6.5h14M5 12h9M5 17.5h6" stroke-width="1.7" stroke-linecap="round" />
-                        <path d="m15 17 2.2 2.2L21 14.5" stroke-width="1.7" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="ra-overview-insight-label">Lowest Completion Campus</div>
-                <div class="ra-overview-insight-value" id="overviewLowestCampus">—</div>
-                <div class="ra-overview-insight-copy" id="overviewLowestCampusCopy">Needs support to convert proposals into outputs.</div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3">
-            <div class="ra-overview-insight">
-                <div class="ra-overview-insight-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M7 4.5h10v4.2a5 5 0 0 1-3.4 4.7L12 14l-1.6-.6A5 5 0 0 1 7 8.7V4.5Z" stroke-width="1.7"
-                            stroke-linejoin="round" />
-                        <path d="M12 14v5.5M9 20.5h6" stroke-width="1.7" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <div class="ra-overview-insight-label">Highest Output Campus</div>
-                <div class="ra-overview-insight-value" id="overviewHighestCampus">—</div>
-                <div class="ra-overview-insight-copy" id="overviewHighestCampusCopy">Leads in completed papers and drives overall performance.</div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3">
-            <div class="ra-overview-insight">
-                <div class="ra-overview-insight-icon ra-overview-insight-icon-green" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M9 3.5h6M10 3.5v4l-5 8.4A3 3 0 0 0 7.6 20h8.8a3 3 0 0 0 2.6-4.1L14 7.5v-4"
-                            stroke-width="1.7" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="ra-overview-insight-label">Most Funded Category</div>
-                <div class="ra-overview-insight-value" id="overviewTopCategory">—</div>
-                <div class="ra-overview-insight-copy" id="overviewTopCategoryCopy">Receives the largest share of funding across categories.</div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3">
-            <div class="ra-overview-insight">
-                <div class="ra-overview-insight-icon ra-overview-insight-icon-amber" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4.5 18.5V12M9.5 18.5V8.5M14.5 18.5v-4M19.5 18.5V5.5" stroke-width="1.7"
-                            stroke-linecap="round" />
-                        <path d="m4.5 7.5 5 1.5 5-3 5 1.5" stroke-width="1.7" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="ra-overview-insight-label">Best Growth Year</div>
-                <div class="ra-overview-insight-value" id="overviewBestGrowthYear">—</div>
-                <div class="ra-overview-insight-copy" id="overviewBestGrowthYearCopy">Showed the strongest growth across proposals and outputs.</div>
             </div>
         </div>
     </div>
@@ -201,7 +150,7 @@
      * computes narrative metrics client-side so the landing page stays aligned
      * with the detailed panels while speaking in executive language.
      */
-    (function () {
+    (function() {
         const API_BASE = window.RESEARCH_API_BASE ||
             '{{ rtrim(config('services.research_api.url', 'http://127.0.0.1:8001'), '/') }}';
 
@@ -209,9 +158,14 @@
         let overviewFundingShareChart = null;
         let overviewTrendRows = [];
         let overviewLoaded = false;
+        const OVERVIEW_MIN_YEAR = 2017;
+        // Keep the publication story anchored to the first meaningful
+        // publication period requested by the user.
+        const OVERVIEW_PUBLICATION_START_YEAR = 2020;
 
         const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
-        const fmtPct = (n) => (n === null || n === undefined || Number.isNaN(Number(n))) ? '—' : `${Number(n).toFixed(1)}%`;
+        const fmtPct = (n) => (n === null || n === undefined || Number.isNaN(Number(n))) ? '—' :
+            `${Number(n).toFixed(1)}%`;
         const fmtCurrency = (n) => `₱${Number(n ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
         function setText(id, value) {
@@ -228,6 +182,60 @@
                 .replaceAll("'", '&#39;');
         }
 
+        function buildOverviewYearLabel(selectedYear, trendRows) {
+            // Show a bounded year range for the overview cards when the shared
+            // filter is on "all years", and a single parenthesized year when a
+            // specific filter value is active.
+            if (selectedYear) return `(${selectedYear})`;
+            const years = getOverviewDisplayRows(selectedYear, trendRows)
+                .map((row) => Number(row.year))
+                .filter(Boolean);
+            if (!years.length) return `(${OVERVIEW_MIN_YEAR}-${new Date().getFullYear()})`;
+            return `(${Math.min(...years)}-${Math.max(...years)})`;
+        }
+
+        function buildOverviewRangeText(selectedYear, trendRows) {
+            if (selectedYear) return String(selectedYear);
+            const years = getOverviewDisplayRows(selectedYear, trendRows)
+                .map((row) => Number(row.year))
+                .filter(Boolean);
+            if (!years.length) return `${OVERVIEW_MIN_YEAR}-${new Date().getFullYear()}`;
+            return `${Math.min(...years)}-${Math.max(...years)}`;
+        }
+
+        function getOverviewDisplayRows(selectedYear, trendRows) {
+            if (selectedYear) {
+                return (trendRows || []).filter((row) => String(row.year) === String(selectedYear));
+            }
+
+            const latestPublishedYear = (trendRows || [])
+                .filter((row) => Number(row.published_papers || 0) > 0)
+                .map((row) => Number(row.year))
+                .filter(Boolean)
+                .pop();
+
+            // Default the overview trend to the publication reporting period
+            // beginning in 2020 and ending at the latest year with actual
+            // published-paper activity, so empty future years do not stretch
+            // the publication story.
+            return (trendRows || []).filter((row) => {
+                const year = Number(row.year);
+                if (!year || year < OVERVIEW_PUBLICATION_START_YEAR) return false;
+                if (!latestPublishedYear) return true;
+                return year <= latestPublishedYear;
+            });
+        }
+
+        function buildOverviewTrendRange(rows) {
+            const years = (rows || []).map((row) => Number(row.year)).filter(Boolean);
+            if (!years.length) return `${OVERVIEW_MIN_YEAR}-${new Date().getFullYear()}`;
+            const minYear = Math.min(...years);
+            const maxYear = Math.max(...years);
+            // When both filters collapse to one year, show a single year label
+            // instead of a redundant range like 2025-2025.
+            return minYear === maxYear ? String(minYear) : `${minYear}-${maxYear}`;
+        }
+
         function buildProposalsUrl(year) {
             const url = new URL(`${API_BASE}/api/proposals/dashboard`);
             if (year) url.searchParams.set('year', year);
@@ -241,6 +249,7 @@
         function buildPublicationsByYearUrl() {
             return new URL(`${API_BASE}/api/publications/by-year`).toString();
         }
+
         function buildPublicationsByCampusUrl(year) {
             // there's no dedicated by-campus endpoint — reuse campus-contribution
             return new URL(`${API_BASE}/api/publications/campus-contribution`).toString();
@@ -272,49 +281,45 @@
             }
         }
 
-        function setTrendYearOptions(years) {
-            const select = document.getElementById('overviewTrendYearFilter');
-            if (!select) return;
-
-            const current = select.value;
-            select.innerHTML = '<option value="">All years</option>';
-            years.forEach((year) => {
-                const option = document.createElement('option');
-                option.value = String(year);
-                option.textContent = String(year);
-                select.appendChild(option);
-            });
-            select.value = years.includes(Number(current)) ? current : '';
-        }
-
         function mergeOverviewTrendData(proposals, publicationYears) {
             const proposalMap = new Map(
-                (proposals.proposals_by_year || []).map((row) => [Number(row.year), Number(row.total_proposals || 0)])
+                (proposals.proposals_by_year || []).map((row) => [Number(row.year), Number(row
+                    .total_proposals || 0)])
+            );
+            const completedMap = new Map(
+                (proposals.completed_outputs_by_year || []).map((row) => [Number(row.year), Number(row
+                    .completed_outputs || 0)])
             );
             const publicationMap = new Map(
                 (publicationYears || []).map((row) => [
                     Number(row.year_published),
                     {
-                        // clean_publications represents final published outputs,
-                        // so the overview reuses that same count for the
-                        // publication-completion and published-output series.
+                        // Published outputs come from the publications
+                        // database and stay separate from proposal-side
+                        // completed outputs.
                         published_papers: Number(row.total_publications || 0),
-                        completed_papers: Number(row.total_publications || 0),
                     }
                 ])
             );
 
-            const yearSet = new Set([...proposalMap.keys(), ...publicationMap.keys()]);
+            const yearSet = new Set([...proposalMap.keys(), ...completedMap.keys(), ...publicationMap.keys()]);
 
             return Array.from(yearSet)
-                .filter(Boolean)
+                // The overview story starts at the institutional reporting
+                // window, so ignore stray historical years from dirty source
+                // publication data such as 1905.
+                .filter((year) => year && year >= OVERVIEW_MIN_YEAR)
                 .sort((a, b) => a - b)
                 .map((year) => {
-                    const pub = publicationMap.get(year) || { published_papers: 0, completed_papers: 0 };
+                    const pub = publicationMap.get(year) || {
+                        published_papers: 0,
+                    };
+                    const proposalCount = proposalMap.get(year) || 0;
+                    const completedCount = completedMap.get(year) || 0;
                     return {
                         year,
-                        proposals: proposalMap.get(year) || 0,
-                        completed_papers: pub.completed_papers,
+                        proposals: proposalCount,
+                        completed_papers: completedCount,
                         published_papers: pub.published_papers,
                     };
                 });
@@ -324,9 +329,9 @@
             const chartEl = document.getElementById('overviewTrendChart');
             if (!chartEl) return;
 
-            const rows = selectedYear
-                ? overviewTrendRows.filter((row) => String(row.year) === String(selectedYear))
-                : overviewTrendRows;
+            const sharedYear = document.getElementById('yearFilter')?.value || '';
+            const effectiveYear = selectedYear || sharedYear;
+            const rows = getOverviewDisplayRows(effectiveYear, overviewTrendRows);
 
             destroyTrendChart();
 
@@ -338,15 +343,19 @@
             chartEl.innerHTML = '';
             setText(
                 'overviewTrendTitle',
-                `Proposals vs Completed Papers vs Published Papers Over Time (${rows[0].year}-${rows[rows.length - 1].year})`
+                `Total Research Activity Over Time (${buildOverviewTrendRange(rows)})`
             );
 
             overviewTrendChart = new ApexCharts(chartEl, {
                 chart: {
                     type: 'line',
                     height: 340,
-                    toolbar: { show: false },
-                    zoom: { enabled: false }
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    }
                 },
                 series: [{
                     name: 'Proposals',
@@ -365,14 +374,19 @@
                 },
                 markers: {
                     size: 5,
-                    hover: { size: 6 }
+                    hover: {
+                        size: 6
+                    }
                 },
                 dataLabels: {
-                    enabled: true,
+                    enabled: false,
                     offsetY: -10,
-                    background: { enabled: false },
+                    background: {
+                        enabled: false
+                    },
                     style: {
-                        fontSize: '11px',
+                        /* Enlarge point labels so yearly values are easier to read. */
+                        fontSize: '16px',
                         fontWeight: '700',
                         colors: ['#1E4ED8']
                     },
@@ -381,8 +395,11 @@
                 legend: {
                     position: 'top',
                     horizontalAlign: 'left',
-                    fontSize: '13px',
-                    labels: { colors: '#3552A3' }
+                    /* Enlarge legend labels for clearer series identification. */
+                    fontSize: '18px',
+                    labels: {
+                        colors: '#3552A3'
+                    }
                 },
                 grid: {
                     borderColor: '#E5EDFF',
@@ -393,7 +410,8 @@
                     labels: {
                         style: {
                             colors: '#3552A3',
-                            fontSize: '12px'
+                            /* Enlarge year labels along the horizontal axis. */
+                            fontSize: '16px'
                         }
                     }
                 },
@@ -404,7 +422,8 @@
                         formatter: (value) => fmtInt(value),
                         style: {
                             colors: '#3552A3',
-                            fontSize: '12px'
+                            /* Enlarge scale labels on the vertical axis. */
+                            fontSize: '16px'
                         }
                     }
                 },
@@ -467,12 +486,21 @@
                 chart: {
                     type: 'donut',
                     height: 220,
-                    toolbar: { show: false }
+                    toolbar: {
+                        show: false
+                    }
                 },
                 series: topRows.map((row) => Number(row.total_allocated_fund || 0)),
                 labels: topRows.map((row) => row.campus_name),
                 colors: palette,
-                legend: { show: false },
+                // Move callouts into the side legend block so long campus names
+                // stay readable and do not collide inside the donut slices.
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                    show: false
+                },
                 stroke: {
                     colors: ['#FFFDF9'],
                     width: 2
@@ -512,83 +540,51 @@
             }).join('');
         }
 
-        function updateInsightCards(publicationCampusRows, campusContributionRows, fundingCategoryRows) {
-            const sortedByRate = campusContributionRows
-                .map((row) => {
-                    return {
-                        campus_name: row.campus_name,
-                        completion_rate: Number(row.completion_rate || 0),
-                    };
-                })
-                .sort((a, b) => a.completion_rate - b.completion_rate);
-
-            const sortedByOutput = publicationCampusRows
-                .map((row) => ({
-                    campus_name: row.campus_name,
-                    completed_outputs: Number(row.completed_outputs || 0),
-                }))
-                .sort((a, b) => b.completed_outputs - a.completed_outputs);
-
-            const topCategory = [...fundingCategoryRows]
-                .sort((a, b) => Number(b.total_allocated_fund || 0) - Number(a.total_allocated_fund || 0))[0];
-
-            const growthRows = overviewTrendRows
-                .map((row, index, list) => {
-                    if (index === 0) return null;
-                    const prev = list[index - 1];
-                    return {
-                        year: row.year,
-                        growth_score: (row.proposals - prev.proposals) + (row.completed_papers - prev.completed_papers),
-                    };
-                })
-                .filter(Boolean)
-                .sort((a, b) => b.growth_score - a.growth_score);
-
-            const lowest = sortedByRate[0];
-            const highest = sortedByOutput[0];
-            const bestGrowth = growthRows[0];
-
-            setText('overviewLowestCampus', lowest?.campus_name || '—');
-            setText(
-                'overviewLowestCampusCopy',
-                lowest ? `${fmtPct(lowest.completion_rate)} completion rate across publication records.` : 'Needs support to convert proposals into outputs.'
-            );
-
-            setText('overviewHighestCampus', highest?.campus_name || '—');
-            setText(
-                'overviewHighestCampusCopy',
-                highest ? `${fmtInt(highest.completed_outputs)} completed papers lead overall output.` : 'Leads in completed papers and drives overall performance.'
-            );
-
-            setText('overviewTopCategory', topCategory?.program_category || '—');
-            setText(
-                'overviewTopCategoryCopy',
-                topCategory ? `${fmtCurrency(topCategory.total_allocated_fund)} allocated to this category.` : 'Receives the largest share of funding across categories.'
-            );
-
-            setText('overviewBestGrowthYear', bestGrowth?.year || '—');
-            setText(
-                'overviewBestGrowthYearCopy',
-                bestGrowth ? `Strongest combined rise in proposals and completed papers.` : 'Showed the strongest growth across proposals and outputs.'
-            );
-        }
-
         async function loadOverview(year = '') {
             try {
-                const [proposalRes, pubSummaryRes, pubYearRes, pubCampusRes, pubContributionRes, fundRes] = await Promise.all([
-                    fetch(buildProposalsUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsSummaryUrl(), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsByYearUrl(), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsByCampusUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildPublicationsCampusContributionUrl(year), { headers: { Accept: 'application/json' } }),
-                    fetch(buildFundingUrl(year), { headers: { Accept: 'application/json' } }),
+                const [proposalRes, pubSummaryRes, pubYearRes, pubCampusRes, pubContributionRes, fundRes] =
+                await Promise.all([
+                    fetch(buildProposalsUrl(year), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
+                    fetch(buildPublicationsSummaryUrl(), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
+                    fetch(buildPublicationsByYearUrl(), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
+                    fetch(buildPublicationsByCampusUrl(year), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
+                    fetch(buildPublicationsCampusContributionUrl(year), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
+                    fetch(buildFundingUrl(year), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    }),
                 ]);
 
                 if (!proposalRes.ok) throw new Error(`Proposal service responded with ${proposalRes.status}`);
-                if (!pubSummaryRes.ok) throw new Error(`Publications summary responded with ${pubSummaryRes.status}`);
-                if (!pubYearRes.ok) throw new Error(`Publications yearly trend responded with ${pubYearRes.status}`);
-                if (!pubCampusRes.ok) throw new Error(`Publications by-campus responded with ${pubCampusRes.status}`);
-                if (!pubContributionRes.ok) throw new Error(`Publications campus contribution responded with ${pubContributionRes.status}`);
+                if (!pubSummaryRes.ok) throw new Error(
+                    `Publications summary responded with ${pubSummaryRes.status}`);
+                if (!pubYearRes.ok) throw new Error(
+                    `Publications yearly trend responded with ${pubYearRes.status}`);
+                if (!pubCampusRes.ok) throw new Error(
+                    `Publications by-campus responded with ${pubCampusRes.status}`);
+                if (!pubContributionRes.ok) throw new Error(
+                    `Publications campus contribution responded with ${pubContributionRes.status}`);
                 if (!fundRes.ok) throw new Error(`Funding service responded with ${fundRes.status}`);
 
                 const proposals = await proposalRes.json();
@@ -600,28 +596,52 @@
 
                 const proposalTotal = (proposals.status_distribution || [])
                     .reduce((sum, row) => sum + Number(row.total_proposals || 0), 0);
-                const completedPapers = Number(publicationsSummary.total_publications || 0);
+                // Completed outputs come from the proposal warehouse, not the
+                // publications table, because not every completed paper is published.
+                const completedPapers = (proposals.completed_outputs_by_year || [])
+                    .reduce((sum, row) => sum + Number(row.completed_outputs || 0), 0);
+                // Published outputs remain sourced from the publications database.
+                const publishedPapers = Number(publicationsSummary.total_publications || 0);
                 const totalFund = Number(funding.total_allocated_fund?.[0]?.total_allocated_fund || 0);
-                const proposalToPublicationRate = proposalTotal > 0 ? (completedPapers / proposalTotal) * 100 : 0;
+                const proposalToPublicationRate = proposalTotal > 0 ? (completedPapers / proposalTotal) * 100 :
+                    0;
 
                 // The overview now skips the old conversion strip, so only the
                 // hero cards and lower storytelling sections are updated here.
                 setText('overviewHeroProposals', fmtInt(proposalTotal));
                 setText('overviewHeroCompletedPapers', fmtInt(completedPapers));
+                setText('overviewHeroPublishedPapers', fmtInt(publishedPapers));
                 setText('overviewHeroFundAllocation', fmtCurrency(totalFund));
                 setText('overviewHeroConversionRate', fmtPct(proposalToPublicationRate));
-                setText('overviewProposalCopy', year ? `Total research proposals submitted for ${year}.` : 'Total research proposals submitted across all years.');
-
+                // Keep the hero-card captions synchronized with the shared
+                // year filter so the narrative text matches the numbers shown.
                 overviewTrendRows = mergeOverviewTrendData(proposals, publicationsByYear);
-                setTrendYearOptions(overviewTrendRows.map((row) => row.year));
-                renderTrendChart(document.getElementById('overviewTrendYearFilter')?.value || '');
+                const overviewYearLabel = buildOverviewYearLabel(year, overviewTrendRows);
+                const overviewRangeText = buildOverviewRangeText(year, overviewTrendRows);
+                setText('overviewProposalYearLabel', overviewYearLabel);
+                setText('overviewCompletedYearLabel', overviewYearLabel);
+                setText('overviewPublishedYearLabel', overviewYearLabel);
+                setText('overviewFundingYearLabel', overviewYearLabel);
+                setText('overviewProposalCopy', year ? `Total research proposals submitted for ${year}.` :
+                    `Total research proposals submitted from ${overviewRangeText}.`);
+                setText('overviewCompletedCopy', year ?
+                    `Research papers completed through to full output for ${year}.` :
+                    `Research papers completed through to full output from ${overviewRangeText}.`);
+                setText('overviewFundingCopy', year ?
+                    `Total funds allocated to support research and innovation for ${year}.` :
+                    `Total funds allocated to support research and innovation from ${overviewRangeText}.`);
+
+                const visibleTrendRows = getOverviewDisplayRows(year, overviewTrendRows);
+                // The trend now follows the shared overview year filter only,
+                // so there is no separate local range selector to maintain.
+                renderTrendChart(year);
 
                 const outputCampusRows = (publicationsByCampus || [])
-                .map((row) => ({
-                    campus_name: row.campus,
-                    completed_outputs: Number(row.publications || 0),   // ✅ matches SQL alias
-                }))
-                .sort((a, b) => b.completed_outputs - a.completed_outputs);
+                    .map((row) => ({
+                        campus_name: row.campus,
+                        completed_outputs: Number(row.publications || 0), // ✅ matches SQL alias
+                    }))
+                    .sort((a, b) => b.completed_outputs - a.completed_outputs);
 
                 const campusContributionRows = (publicationsCampusContribution || [])
                     .map((row) => ({
@@ -644,7 +664,6 @@
                     'is-soft'
                 );
                 renderFundingShare(funding.funding_by_campus || []);
-                updateInsightCards(outputCampusRows, campusContributionRows, funding.funding_by_category || []);
 
                 overviewLoaded = true;
             } catch (error) {
@@ -654,24 +673,21 @@
                 [
                     'overviewHeroProposals',
                     'overviewHeroCompletedPapers',
+                    'overviewHeroPublishedPapers',
                     'overviewHeroFundAllocation',
                     'overviewHeroConversionRate',
-                    'overviewLowestCampus',
-                    'overviewHighestCampus',
-                    'overviewTopCategory',
-                    'overviewBestGrowthYear',
                 ].forEach((id) => setText(id, '—'));
-                document.getElementById('overviewTrendChart').innerHTML = '<div class="ra-empty">could not load trend data</div>';
-                document.getElementById('overviewTopCampusOutputs').innerHTML = '<div class="ra-empty">could not load campus output data</div>';
-                document.getElementById('overviewCampusCompletion').innerHTML = '<div class="ra-empty">could not load campus completion data</div>';
-                document.getElementById('overviewFundingShareChart').innerHTML = '<div class="ra-empty">could not load funding share data</div>';
+                document.getElementById('overviewTrendChart').innerHTML =
+                    '<div class="ra-empty">could not load trend data</div>';
+                document.getElementById('overviewTopCampusOutputs').innerHTML =
+                    '<div class="ra-empty">could not load campus output data</div>';
+                document.getElementById('overviewCampusCompletion').innerHTML =
+                    '<div class="ra-empty">could not load campus completion data</div>';
+                document.getElementById('overviewFundingShareChart').innerHTML =
+                    '<div class="ra-empty">could not load funding share data</div>';
                 document.getElementById('overviewFundingLegend').innerHTML = '';
             }
         }
-
-        document.getElementById('overviewTrendYearFilter')?.addEventListener('change', (e) => {
-            renderTrendChart(e.target.value);
-        });
 
         document.getElementById('yearFilter')?.addEventListener('change', (e) => {
             if (overviewLoaded) {

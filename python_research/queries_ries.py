@@ -30,12 +30,34 @@ CLEAN_PUBLICATIONS SCHEMA NOTES
 _COMPLETED_COND = "rs.Completed_RouteStatus = 6 AND rs.completed_approved_at IS NOT NULL"
 
 # Reusable guard that skips bad year values (year=0, NULL) in every query.
-_VALID_YEAR = "year_published IS NOT NULL AND year_published > 0"
+# The current publications source stores the date as free text like
+# "January 2025" or "2025". These helpers avoid regex-only functions so the
+# local monthly endpoint keeps working on stricter MySQL setups.
+_PUB_DATE_TEXT = "LOWER(TRIM(COALESCE(month_year_published, '')))"
+_PUB_YEAR_EXPR = f"CAST(RIGHT({_PUB_DATE_TEXT}, 4) AS UNSIGNED)"
+_PUB_MONTH_EXPR = """
+CASE
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'january' THEN 1
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'february' THEN 2
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'march' THEN 3
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'april' THEN 4
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'may' THEN 5
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'june' THEN 6
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'july' THEN 7
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'august' THEN 8
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'september' THEN 9
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'october' THEN 10
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'november' THEN 11
+    WHEN SUBSTRING_INDEX(LOWER(TRIM(COALESCE(month_year_published, ''))), ' ', 1) = 'december' THEN 12
+    ELSE NULL
+END
+"""
+_VALID_YEAR = f"{_PUB_YEAR_EXPR} IS NOT NULL AND {_PUB_YEAR_EXPR} > 0"
 
 RIES_QUERIES: dict[str, str] = {
 
 # ══════════════════════════════════════════════════════════════════════
-# NEW — clean_publications queries (unfiltered, no year param)
+# NEW — research_publications queries (unfiltered, no year param)
 # ══════════════════════════════════════════════════════════════════════
 
 # ── Summary KPI row ────────────────────────────────────────────────────
@@ -45,33 +67,30 @@ RIES_QUERIES: dict[str, str] = {
   SELECT
       COUNT(*)                                            AS total_publications,
       COUNT(DISTINCT campus)                              AS total_campuses,
-      SUM(indexing_tier = 'Scopus')                       AS scopus_publications,
+      SUM(accreditation_indexing = 'Scopus')             AS scopus_publications,
       ROUND(
-          100.0 * SUM(indexing_tier = 'Scopus') / COUNT(*), 2
+          100.0 * SUM(accreditation_indexing = 'Scopus') / COUNT(*), 2
       )                                                   AS scopus_percentage,
-      SUM(indexing_tier = 'International')                AS international_publications,
+      SUM(accreditation_indexing = 'International')      AS international_publications,
       ROUND(
-          100.0 * SUM(indexing_tier = 'International') / COUNT(*), 2
+          100.0 * SUM(accreditation_indexing = 'International') / COUNT(*), 2
       )                                                   AS international_percentage
-  FROM clean_publications
-  WHERE is_primary_record = 1;
+  FROM research_publications;
 """,
 
 # ── Annual publication counts (year-0/NULL excluded) ───────────────────
-"pub_by_year_clean": """
+"pub_by_year_clean": f"""
 SELECT
-    year_published,
+    {_PUB_YEAR_EXPR} AS year_published,
     COUNT(*) AS total_publications
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND year_published IS NOT NULL
-  AND year_published > 0
-GROUP BY year_published
-ORDER BY year_published;
+FROM research_publications
+WHERE {_VALID_YEAR}
+GROUP BY {_PUB_YEAR_EXPR}
+ORDER BY {_PUB_YEAR_EXPR};
 """,
 
 # ── Year-over-year growth ───────────────────────────────────────────────
-"pub_yoy_growth": """
+"pub_yoy_growth": f"""
 SELECT
     current.year_published,
     current.total_publications  AS current_year_total,
@@ -82,18 +101,16 @@ SELECT
         2
     ) AS growth_percentage
 FROM (
-    SELECT year_published, COUNT(*) AS total_publications
-    FROM clean_publications
-    WHERE is_primary_record = 1
-      AND year_published IS NOT NULL AND year_published > 0
-    GROUP BY year_published
+    SELECT {_PUB_YEAR_EXPR} AS year_published, COUNT(*) AS total_publications
+    FROM research_publications
+    WHERE {_VALID_YEAR}
+    GROUP BY {_PUB_YEAR_EXPR}
 ) current
 JOIN (
-    SELECT year_published, COUNT(*) AS total_publications
-    FROM clean_publications
-    WHERE is_primary_record = 1
-      AND year_published IS NOT NULL AND year_published > 0
-    GROUP BY year_published
+    SELECT {_PUB_YEAR_EXPR} AS year_published, COUNT(*) AS total_publications
+    FROM research_publications
+    WHERE {_VALID_YEAR}
+    GROUP BY {_PUB_YEAR_EXPR}
 ) previous
   ON current.year_published = previous.year_published + 1
 ORDER BY current.year_published;
@@ -106,38 +123,35 @@ SELECT
     COUNT(*) AS publications,
     ROUND(
         COUNT(*) * 100.0 /
-        (SELECT COUNT(*) FROM clean_publications WHERE is_primary_record = 1),
+        NULLIF((SELECT COUNT(*) FROM research_publications), 0),
         2
     ) AS contribution_percentage
-FROM clean_publications
-WHERE is_primary_record = 1
+FROM research_publications
 GROUP BY campus
 ORDER BY publications DESC;
 """,
 
 # ── Monthly totals (all years, no filter) ─────────────────────────────
-"pub_monthly_all": """
+"pub_monthly_all": f"""
 SELECT
-    year_published,
-    month_published,
+    {_PUB_YEAR_EXPR} AS year_published,
+    {_PUB_MONTH_EXPR} AS month_published,
     COUNT(*) AS total
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND year_published IS NOT NULL AND year_published > 0
-  AND month_published IS NOT NULL
-GROUP BY year_published, month_published
-ORDER BY year_published, month_published;
+FROM research_publications
+WHERE {_VALID_YEAR}
+  AND {_PUB_MONTH_EXPR} IS NOT NULL
+GROUP BY {_PUB_YEAR_EXPR}, {_PUB_MONTH_EXPR}
+ORDER BY {_PUB_YEAR_EXPR}, {_PUB_MONTH_EXPR};
 """,
 
 # ── Campus × indexing tier cross-tab ──────────────────────────────────
 "pub_campus_indexing_clean": """
 SELECT
     campus,
-    indexing_tier,
+    accreditation_indexing AS indexing_tier,
     COUNT(*) AS total
-FROM clean_publications
-WHERE is_primary_record = 1
-GROUP BY campus, indexing_tier
+FROM research_publications
+GROUP BY campus, accreditation_indexing
 ORDER BY campus, total DESC;
 """,
 
@@ -146,8 +160,7 @@ ORDER BY campus, total DESC;
 SELECT
     publication_name,
     COUNT(*) AS total_publications
-FROM clean_publications
-WHERE is_primary_record = 1
+FROM research_publications
 GROUP BY publication_name
 ORDER BY total_publications DESC
 LIMIT 10;
@@ -156,59 +169,58 @@ LIMIT 10;
 # ── Indexing tier distribution with % ────────────────────────────────
 "pub_by_indexing_clean": """
 SELECT
-    indexing_tier,
+    accreditation_indexing AS indexing_tier,
     COUNT(*) AS total,
     ROUND(
         COUNT(*) * 100.0 /
-        (SELECT COUNT(*) FROM clean_publications WHERE is_primary_record = 1),
+        NULLIF((SELECT COUNT(*) FROM research_publications), 0),
         2
     ) AS percentage
-FROM clean_publications
-WHERE is_primary_record = 1
-GROUP BY indexing_tier
+FROM research_publications
+GROUP BY accreditation_indexing
 ORDER BY total DESC;
 """,
 
 # ── Year × campus (for stacked bar, year-0 excluded) ─────────────────
-"pub_year_campus_clean": """
+"pub_year_campus_clean": f"""
 SELECT
-    year_published,
+    {_PUB_YEAR_EXPR} AS year_published,
     campus,
     COUNT(*) AS publications
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND year_published IS NOT NULL AND year_published > 0
-GROUP BY year_published, campus
-ORDER BY campus, year_published;
+FROM research_publications
+WHERE {_VALID_YEAR}
+GROUP BY {_PUB_YEAR_EXPR}, campus
+ORDER BY campus, {_PUB_YEAR_EXPR};
 """,
 
 # ── Quarterly breakdown 2020–2026 ─────────────────────────────────────
-"pub_quarterly_clean": """
+"pub_quarterly_clean": f"""
 SELECT
-    year_published,
+    {_PUB_YEAR_EXPR} AS year_published,
     CASE
-        WHEN month_published BETWEEN 1 AND 3 THEN 'Q1'
-        WHEN month_published BETWEEN 4 AND 6 THEN 'Q2'
-        WHEN month_published BETWEEN 7 AND 9 THEN 'Q3'
+        WHEN {_PUB_MONTH_EXPR} BETWEEN 1 AND 3 THEN 'Q1'
+        WHEN {_PUB_MONTH_EXPR} BETWEEN 4 AND 6 THEN 'Q2'
+        WHEN {_PUB_MONTH_EXPR} BETWEEN 7 AND 9 THEN 'Q3'
         ELSE 'Q4'
     END AS quarter,
     COUNT(*) AS publications
-FROM clean_publications
-WHERE is_primary_record = 1
-  AND year_published BETWEEN 2020 AND 2026
-GROUP BY year_published, quarter
-ORDER BY year_published, quarter;
+FROM research_publications
+WHERE {_VALID_YEAR}
+  AND {_PUB_MONTH_EXPR} IS NOT NULL
+  AND {_PUB_YEAR_EXPR} BETWEEN 2020 AND 2026
+GROUP BY {_PUB_YEAR_EXPR}, quarter
+ORDER BY {_PUB_YEAR_EXPR}, quarter;
 """,
 
 # ── Data-quality flags (full table, not filtered by year) ─────────────
 "pub_data_quality": """
 SELECT
-    SUM(flag_duplicate_title) AS duplicate_titles,
-    SUM(flag_bad_link)        AS bad_links,
-    SUM(flag_bad_date)        AS bad_dates,
-    SUM(flag_null_date)       AS missing_dates,
-    SUM(flag_null_indexing)   AS missing_indexing
-FROM clean_publications;
+    0 AS duplicate_titles,
+    SUM(CASE WHEN link IS NULL OR TRIM(link) = '' THEN 1 ELSE 0 END) AS bad_links,
+    SUM(CASE WHEN month_year_published IS NULL OR TRIM(month_year_published) = '' THEN 1 ELSE 0 END) AS bad_dates,
+    SUM(CASE WHEN month_year_published IS NULL OR TRIM(month_year_published) = '' THEN 1 ELSE 0 END) AS missing_dates,
+    SUM(CASE WHEN accreditation_indexing IS NULL OR TRIM(accreditation_indexing) = '' THEN 1 ELSE 0 END) AS missing_indexing
+FROM research_publications;
 """,
 
 # ══════════════════════════════════════════════════════════════════════

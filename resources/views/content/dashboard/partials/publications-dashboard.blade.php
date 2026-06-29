@@ -33,43 +33,43 @@
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-2">
         <div class="pub-kpi">
-            <div class="pub-kpi-num" id="pubKpiTotal"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">Total publications</div>
+            <div class="pub-kpi-num" id="pubKpiTotal"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot">all time · primary records</div>
         </div>
     </div>
     <div class="col-6 col-lg-2">
         <div class="pub-kpi">
-            <div class="pub-kpi-num" id="pubKpiCampuses"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">Campuses represented</div>
+            <div class="pub-kpi-num" id="pubKpiCampuses"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot">with at least one paper</div>
         </div>
     </div>
     <div class="col-6 col-lg-2">
         <div class="pub-kpi pub-kpi--scopus">
-            <div class="pub-kpi-num" id="pubKpiScopus"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">Scopus-indexed</div>
+            <div class="pub-kpi-num" id="pubKpiScopus"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot" id="pubKpiScopusPct">— of total</div>
         </div>
     </div>
     <div class="col-6 col-lg-2">
         <div class="pub-kpi pub-kpi--intl">
-            <div class="pub-kpi-num" id="pubKpiInternational"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">International</div>
+            <div class="pub-kpi-num" id="pubKpiInternational"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot" id="pubKpiIntlPct">— of total</div>
         </div>
     </div>
     <div class="col-6 col-lg-2">
         <div class="pub-kpi pub-kpi--growth" id="pubKpiGrowthCard">
-            <div class="pub-kpi-num" id="pubKpiGrowth"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">Year-over-Year growth</div>
+            <div class="pub-kpi-num" id="pubKpiGrowth"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot" id="pubKpiGrowthYear">vs. prior year</div>
         </div>
     </div>
     <div class="col-6 col-lg-2">
         <div class="pub-kpi">
-            <div class="pub-kpi-num" id="pubKpiLatestYear"><span class="ra-skel"></span></div>
             <div class="pub-kpi-label">Papers this year</div>
+            <div class="pub-kpi-num" id="pubKpiLatestYear"><span class="ra-skel"></span></div>
             <div class="pub-kpi-foot" id="pubKpiLatestYearLabel">most recent year on record</div>
         </div>
     </div>
@@ -216,15 +216,15 @@
 
 
 <style>
-/* ── Tier color tokens — ALL known tiers get a distinct color ── */
+/* ── Tier color tokens — mapped to the shared dashboard theme ── */
 :root {
-    --tier-international:       #2dd4bf;
-    --tier-scopus:              #635bff;
-    --tier-aci:                 #f97316;
-    --tier-thomson:             #06b6d4;
-    --tier-local:               #eab308;
-    --tier-unknown:             #94a3b8;
-    --tier-fallback:            #9b9db0;
+    --tier-international:       var(--secondary, #1E3FA8);
+    --tier-scopus:              var(--primary, #0B1F5C);
+    --tier-aci:                 #4E7CF0;
+    --tier-thomson:             var(--info, #AFC8F3);
+    --tier-local:               #7F9FF8;
+    --tier-unknown:             var(--muted, #5a6478);
+    --tier-fallback:            var(--ink, #071240);
 }
 
 /* ── Section label ── */
@@ -233,7 +233,7 @@
     font-size: .68rem;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--ra-text-faint, #94a3b8);
+    color: var(--ra-text-dim, #0B1F5C);
     margin: 0 0 .75rem;
     padding-left: .1rem;
     display: flex;
@@ -244,7 +244,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--ra-line, #e2e8f0);
+    background: var(--ra-line, #dbe4fb);
 }
 
 /* ── Page header ── */
@@ -293,25 +293,24 @@
 /* ── KPI cards ── */
 .pub-kpi {
     position: relative;
+    /* Mirror the overview KPI shell so the publication strip feels like the same dashboard family. */
     border: 1px solid var(--ra-line, #e2e8f0);
-    border-radius: 14px;
-    background: var(--ra-panel, #fff);
-    padding: 1rem 1.1rem .9rem;
+    border-radius: .8rem;
+    background: #FFFDF9;
+    padding: 1.3rem 1.4rem 1.25rem;
     height: 100%;
     overflow: hidden;
-    transition: transform .18s, box-shadow .18s;
+    box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .06);
+    transition: box-shadow .18s, border-color .18s;
 }
 .pub-kpi::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 3px;
-    background: var(--ra-line, #e2e8f0);
-    border-radius: 14px 14px 0 0;
+    /* Remove the accent strip so the KPI cards match the cleaner overview card format. */
+    display: none;
 }
 .pub-kpi:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,.07);
+    /* Keep the hover effect subtle like the overview cards. */
+    box-shadow: 0 .45rem 1.1rem rgba(26, 66, 160, .08);
+    border-color: color-mix(in srgb, var(--ra-approved, #1E3FA8) 18%, transparent);
 }
 .pub-kpi--scopus::before        { background: var(--tier-scopus); }
 .pub-kpi--scopus .pub-kpi-num   { color: var(--tier-scopus); }
@@ -323,28 +322,34 @@
 
 .pub-kpi--growth::before        { background: var(--tier-aci); }
 .pub-kpi--growth .pub-kpi-num   { color: var(--tier-aci); }
-.pub-kpi--growth.is-negative .pub-kpi-num { color: #ef4444; }
-.pub-kpi--growth.is-negative::before      { background: #ef4444; }
+.pub-kpi--growth.is-negative .pub-kpi-num { color: var(--danger, #e74c3c); }
+.pub-kpi--growth.is-negative::before      { background: var(--danger, #e74c3c); }
 
 .pub-kpi-num {
-    font-family: var(--ra-mono, ui-monospace, monospace);
-    font-size: 1.8rem;
+    font-family: var(--ra-serif, Georgia, serif);
+    /* Match publication KPI values to the overview KPI number treatment. */
+    font-size: 2.9rem;
     font-weight: 700;
-    line-height: 1.1;
-    color: var(--ra-text, #1a1c2e);
-    margin: .15rem 0 .2rem;
+    line-height: 1;
+    letter-spacing: -.03em;
+    color: var(--ra-approved, #1E3FA8);
+    margin: 0;
 }
 .pub-kpi-label {
-    font-size: .72rem;
-    font-weight: 600;
-    color: var(--ra-text-dim, #64748b);
-    text-transform: uppercase;
-    letter-spacing: .04em;
+    font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+    /* Match publication KPI labels to the overview card label treatment. */
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ra-text, #071240);
+    margin-bottom: .9rem;
 }
 .pub-kpi-foot {
-    font-size: .68rem;
-    color: var(--ra-text-faint, #94a3b8);
-    margin-top: .2rem;
+    font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+    /* Match publication KPI support text to the overview footnote style. */
+    font-size: 1.5rem;
+    color: var(--ra-text-dim, #5a6478);
+    margin-top: .85rem;
 }
 
 /* ── Cards ── */
@@ -352,27 +357,32 @@
     border: 1px solid var(--ra-line, #e2e8f0);
     border-radius: 16px;
     background: var(--ra-panel, #fff);
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-    transition: box-shadow .2s;
+    box-shadow: 0 .35rem 1rem rgba(26, 66, 160, .04);
+    transition: box-shadow .2s, border-color .2s;
     overflow: hidden;
 }
 .pub-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,.07);
+    box-shadow: 0 .55rem 1.4rem rgba(26, 66, 160, .08);
+    border-color: color-mix(in srgb, var(--ra-approved, #1E3FA8) 18%, transparent);
 }
 .pub-card-head {
-    padding: 1.1rem 1.2rem .5rem;
+    padding: 1.1rem 1.2rem .65rem;
+    border-bottom: 1px solid var(--ra-line-soft, #edf2ff);
 }
 .pub-card-title {
     font-family: var(--ra-serif, Georgia, serif);
-    font-size: .98rem;
-    font-weight: 600;
-    color: var(--ra-text, #1a1c2e);
+    /* Reduce publication panel titles so they align with the shared dashboard cards. */
+    font-size: 1.8rem;
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--ra-text, #071240);
     margin: 0 0 .2rem;
 }
 .pub-card-sub {
-    font-size: .76rem;
-    color: var(--ra-text-dim, #64748b);
-    line-height: 1.4;
+    /* Reduce publication panel subtitles to keep the chart area balanced. */
+    font-size: 1rem;
+    line-height: 1.35;
+    color: var(--ra-text-dim, #0B1F5C);
 }
 
 /* ── Indexing table ── */
@@ -385,19 +395,19 @@
     font-size: .65rem;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: var(--ra-text-faint, #94a3b8);
+    color: var(--ra-text-faint, #5a6478);
     padding: .4rem .5rem;
-    border-bottom: 1px solid var(--ra-line, #e2e8f0);
+    border-bottom: 1px solid var(--ra-line, #dbe4fb);
     font-weight: 500;
 }
 .pub-table tbody td {
     font-size: .8rem;
-    color: var(--ra-text-dim, #64748b);
+    color: var(--ra-text-dim, #0B1F5C);
     padding: .4rem .5rem;
-    border-bottom: 1px solid var(--ra-line-soft, #f1f5f9);
+    border-bottom: 1px solid var(--ra-line-soft, #edf2ff);
 }
 .pub-table tbody tr:hover td {
-    background: color-mix(in srgb, var(--tier-scopus) 4%, transparent);
+    background: color-mix(in srgb, var(--ra-approved, #1E3FA8) 5%, transparent);
 }
 .pub-tier-dot {
     display: inline-block;
@@ -417,9 +427,14 @@
     border-radius: 12px;
     padding: .75rem 1rem;
     background: var(--ra-panel, #fff);
-    transition: transform .15s;
+    box-shadow: 0 .25rem .85rem rgba(26, 66, 160, .035);
+    transition: transform .15s, border-color .15s, box-shadow .15s;
 }
-.pub-flag-chip:hover { transform: translateY(-1px); }
+.pub-flag-chip:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ra-approved, #1E3FA8) 18%, transparent);
+    box-shadow: 0 .45rem 1rem rgba(26, 66, 160, .06);
+}
 .pub-flag-icon { font-size: 1.2rem; line-height: 1; }
 .pub-flag-count {
     font-family: var(--ra-mono, ui-monospace, monospace);
@@ -429,10 +444,10 @@
     color: var(--ra-text, #1a1c2e);
 }
 .pub-flag-label { font-size: .72rem; color: var(--ra-text-dim, #64748b); }
-.pub-flag-chip--warn { border-color: color-mix(in srgb, #f59e0b 40%, transparent); }
-.pub-flag-chip--warn .pub-flag-count { color: #f59e0b; }
-.pub-flag-chip--ok   { border-color: color-mix(in srgb, #22c55e 30%, transparent); }
-.pub-flag-chip--ok   .pub-flag-count { color: #22c55e; }
+.pub-flag-chip--warn { border-color: color-mix(in srgb, var(--tier-aci) 35%, transparent); }
+.pub-flag-chip--warn .pub-flag-count { color: var(--tier-aci); }
+.pub-flag-chip--ok   { border-color: color-mix(in srgb, var(--ra-approved, #1E3FA8) 28%, transparent); }
+.pub-flag-chip--ok   .pub-flag-count { color: var(--ra-approved, #1E3FA8); }
 
 /* ── Skeleton ── */
 .ra-skel {
@@ -465,21 +480,23 @@
 
     const pageEl = document.getElementById('raPage') || document.body;
     const MONO   = "'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace";
+    // Keep the publications page aligned with the dashboard reporting window.
+    const PUB_MIN_YEAR = 2017;
 
     // ── ALL known indexing tiers — single source of truth ───────────────
-    // Add any new tier your data produces here; it will propagate to every
-    // chart, the donut, the table dots, and the campus×tier bars.
+    // These colors now read from the shared theme tokens so every publication
+    // chart stays aligned with the dashboard palette.
     const TIER_COLORS = {
-        'International':       '#2dd4bf',
-        'Scopus':              '#635bff',
-        'ACI':                 '#f97316',
-        'Thomson Reuters/WOS': '#06b6d4',
-        'Local/Regional':      '#eab308',
-        'Local':               '#eab308',
-        'Unknown':             '#94a3b8',
-        'Unspecified':         '#9b9db0',
+        'International':       cssVar('--tier-international') || '#1E3FA8',
+        'Scopus':              cssVar('--tier-scopus') || '#0B1F5C',
+        'ACI':                 cssVar('--tier-aci') || '#ffc107',
+        'Thomson Reuters/WOS': cssVar('--tier-thomson') || '#AFC8F3',
+        'Local/Regional':      cssVar('--tier-local') || '#2E7D32',
+        'Local':               cssVar('--tier-local') || '#2E7D32',
+        'Unknown':             cssVar('--tier-unknown') || '#5a6478',
+        'Unspecified':         cssVar('--tier-fallback') || '#071240',
     };
-    const TIER_FALLBACK = '#9b9db0';
+    const TIER_FALLBACK = cssVar('--tier-fallback') || '#071240';
     const tierColor = (t) => TIER_COLORS[t] || TIER_FALLBACK;
 
     // ── State ────────────────────────────────────────────────────────────
@@ -555,7 +572,10 @@
         setText('pubKpiIntlPct',       fmtPct(summary.international_percentage) + ' of total');
 
         // Latest year count
-        const validYears = (yearlyRows || []).filter(r => r.year_published && r.year_published > 0);
+        const validYears = (yearlyRows || []).filter((r) => {
+            const year = Number(r.year_published);
+            return year >= PUB_MIN_YEAR;
+        });
         if (validYears.length) {
             const latest = validYears[validYears.length - 1];
             setText('pubKpiLatestYear',      fmtInt(latest.total_publications));
@@ -576,8 +596,11 @@
 
     // ── Annual trend ──────────────────────────────────────────────────────
     function renderTrend(rows) {
-        // Filter out year 0 / null — data artifacts from uncleaned records
-        const clean = (rows || []).filter(r => r.year_published && Number(r.year_published) > 0);
+        // Ignore stray historical records so the publication story starts in 2017.
+        const clean = (rows || []).filter((r) => {
+            const year = Number(r.year_published);
+            return year >= PUB_MIN_YEAR;
+        });
         if (!clean.length) { empty('chartPubTrend', 'no yearly data yet'); return; }
 
         const years  = clean.map(r => Number(r.year_published));
@@ -603,7 +626,8 @@
                 // Show every year as integer — no decimals, no year-0
                 labels: {
                     formatter: v => String(v),
-                    style: { fontSize: '11px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the year labels so the annual trend is easier to read.
+                    style: { fontSize: '16px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -35,
                 },
                 tickAmount: Math.min(years.length, 12),
@@ -611,16 +635,22 @@
                 axisTicks:  { color: cssVar('--ra-line') || '#e2e8f0' },
                 title: {
                     text: `Year (${minY}–${maxY})`,
-                    style: { fontSize: '11px', color: cssVar('--ra-text-faint') || '#94a3b8' },
+                    // Enlarge the x-axis title to match the larger chart typography.
+                    style: { fontSize: '16px', color: cssVar('--ra-text-faint') || '#94a3b8' },
                 },
             },
             yaxis:  {
                 min: 0,
                 labels: {
                     formatter: v => fmtInt(v),
-                    style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the vertical scale labels for readability.
+                    style: { fontSize: '16px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                 },
-                title: { text: 'Papers', style: { fontSize: '11px', color: cssVar('--ra-text-faint') || '#94a3b8' } },
+                title: {
+                    text: 'Papers',
+                    // Enlarge the y-axis title so it stays proportionate to the chart.
+                    style: { fontSize: '16px', color: cssVar('--ra-text-faint') || '#94a3b8' }
+                },
             },
             stroke: { curve: 'smooth', width: 2.5 },
             fill: {
@@ -636,7 +666,7 @@
                         text: `Peak ${fmtInt(counts[peakIdx])}`,
                         style: {
                             background: TIER_COLORS.Scopus, color: '#fff',
-                            fontSize: '10px',
+                            fontSize: '11px',
                             padding: { left:6, right:6, top:3, bottom:3 },
                         },
                         offsetY: -10,
@@ -648,24 +678,31 @@
 
     // ── YoY growth bar ────────────────────────────────────────────────────
     function renderYoY(rows) {
-        const clean = (rows || []).filter(r => r.year_published && Number(r.year_published) > 0);
+        const clean = (rows || []).filter((r) => {
+            const year = Number(r.year_published);
+            return year >= PUB_MIN_YEAR;
+        });
         if (!clean.length) { empty('chartPubYoY', 'no growth data yet'); return; }
 
         const years  = clean.map(r => Number(r.year_published));
         const values = clean.map(r => Number(r.growth_percentage || 0));
-        const colors = values.map(v => v >= 0 ? TIER_COLORS.Scopus : '#ef4444');
+        // Match the growth chart to the overview palette: deep blue for growth
+        // and a softer coral-red for decline.
+        const growthPositive = cssVar('--ra-approved') || '#1E3FA8';
+        const growthNegative = '#D36B5E';
+        const colors = values.map(v => v >= 0 ? growthPositive : growthNegative);
 
         draw('yoy', 'chartPubYoY', base({
             chart: { type: 'bar', height: 280 },
             plotOptions: { bar: { borderRadius: 3, columnWidth: '55%', colors: { ranges: [] } } },
             series: [{ name: 'Growth %', data: values }],
-            colors: [TIER_COLORS.Scopus],  // overridden per-bar below
+            colors: [growthPositive],  // overridden per-bar below
             fill:   { colors },
             xaxis: {
                 categories: years,
                 labels: {
                     formatter: v => String(v),
-                    style: { fontSize: '10px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    style: { fontSize: '11px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -35,
                 },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
@@ -685,7 +722,7 @@
             dataLabels: {
                 enabled: true,
                 formatter: v => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`,
-                style: { fontSize: '9px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
+                style: { fontSize: '10px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
             },
         }));
 
@@ -704,16 +741,17 @@
             chart: { type: 'bar', height: 280, stacked: false },
             plotOptions: { bar: { borderRadius: 3, columnWidth: '55%' } },
             series: [
-                { name: 'Growth', data: posSeries, color: TIER_COLORS.Scopus },
-                { name: 'Decline', data: negSeries, color: '#ef4444' },
+                { name: 'Growth', data: posSeries, color: growthPositive },
+                { name: 'Decline', data: negSeries, color: growthNegative },
             ],
-            colors: [TIER_COLORS.Scopus, '#ef4444'],
+            colors: [growthPositive, growthNegative],
             xaxis: {
                 type: 'numeric',
                 tickAmount: Math.min(years.length, 12),
                 labels: {
                     formatter: v => String(Math.round(v)),
-                    style: { fontSize: '10px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the year labels so the growth chart is easier to scan.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -35,
                 },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
@@ -722,7 +760,8 @@
             yaxis: {
                 labels: {
                     formatter: v => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`,
-                    style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the percent scale labels on the vertical axis.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                 },
             },
             tooltip: { theme: theme(), y: { formatter: v => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%` } },
@@ -730,7 +769,8 @@
             dataLabels: {
                 enabled: true,
                 formatter: v => v == null ? '' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`,
-                style: { fontSize: '9px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
+                // Enlarge the percentage labels shown on the bars.
+                style: { fontSize: '15px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
                 background: { enabled: false },
             },
         }));
@@ -747,18 +787,25 @@
             colors: [TIER_COLORS.Scopus],
             xaxis: {
                 categories: rows.map(r => r.campus),
-                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO, fontSize: '10px' } },
+                // Enlarge the numeric scale labels below the campus bars.
+                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO, fontSize: '15px' } },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
                 axisTicks:  { color: cssVar('--ra-line') || '#e2e8f0' },
             },
-            yaxis: { labels: { style: { colors: cssVar('--ra-text-dim') || '#64748b', fontSize: '11px' } } },
+            yaxis: {
+                labels: {
+                    // Enlarge the campus labels on the left side of the chart.
+                    style: { colors: cssVar('--ra-text-dim') || '#64748b', fontSize: '15px' }
+                }
+            },
             dataLabels: {
                 enabled: true,
                 formatter: (v, { dataPointIndex }) => {
                     const pct = rows[dataPointIndex]?.contribution_percentage;
                     return pct != null ? `${fmtInt(v)} (${Number(pct).toFixed(1)}%)` : fmtInt(v);
                 },
-                style: { fontSize: '10px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
+                    // Enlarge the value labels shown at the end of each bar.
+                    style: { fontSize: '15px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
             },
             tooltip: {
                 theme: theme(),
@@ -774,7 +821,10 @@
 
     // ── Year × campus stacked bar ──────────────────────────────────────────
     function renderYearCampus(rows) {
-        const clean = (rows || []).filter(r => r.year_published && Number(r.year_published) > 0);
+        const clean = (rows || []).filter((r) => {
+            const year = Number(r.year_published);
+            return year >= PUB_MIN_YEAR;
+        });
         if (!clean.length) { empty('chartPubYearCampus', 'no year × campus data yet'); return; }
 
         const years     = [...new Set(clean.map(r => Number(r.year_published)))].sort((a,b) => a-b);
@@ -788,10 +838,19 @@
             pivot[c][y] = Number(r.publications || r.total || 0);
         });
 
-        // Assign each campus a color from a consistent palette
+        // Use the overview-style blue family so the campus trend chart matches
+        // the rest of the dashboard instead of mixing unrelated accent colors.
         const campusPalette = [
-            '#635bff','#2dd4bf','#f97316','#06b6d4','#eab308',
-            '#a855f7','#ec4899','#10b981','#f43f5e','#84cc16',
+            '#0B1F5C',
+            '#1E3FA8',
+            '#4E7CF0',
+            '#7EA4F7',
+            '#AFC8F3',
+            '#071240',
+            '#2B56C2',
+            '#5F8AF4',
+            '#8FB1FF',
+            '#3552A3',
         ];
         const series = campuses.map((campus, i) => ({
             name: campus,
@@ -808,19 +867,28 @@
                 categories: years,
                 labels: {
                     formatter: v => String(v),
-                    style: { fontSize: '10px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the year labels in the stacked campus timeline.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -35,
                 },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
                 axisTicks:  { color: cssVar('--ra-line') || '#e2e8f0' },
             },
             yaxis: {
-                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO } },
-                title: { text: 'Papers', style: { fontSize: '11px', color: cssVar('--ra-text-faint') || '#94a3b8' } },
+                labels: {
+                    // Enlarge the publication scale labels for the stacked campus chart.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO }
+                },
+                title: {
+                    text: 'Papers',
+                    // Enlarge the y-axis title to match the larger graph typography.
+                    style: { fontSize: '15px', color: cssVar('--ra-text-faint') || '#94a3b8' }
+                },
             },
             legend: {
                 position: 'bottom',
-                fontSize: '10px',
+                // Enlarge the campus legend so the color key is easier to read.
+                fontSize: '14px',
                 labels: { colors: cssVar('--ra-text-dim') || '#64748b' },
             },
             tooltip: { theme: theme() },
@@ -838,15 +906,38 @@
             labels: rows.map(r => r.indexing_tier || 'Unspecified'),
             series: rows.map(r => Number(r.total || 0)),
             colors,
+            // Keep the tier callouts in the side legend so the donut stays clean
+            // while the label + percentage remain readable beside the chart.
+            dataLabels: {
+                enabled: false,
+            },
             stroke: { colors: [cssVar('--ra-panel') || '#fff'], width: 2 },
-            legend: { position: 'right', fontSize: '10px', labels: { colors: cssVar('--ra-text-dim') || '#64748b' } },
+            legend: {
+                position: 'right',
+                // Enlarge the side legend so the tier names and percentages are readable.
+                fontSize: '14px',
+                labels: { colors: cssVar('--ra-text-dim') || '#64748b' },
+                formatter: (seriesName, opts) => {
+                    const pct = Number(opts.w.globals.seriesPercent[opts.seriesIndex] || 0);
+                    return `${seriesName} (${Math.round(pct)}%)`;
+                },
+            },
             plotOptions: {
                 pie: {
                     donut: {
                         labels: {
                             show: true,
-                            total: { show: true, label: 'Total', color: cssVar('--ra-text-dim') || '#64748b' },
-                            value: { color: cssVar('--ra-text') || '#1a1c2e', fontFamily: MONO },
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                color: cssVar('--ra-text-dim') || '#64748b',
+                                fontSize: '16px',
+                            },
+                            value: {
+                                color: cssVar('--ra-text') || '#1a1c2e',
+                                fontFamily: MONO,
+                                fontSize: '18px',
+                            },
                         },
                     },
                 },
@@ -904,7 +995,8 @@
             xaxis: {
                 categories: campusSet,
                 labels: {
-                    style: { fontSize: '9px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the campus labels for the grouped indexing chart.
+                    style: { fontSize: '14px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -40,
                     trim: true,
                     maxHeight: 80,
@@ -913,12 +1005,20 @@
                 axisTicks:  { color: cssVar('--ra-line') || '#e2e8f0' },
             },
             yaxis: {
-                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO } },
-                title: { text: 'Papers', style: { fontSize: '11px', color: cssVar('--ra-text-faint') || '#94a3b8' } },
+                labels: {
+                    // Enlarge the publication scale labels on the grouped indexing chart.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO }
+                },
+                title: {
+                    text: 'Papers',
+                    // Enlarge the axis title to keep it proportionate to the chart labels.
+                    style: { fontSize: '15px', color: cssVar('--ra-text-faint') || '#94a3b8' }
+                },
             },
             legend: {
                 position: 'top',
-                fontSize: '10px',
+                // Enlarge the indexing-tier legend text for easier comparison.
+                fontSize: '14px',
                 labels: { colors: cssVar('--ra-text-dim') || '#64748b' },
             },
         }));
@@ -939,7 +1039,8 @@
             xaxis: {
                 categories,
                 labels: {
-                    style: { fontSize: '9px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the quarterly labels so the recent-window timeline is easier to read.
+                    style: { fontSize: '14px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -45,
                 },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
@@ -948,7 +1049,8 @@
             yaxis: {
                 labels: {
                     formatter: v => fmtInt(v),
-                    style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the quarterly scale labels on the vertical axis.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                 },
             },
         }));
@@ -965,12 +1067,13 @@
         draw('monthly', 'chartPubMonthly', base({
             chart: { type: 'area', height: 260 },
             series: [{ name: 'Publications', data: values }],
-            colors: ['#06b6d4'],
+            colors: [cssVar('--info') || '#AFC8F3'],
             xaxis: {
                 categories: labels,
                 tickAmount: 8,
                 labels: {
-                    style: { fontSize: '9px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the month labels so the monthly activity chart reads clearly.
+                    style: { fontSize: '14px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                     rotate: -35,
                 },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
@@ -979,7 +1082,8 @@
             yaxis: {
                 labels: {
                     formatter: v => fmtInt(v),
-                    style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
+                    // Enlarge the monthly scale labels on the vertical axis.
+                    style: { fontSize: '15px', colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO },
                 },
             },
             stroke: { curve: 'smooth', width: 2.5 },
@@ -1005,15 +1109,22 @@
             colors: [TIER_COLORS.International],
             xaxis: {
                 categories: labels,
-                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO, fontSize: '10px' } },
+                // Enlarge the journal-count scale labels for better readability.
+                labels: { style: { colors: cssVar('--ra-text-faint') || '#94a3b8', fontFamily: MONO, fontSize: '14px' } },
                 axisBorder: { color: cssVar('--ra-line') || '#e2e8f0' },
                 axisTicks:  { color: cssVar('--ra-line') || '#e2e8f0' },
             },
-            yaxis: { labels: { style: { colors: cssVar('--ra-text-dim') || '#64748b', fontSize: '10px' } } },
+            yaxis: {
+                labels: {
+                    // Enlarge the journal names on the left side of the ranking.
+                    style: { colors: cssVar('--ra-text-dim') || '#64748b', fontSize: '14px' }
+                }
+            },
             dataLabels: {
                 enabled: true,
                 formatter: v => fmtInt(v),
-                style: { fontSize: '10px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
+                // Enlarge the journal totals shown at the end of each bar.
+                style: { fontSize: '14px', fontFamily: MONO, colors: [cssVar('--ra-text') || '#1a1c2e'] },
             },
             tooltip: {
                 theme: theme(),

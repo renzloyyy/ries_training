@@ -15,48 +15,71 @@
 @section('page-style')
     <style>
         /* =================================================================
-                                       Research Analytics — console design tokens
-                                       ------------------------------------------------------------
-                                       Direction: dark, instrument-panel feel for a research office's
-                                       internal pipeline tool. True near-black (not navy-tinted), warm
-                                       off-white text (not pure #fff), and color spent on exactly two
-                                       things that mean something in this data: completed (sage) and
-                                       pending (amber). A monospace face is reserved for every
-                                       label/readout/axis — the one typographic move that signals
-                                       "instrument" rather than "dark-mode admin template".
-                                    ================================================================= */
+                                                                   Research Analytics — console design tokens
+                                                                   ------------------------------------------------------------
+                                                                   Direction: dark, instrument-panel feel for a research office's
+                                                                   internal pipeline tool. True near-black (not navy-tinted), warm
+                                                                   off-white text (not pure #fff), and color spent on exactly two
+                                                                   things that mean something in this data: completed (sage) and
+                                                                   pending (amber). A monospace face is reserved for every
+                                                                   label/readout/axis — the one typographic move that signals
+                                                                   "instrument" rather than "dark-mode admin template".
+                                                                ================================================================= */
         :root {
-            --ra-bg: #0A0D12;
-            --ra-panel: #11151D;
-            --ra-panel-2: #161B25;
-            --ra-line: #232A36;
-            --ra-line-soft: #1A202B;
-            --ra-text: #E7E5DE;
-            --ra-text-dim: #8B92A1;
-            --ra-text-faint: #586272;
-            --ra-approved: #7FB39A;
-            --ra-approved-dim: #3D5448;
-            --ra-pending: #D9A35C;
-            --ra-pending-dim: #4A3D29;
-            --ra-danger: #C2705E;
+            --primary: #0B1F5C;
+            --secondary: #1E3FA8;
+            --success: #2E7D32;
+            --info: #AFC8F3;
+            --warning: #ffc107;
+            --danger: #e74c3c;
+            --light: #F4F6FA;
+            --dark: #071240;
+            --gray: #000000;
+            --white: #ffffff;
+            --muted: #5a6478;
+
+            --forest: #0B1F5C;
+            --emerald: #2E7D32;
+            --sea: #1E3FA8;
+            --gold: #ffc107;
+            --coral: #AFC8F3;
+            --cream: #F4F6FA;
+            --ink: #071240;
+
+            /* Dashboard tokens are mapped to the shared palette so the
+                                           existing overview, proposal, publication, and funding styles
+                                           inherit the new theme without rewriting every component rule. */
+            --ra-bg: var(--light);
+            --ra-panel: var(--white);
+            --ra-panel-2: #f8faff;
+            --ra-line: #dbe4fb;
+            --ra-line-soft: #edf2ff;
+            --ra-text: var(--dark);
+            --ra-text-dim: var(--primary);
+            --ra-text-faint: var(--muted);
+            --ra-approved: var(--secondary);
+            --ra-approved-dim: rgba(30, 63, 168, 0.12);
+            --ra-pending: var(--info);
+            --ra-pending-dim: rgba(175, 200, 243, 0.26);
+            --ra-danger: var(--danger);
             --ra-serif: 'Lora', 'Georgia', serif;
             --ra-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
         }
 
         .ra-page[data-theme="light"] {
-            --ra-bg: #F3EFE6;
-            --ra-panel: #FCFAF5;
-            --ra-panel-2: #F5F0E5;
-            --ra-line: #D9E2FF;
-            --ra-line-soft: #EAF0FF;
-            --ra-text: #060e40;
-            --ra-text-dim: #24306f;
-            --ra-text-faint: #56639a;
-            --ra-approved: #1E4ED8;
-            --ra-approved-dim: #DCE8FF;
-            --ra-pending: #4D7BFF;
-            --ra-pending-dim: #E4EEFF;
-            --ra-danger: #C45757;
+            --ra-bg: var(--light);
+            --ra-panel: var(--white);
+            --ra-panel-2: #f8faff;
+            --ra-line: #dbe4fb;
+            --ra-line-soft: #edf2ff;
+            --ra-text: var(--dark);
+            --ra-text-dim: var(--primary);
+            --ra-text-faint: var(--muted);
+            --ra-approved: var(--secondary);
+            --ra-approved-dim: rgba(30, 63, 168, 0.12);
+            --ra-pending: var(--info);
+            --ra-pending-dim: rgba(175, 200, 243, 0.26);
+            --ra-danger: var(--danger);
         }
 
         @font-face {
@@ -72,8 +95,8 @@
         .ra-page {
             background-color: var(--ra-bg);
             background-image:
-                radial-gradient(circle at 12% 0%, rgba(127, 179, 154, 0.05), transparent 38%),
-                radial-gradient(circle at 88% 12%, rgba(217, 163, 92, 0.04), transparent 42%);
+                radial-gradient(circle at 12% 0%, rgba(30, 63, 168, 0.08), transparent 38%),
+                radial-gradient(circle at 88% 12%, rgba(175, 200, 243, 0.18), transparent 42%);
             color: var(--ra-text);
             min-height: 100vh;
             padding: .9rem clamp(1rem, 3vw, 2.5rem) 3rem;
@@ -100,7 +123,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            padding: .9rem 1.1rem;
+            padding: .55rem .95rem;
             margin-bottom: 1.15rem;
             border: 1px solid var(--ra-line);
             border-radius: .95rem;
@@ -112,25 +135,26 @@
         .ra-topnav-brand {
             display: flex;
             align-items: center;
-            gap: .75rem;
+            gap: .55rem;
             min-width: 0;
         }
 
         .ra-topnav-mark {
-            width: 2.3rem;
-            height: 2.3rem;
+            width: 18rem;
+            height: 7rem;
             display: grid;
             place-items: center;
-            border-radius: .75rem;
-            background: linear-gradient(180deg, var(--secondary, #1E3FA8), var(--primary, #0B1F5C));
-            color: #FFF;
+            border-radius: 1rem;
+            background: #FFF;
+            overflow: hidden;
             flex: 0 0 auto;
         }
 
-        .ra-topnav-mark svg {
-            width: 1.15rem;
-            height: 1.15rem;
-            stroke: currentColor;
+        .ra-topnav-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
         .ra-topnav-copy {
@@ -164,13 +188,13 @@
         }
 
         .ra-topnav-link {
-            padding: .62rem .9rem;
+            padding: .7rem 1rem;
             border: 1px solid transparent;
             border-radius: 999px;
             background: transparent;
             color: var(--ra-text-dim);
             font-family: var(--ra-mono);
-            font-size: .76rem;
+            font-size: 1.05rem;
             font-weight: 600;
             letter-spacing: .02em;
             cursor: pointer;
@@ -200,7 +224,9 @@
 
         .ra-eyebrow {
             font-family: var(--ra-mono);
-            font-size: .68rem;
+            /* Increase the executive header metadata so it remains readable
+                   alongside the larger dashboard title. */
+            font-size: .82rem;
             letter-spacing: .18em;
             text-transform: uppercase;
             color: var(--ra-text-faint);
@@ -220,7 +246,9 @@
 
         .ra-title {
             font-family: var(--ra-serif);
-            font-size: clamp(1.7rem, 2.4vw, 2.15rem);
+            /* Scale the main dashboard heading up without changing the layout
+                   container widths. */
+            font-size: clamp(2.2rem, 3.2vw, 2.85rem);
             font-weight: 600;
             color: var(--ra-text);
             margin: 0;
@@ -230,14 +258,16 @@
 
         .ra-subtitle {
             color: var(--ra-text-dim);
-            font-size: .87rem;
+            /* Match the subtitle to the larger hero header treatment. */
+            font-size: clamp(1.15rem, 1.9vw, 1.45rem);
             margin-top: .5rem;
             max-width: 46ch;
         }
 
         .ra-asof {
             font-family: var(--ra-mono);
-            font-size: .72rem;
+            /* Slightly enlarge the update-status text for better legibility. */
+            font-size: .9rem;
             color: var(--ra-text-dim);
             display: flex;
             align-items: center;
@@ -278,7 +308,8 @@
 
         .ra-filter-label {
             font-family: var(--ra-mono);
-            font-size: .66rem;
+            /* Slightly enlarge filter labels so controls are easier to scan. */
+            font-size: .92rem;
             letter-spacing: .07em;
             text-transform: uppercase;
             color: var(--ra-text-faint);
@@ -292,7 +323,8 @@
             border-radius: .35rem;
             padding: .55rem .75rem;
             font-family: var(--ra-mono);
-            font-size: .78rem;
+            /* Enlarge dropdown text to match the updated dashboard scale. */
+            font-size: 1.05rem;
         }
 
         .ra-select:focus {
@@ -347,9 +379,17 @@
         }
 
         @keyframes ra-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(127, 179, 154, .45), 0 0 6px 1px rgba(127, 179, 154, .45); }
-            70% { box-shadow: 0 0 0 7px rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, .3); }
-            100% { box-shadow: 0 0 0 0 rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(127, 179, 154, .45), 0 0 6px 1px rgba(127, 179, 154, .45);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, .3);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(127, 179, 154, 0), 0 0 6px 1px rgba(127, 179, 154, 0);
+            }
         }
 
         /* ---------- KPI strip ---------- */
@@ -385,30 +425,44 @@
         }
 
         .ra-kpi-label {
-            font-family: var(--ra-mono);
-            font-size: .68rem;
-            letter-spacing: .07em;
-            text-transform: uppercase;
-            color: var(--ra-text-faint);
+            font-family: var(--ra-serif);
+            /* Match proposal KPI headings to the overview hero-card title treatment. */
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: none;
+            /* Keep the proposal KPI heading color aligned with overview titles. */
+            color: var(--ra-text);
             margin-bottom: .55rem;
         }
 
         .ra-kpi-value {
             font-family: var(--ra-serif);
-            font-size: 1.95rem;
-            font-weight: 600;
+            /* Match proposal KPI numbers to the overview hero-card value style. */
+            font-size: 2.9rem;
+            font-weight: 700;
             color: var(--ra-approved);
             line-height: 1;
-            letter-spacing: -.01em;
+            letter-spacing: -.03em;
         }
 
-        .ra-kpi-value.is-pending-val  { color: var(--ra-pending); }
-        .ra-kpi-value.is-inprogress-val { color: #6E84A8; }
+        .ra-kpi-value.is-pending-val {
+            /* Keep pending totals on the same primary value color as the other KPI cards. */
+            color: var(--ra-approved);
+        }
+
+        .ra-kpi-value.is-inprogress-val {
+            /* Keep in-progress totals on the same primary value color as the other KPI cards. */
+            color: var(--ra-approved);
+        }
 
         .ra-kpi-foot {
-            font-family: var(--ra-mono);
-            font-size: .7rem;
-            color: var(--ra-text-faint);
+            font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
+            /* Match proposal KPI support text to the overview card support copy. */
+            font-size: 1.2rem;
+            line-height: 1.4;
+            /* Keep support text color aligned with the overview cards. */
+            color: var(--ra-text-dim);
             margin-top: .6rem;
         }
 
@@ -445,7 +499,8 @@
             position: relative;
             z-index: 1;
             font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
-            font-size: .88rem;
+            /* Align overview KPI labels with the shared dashboard label scale. */
+            font-size: 1.5rem;
             font-weight: 700;
             line-height: 1.35;
             color: var(--ra-text);
@@ -456,7 +511,8 @@
             position: relative;
             z-index: 1;
             font-family: var(--ra-serif);
-            font-size: clamp(2rem, 3vw, 2.5rem);
+            /* Keep overview KPI values aligned with the shared KPI number scale. */
+            font-size: 2.9rem;
             font-weight: 700;
             line-height: 1;
             letter-spacing: -.03em;
@@ -468,7 +524,8 @@
             z-index: 1;
             margin-top: .85rem;
             font-family: var(--ra-sans, 'Instrument Sans', 'Segoe UI', sans-serif);
-            font-size: .8rem;
+            /* Use the same readable support size across all overview KPI cards. */
+            font-size: 1.5rem;
             color: var(--ra-text-dim);
         }
 
@@ -569,7 +626,8 @@
         .ra-story-conversion-title,
         .ra-overview-insight-label {
             font-family: var(--ra-serif);
-            font-size: .98rem;
+            /* Apply the requested KPI label size without affecting non-KPI headings. */
+            font-size: 1.4rem;
             font-weight: 600;
             color: var(--ra-text);
         }
@@ -578,7 +636,8 @@
         .ra-story-conversion-value,
         .ra-overview-insight-value {
             font-family: var(--ra-serif);
-            font-size: clamp(1.7rem, 2.7vw, 2.25rem);
+            /* Keep hero KPI values consistent with the main dashboard KPI values. */
+            font-size: 2.9rem;
             font-weight: 700;
             letter-spacing: -.03em;
             line-height: 1;
@@ -589,7 +648,8 @@
         .ra-story-kpi-copy,
         .ra-story-conversion-copy,
         .ra-overview-insight-copy {
-            font-size: .84rem;
+            /* Apply the requested KPI foot text size anywhere the shared KPI copy class is used. */
+            font-size: 1.2rem;
             line-height: 1.4;
             color: var(--ra-text-dim);
         }
@@ -653,14 +713,14 @@
         .ra-story-bar-name,
         .ra-overview-legend-name {
             color: var(--ra-text-dim);
-            font-size: .82rem;
+            font-size: 1.1rem;
         }
 
         .ra-story-bar-value,
         .ra-overview-legend-share {
             color: var(--ra-text);
             font-family: var(--ra-mono);
-            font-size: .78rem;
+            font-size: 1.1rem;
         }
 
         .ra-story-bar-track {
@@ -683,7 +743,13 @@
         .ra-overview-legend {
             display: grid;
             gap: .45rem;
-            margin-top: .8rem;
+        }
+
+        .ra-overview-donut-wrap {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            gap: 1rem;
+            align-items: center;
         }
 
         .ra-overview-legend-row {
@@ -697,6 +763,16 @@
             width: 10px;
             height: 10px;
             border-radius: 999px;
+        }
+
+        @media (max-width: 991.98px) {
+            .ra-overview-donut-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .ra-overview-legend {
+                margin-top: .8rem;
+            }
         }
 
         .ra-overview-insight {
@@ -745,8 +821,13 @@
         }
 
         @keyframes ra-shimmer {
-            0% { background-position: 100% 50%; }
-            100% { background-position: 0 50%; }
+            0% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0 50%;
+            }
         }
 
         /* ---------- Panels ---------- */
@@ -768,7 +849,9 @@
 
         .ra-card-title {
             font-family: var(--ra-serif);
-            font-size: 1.02rem;
+            /* Reduce shared panel titles so they fit cleanly above charts across all blades. */
+            font-size: 1.8rem;
+            line-height: 1.15;
             font-weight: 600;
             color: var(--ra-text);
             margin: 0;
@@ -776,7 +859,9 @@
 
         .ra-card-sub {
             font-family: var(--ra-mono);
-            font-size: .72rem;
+            /* Keep shared panel subtitles readable while leaving more room for chart content. */
+            font-size: 1rem;
+            line-height: 1.35;
             color: var(--ra-text-faint);
             margin-top: .3rem;
             letter-spacing: .01em;
@@ -785,7 +870,8 @@
         /* ---------- Signature element: signal bars ---------- */
         .ra-funnel-row {
             display: grid;
-            grid-template-columns: 142px 1fr 58px;
+            /* Give the campus-name column more room so labels can show in full. */
+            grid-template-columns: 240px 1fr 72px;
             align-items: center;
             gap: .9rem;
             padding: .62rem 0;
@@ -798,12 +884,15 @@
 
         .ra-funnel-name {
             font-family: var(--ra-mono);
-            font-size: .74rem;
+            /* Enlarge campus labels so each row is easier to scan. */
+            font-size: 1rem;
             letter-spacing: .01em;
             color: var(--ra-text-dim);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            /* Allow full campus names to display instead of collapsing to ellipses. */
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            line-height: 1.25;
         }
 
         .ra-funnel-track {
@@ -825,7 +914,8 @@
 
         .ra-funnel-pct {
             font-family: var(--ra-mono);
-            font-size: .76rem;
+            /* Enlarge approval-rate values to match the campus label emphasis. */
+            font-size: 1rem;
             font-weight: 500;
             color: var(--ra-approved);
             text-align: right;
@@ -835,7 +925,8 @@
             display: flex;
             gap: 1.2rem;
             font-family: var(--ra-mono);
-            font-size: .7rem;
+            /* Enlarge legend text so the approved/pending key stays readable. */
+            font-size: .95rem;
             color: var(--ra-text-faint);
             padding: .9rem 1.3rem 1.2rem;
         }
@@ -914,6 +1005,13 @@
             background: rgba(127, 179, 154, .04);
         }
 
+        .ra-table .ra-campus-header td {
+            padding-top: 1rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid rgba(127, 179, 154, .14);
+            background: rgba(127, 179, 154, .04);
+        }
+
         .ra-campus-name {
             font-family: var(--ra-serif);
             font-size: 1rem;
@@ -951,6 +1049,7 @@
         .ra-program-name {
             color: var(--ra-text);
             font-weight: 500;
+            text-align: left;
         }
 
         .ra-metric {
@@ -1076,6 +1175,11 @@
         }
 
         @media (max-width: 991.98px) {
+            .ra-topnav-mark {
+                width: 10rem;
+                height: 4.4rem;
+            }
+
             .ra-funnel-row {
                 grid-template-columns: 96px 1fr 46px;
             }
@@ -1096,16 +1200,13 @@
         <nav class="ra-topnav" aria-label="Dashboard sections">
             <div class="ra-topnav-brand">
                 <div class="ra-topnav-mark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M4.5 6.5v11.2c2.2-.9 4.6-.7 7.5.8 2.9-1.5 5.3-1.7 7.5-.8V6.5c-2.2-.9-4.6-.7-7.5.8-2.9-1.5-5.3-1.7-7.5-.8Z"
-                            stroke-width="1.6" stroke-linejoin="round" />
-                        <path d="M12 7.3v11.2" stroke-width="1.6" stroke-linecap="round" />
-                    </svg>
+                    {{-- Replace the placeholder dashboard icon with the local SLSU
+                         logo asset so the header branding matches the university. --}}
+                    <img src="{{ asset('images/slsu-logo.jpeg') }}" alt="SLSU logo">
                 </div>
                 <div class="ra-topnav-copy">
-                    <p class="ra-topnav-title">Research Analytics</p>
-                    <div class="ra-topnav-subtitle">Top Menu Navigation</div>
+                    {{-- <p class="ra-topnav-title">Executive Dashboard</p>
+                    <div class="ra-topnav-subtitle">Research Program</div> --}}
                 </div>
             </div>
 
@@ -1119,9 +1220,9 @@
 
         <div class="ra-header">
             <div>
-                <div class="ra-eyebrow">Research &amp; Development Office</div>
-                <h1 class="ra-title">Research Program Dashboard</h1>
-                <div class="ra-subtitle">Submission volume, approval velocity, and reach across campuses, programs, and SDGs.</div>
+                {{-- <div class="ra-eyebrow">Research &amp; Development Office</div> --}}
+                <h1 class="ra-title">Executive Dashboard</h1>
+                <div class="ra-subtitle">Research Program</div>
             </div>
             <div class="ra-toolbar">
                 <div class="ra-filter">
@@ -1155,50 +1256,50 @@
 
             {{-- KPI strip: Total + status breakdown (replaces redundant status chart) --}}
             <div class="row g-3 mb-3">
-                <div class="col-sm-6 col-lg-3">
+                {{-- Keep all proposal summary KPIs in a single balanced strip so
+                     the header reads as one unit instead of a split two-row block. --}}
+                <div class="col-sm-6 col-lg">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Total proposals</div>
                         <div class="ra-kpi-value" id="proposalKpiTotal"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">across all campuses</div>
+
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-sm-6 col-lg">
                     <div class="ra-kpi-card is-completed">
                         <div class="ra-kpi-label">Completed</div>
                         <div class="ra-kpi-value" id="proposalKpiCompleted"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">status: C</div>
+                        {{-- Hide raw status codes; the card title already names the metric. --}}
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-sm-6 col-lg">
                     <div class="ra-kpi-card is-pending">
                         <div class="ra-kpi-label">Pending</div>
                         <div class="ra-kpi-value is-pending-val" id="proposalKpiPending"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">status: P</div>
+                        {{-- Hide raw status codes; the card title already names the metric. --}}
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-sm-6 col-lg">
                     <div class="ra-kpi-card is-inprogress">
                         <div class="ra-kpi-label">In Progress</div>
-                        <div class="ra-kpi-value is-inprogress-val" id="proposalKpiInProgress"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">status: PG</div>
+                        <div class="ra-kpi-value is-inprogress-val" id="proposalKpiInProgress"><span class="ra-skel"></span>
+                        </div>
+                        {{-- Hide raw status codes; the card title already names the metric. --}}
                     </div>
                 </div>
-            </div>
-
-            {{-- Second row: campuses reporting --}}
-            <div class="row g-3 mb-3">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-6 col-lg">
                     <div class="ra-kpi-card">
                         <div class="ra-kpi-label">Campuses reporting</div>
                         <div class="ra-kpi-value" id="proposalKpiCampuses"><span class="ra-skel"></span></div>
-                        <div class="ra-kpi-foot">with at least one proposal</div>
+                       
                     </div>
                 </div>
             </div>
 
             <div class="row g-3 mb-3">
-                {{-- Research format --}}
-                <div class="col-lg-4">
+                {{-- Promote the research-type card to a full-width lead panel so
+                     all study types can stay visible before the agenda section. --}}
+                <div class="col-12">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -1207,13 +1308,16 @@
                             </div>
                         </div>
                         <div class="px-3 pb-3">
-                            <div id="chartFormat" style="min-height:230px;"></div>
+                            <div id="chartFormat" style="min-height:280px;"></div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {{-- Research agenda --}}
-                <div class="col-lg-8">
+            <div class="row g-3 mb-3">
+                {{-- Place the agenda panel under the research-type lead card so
+                     the section reads top-to-bottom instead of competing side-by-side. --}}
+                <div class="col-12">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -1235,7 +1339,7 @@
                         <div class="ra-card-head">
                             <div>
                                 <h2 class="ra-card-title">Submissions over time</h2>
-                                <div class="ra-card-sub">by year and quarter</div>
+                                <div class="ra-card-sub" id="quarterChartRangeLabel">2020-2026 by year and quarter</div>
                             </div>
                         </div>
                         <div class="px-3 pb-3">
@@ -1247,8 +1351,9 @@
             </div>
 
             <div class="row g-3 mb-3">
-                {{-- SDG breakdown --}}
-                <div class="col-lg-5">
+                {{-- Put SDG above the campus approval panel so the section reads
+                     top-to-bottom instead of competing side-by-side. --}}
+                <div class="col-12">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -1262,8 +1367,8 @@
                     </div>
                 </div>
 
-                {{-- Approval signal bars by campus --}}
-                <div class="col-lg-7">
+                {{-- Put approval below SDG so users read thematic alignment before campus performance. --}}
+                <div class="col-12">
                     <div class="ra-card h-100">
                         <div class="ra-card-head">
                             <div>
@@ -1276,7 +1381,8 @@
                         </div>
                         <div class="ra-legend">
                             <span><i style="background:var(--ra-approved)"></i> Approved</span>
-                            <span><i style="background:var(--ra-line); border:1px solid var(--ra-text-faint)"></i> Pending</span>
+                            <span><i style="background:var(--ra-line); border:1px solid var(--ra-text-faint)"></i>
+                                Pending</span>
                         </div>
                     </div>
                 </div>
@@ -1301,10 +1407,12 @@
                                         <th>Campus</th>
                                         <th>Program</th>
                                         <th class="text-end ra-metric-head ra-head-total">
-                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Total proposals</span>
+                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Total
+                                                proposals</span>
                                         </th>
                                         <th class="text-end ra-metric-head ra-head-completed">
-                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Approved proposals</span>
+                                            <span class="ra-head-label"><span class="ra-head-dot">+</span>Approved
+                                                proposals</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -1346,15 +1454,25 @@
             const themeToggleEl = document.getElementById('themeToggle');
             const MONO = "'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace";
             const THEME_STORAGE_KEY = 'research-analytics-theme';
+            // Remember the last active dashboard tab so page refreshes reopen
+            // the same section instead of resetting the user to Overview.
+            const ACTIVE_TAB_STORAGE_KEY = 'research-analytics-active-tab';
             const chartInstances = {};
             let availableYears = [];
+            // Limit the shared year dropdown to the latest five reporting years
+            // so the top-level filter stays aligned with the current dashboard window.
+            const DASHBOARD_YEAR_SELECTION_SPAN = 5;
             let activeYear = '';
 
             const fmtInt = (n) => Number(n ?? 0).toLocaleString('en-US');
             const fmtPct = (n) => (n === null || n === undefined) ? '—' : `${Number(n).toFixed(1)}%`;
             const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-            }[c]));
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            } [c]));
 
             function showGlobalError(message) {
                 const el = document.getElementById('raGlobalError');
@@ -1389,6 +1507,15 @@
                 themeToggleEl.setAttribute('title', `Switch to ${nextTheme} mode`);
             }
 
+            function readSavedDashboardTab(panelTargets) {
+                // Prefer the URL hash so a copied/refreshed link keeps the same
+                // panel, then fall back to the last tab saved in localStorage.
+                const hashTab = window.location.hash.replace(/^#/, '');
+                if (panelTargets[hashTab]) return hashTab;
+                const savedTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+                return panelTargets[savedTab] ? savedTab : 'overview';
+            }
+
             function baseChartOptions(overrides) {
                 const textDim = cssVar('--ra-text-dim');
                 const line = cssVar('--ra-line');
@@ -1396,18 +1523,44 @@
                     chart: {
                         fontFamily: 'Public Sans, sans-serif',
                         background: 'transparent',
-                        toolbar: { show: false },
-                        animations: { easing: 'easeinout', speed: 500 },
+                        toolbar: {
+                            show: false
+                        },
+                        animations: {
+                            easing: 'easeinout',
+                            speed: 500
+                        },
                     },
-                    theme: { mode: currentTheme() },
+                    theme: {
+                        mode: currentTheme()
+                    },
                     colors: palette(),
-                    dataLabels: { enabled: false },
-                    grid: { borderColor: line, strokeDashArray: 3 },
-                    tooltip: { theme: currentTheme() },
-                    legend: { labels: { colors: textDim } },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    grid: {
+                        borderColor: line,
+                        strokeDashArray: 3
+                    },
+                    tooltip: {
+                        theme: currentTheme()
+                    },
+                    legend: {
+                        labels: {
+                            colors: textDim
+                        }
+                    },
                     states: {
-                        hover: { filter: { type: 'none' } },
-                        active: { filter: { type: 'none' } },
+                        hover: {
+                            filter: {
+                                type: 'none'
+                            }
+                        },
+                        active: {
+                            filter: {
+                                type: 'none'
+                            }
+                        },
                     }
                 }, overrides);
             }
@@ -1419,7 +1572,11 @@
             }
 
             async function fetchDashboard(year = '') {
-                const res = await fetch(buildDashboardUrl(year), { headers: { Accept: 'application/json' } });
+                const res = await fetch(buildDashboardUrl(year), {
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                });
                 if (!res.ok) throw new Error(`Analytics service responded with ${res.status}`);
                 return res.json();
             }
@@ -1441,9 +1598,12 @@
             function setYearOptions(yearRows) {
                 if (availableYears.length) return;
                 availableYears = (yearRows || []).map((row) => Number(row.year)).filter(Boolean);
+                const visibleYears = availableYears.slice(-DASHBOARD_YEAR_SELECTION_SPAN);
                 const select = document.getElementById('yearFilter');
-                select.innerHTML = '<option value="">All years</option>';
-                availableYears.forEach((year) => {
+                // Rename the shared default option so the filter language matches
+                // the overview reporting window that starts from 2020.
+                select.innerHTML = `<option value="">Since 2020</option>`;
+                visibleYears.forEach((year) => {
                     const option = document.createElement('option');
                     option.value = String(year);
                     option.textContent = String(year);
@@ -1469,9 +1629,9 @@
                     total += count;
                 });
 
-                setTextIfExists('proposalKpiTotal',      fmtInt(total));
-                setTextIfExists('proposalKpiCompleted',  fmtInt(statusMap['C']  ?? 0));
-                setTextIfExists('proposalKpiPending',    fmtInt(statusMap['P']  ?? 0));
+                setTextIfExists('proposalKpiTotal', fmtInt(total));
+                setTextIfExists('proposalKpiCompleted', fmtInt(statusMap['C'] ?? 0));
+                setTextIfExists('proposalKpiPending', fmtInt(statusMap['P'] ?? 0));
                 setTextIfExists('proposalKpiInProgress', fmtInt(statusMap['PG'] ?? 0));
 
                 const campusRows = data.proposals_by_campus || [];
@@ -1480,27 +1640,73 @@
 
             function renderQuarterChart(rows) {
                 destroyChart('quarter');
-                if (!rows.length) {
+                // Keep the default "all years" quarter chart focused on the
+                // current storytelling window while preserving explicit
+                // single-year filtering when the user selects a year.
+                const displayRows = String(activeYear || '').trim() ?
+                    rows :
+                    rows.filter((row) => Number(row.year) >= 2020 && Number(row.year) <= 2026);
+                const rangeLabel = document.getElementById('quarterChartRangeLabel');
+                if (rangeLabel) {
+                    rangeLabel.textContent = activeYear ?
+                        `${activeYear} by year and quarter` :
+                        '2020-2026 by year and quarter';
+                }
+                if (!displayRows.length) {
                     document.getElementById('chartQuarter').innerHTML =
                         '<div class="ra-empty">no submission history yet</div>';
                     return;
                 }
                 document.getElementById('chartQuarter').innerHTML = '';
                 renderChart('quarter', 'chartQuarter', baseChartOptions({
-                    chart: { type: 'area', height: 260 },
-                    series: [{ name: 'Proposals', data: rows.map((r) => Number(r.total_proposals || 0)) }],
-                    xaxis: {
-                        categories: rows.map((r) => `${r.year} Q${r.quarter}`),
-                        tickAmount: 8,
-                        labels: { style: { fontSize: '10px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
-                        axisBorder: { color: cssVar('--ra-line') },
-                        axisTicks: { color: cssVar('--ra-line') },
+                    chart: {
+                        type: 'area',
+                        height: 260
                     },
-                    yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
-                    stroke: { curve: 'smooth', width: 2 },
+                    series: [{
+                        name: 'Proposals',
+                        data: displayRows.map((r) => Number(r.total_proposals || 0))
+                    }],
+                    xaxis: {
+                        categories: displayRows.map((r) => `${r.year} Q${r.quarter}`),
+                        tickAmount: 8,
+                        labels: {
+                            style: {
+                                /* Enlarge quarter labels so the timeline reads more clearly. */
+                                fontSize: '15px',
+                                colors: cssVar('--ra-text-faint'),
+                                fontFamily: MONO
+                            }
+                        },
+                        axisBorder: {
+                            color: cssVar('--ra-line')
+                        },
+                        axisTicks: {
+                            color: cssVar('--ra-line')
+                        },
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-faint'),
+                                fontFamily: MONO,
+                                /* Enlarge the vertical scale labels to match the x-axis text. */
+                                fontSize: '15px'
+                            }
+                        }
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2
+                    },
                     fill: {
                         type: 'gradient',
-                        gradient: { shadeIntensity: 1, opacityFrom: .35, opacityTo: 0, stops: [0, 95, 100] },
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: .35,
+                            opacityTo: 0,
+                            stops: [0, 95, 100]
+                        },
                     },
                     colors: [cssVar('--ra-approved')],
                 }));
@@ -1515,16 +1721,47 @@
                 document.getElementById('chartSdg').innerHTML = '';
                 const top = rows.slice(0, 17);
                 renderChart('sdg', 'chartSdg', baseChartOptions({
-                    chart: { type: 'bar', height: 300 },
-                    plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '52%' } },
-                    series: [{ name: 'Proposals', data: top.map((r) => Number(r.total_proposals || 0)) }],
+                    chart: {
+                        type: 'bar',
+                        height: 300
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                            borderRadius: 2,
+                            barHeight: '52%'
+                        }
+                    },
+                    series: [{
+                        name: 'Proposals',
+                        data: top.map((r) => Number(r.total_proposals || 0))
+                    }],
                     xaxis: {
                         categories: top.map((r) => r.sdg_code || r.sdg_name),
-                        labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO, fontSize: '10px' } },
-                        axisBorder: { color: cssVar('--ra-line') },
-                        axisTicks: { color: cssVar('--ra-line') },
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-faint'),
+                                fontFamily: MONO,
+                                /* Enlarge the horizontal SDG scale labels for better readability. */
+                                fontSize: '16px'
+                            }
+                        },
+                        axisBorder: {
+                            color: cssVar('--ra-line')
+                        },
+                        axisTicks: {
+                            color: cssVar('--ra-line')
+                        },
                     },
-                    yaxis: { labels: { style: { colors: cssVar('--ra-text-dim'), fontSize: '11px' } } },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-dim'),
+                                /* Enlarge the SDG category labels on the left side. */
+                                fontSize: '16px'
+                            }
+                        }
+                    },
                     colors: [cssVar('--ra-approved')],
                 }));
             }
@@ -1536,12 +1773,68 @@
                     return;
                 }
                 document.getElementById('chartFormat').innerHTML = '';
+                // Switch the research-type panel to a ranked horizontal bar so
+                // category names stay readable and the user can compare sizes directly.
                 renderChart('format', 'chartFormat', baseChartOptions({
-                    chart: { type: 'donut', height: 230 },
-                    labels: rows.map((r) => r.research_format_name),
-                    series: rows.map((r) => Number(r.total_proposals || 0)),
-                    stroke: { colors: [cssVar('--ra-panel')], width: 2 },
-                    legend: { position: 'bottom', fontSize: '11px', labels: { colors: cssVar('--ra-text-dim') } },
+                    chart: {
+                        type: 'bar',
+                        height: Math.max(230, rows.length * 44)
+                    },
+                    series: [{
+                        name: 'Proposals',
+                        data: rows.map((r) => Number(r.total_proposals || 0)),
+                    }],
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                            borderRadius: 8,
+                            barHeight: '55%',
+                            distributed: true,
+                        }
+                    },
+                    xaxis: {
+                        categories: rows.map((r) => r.research_format_name),
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-dim'),
+                                /* Enlarge the horizontal scale labels for better readability. */
+                                fontSize: '16px'
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-dim'),
+                                /* Enlarge the research-type category labels on the left. */
+                                fontSize: '16px'
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        style: {
+                            /* Enlarge the proposal totals shown inside each bar. */
+                            fontSize: '16px',
+                            fontWeight: 700,
+                            // Use the existing dashboard text token so value labels
+                            // stay visible without relying on an undefined color var.
+                            colors: [cssVar('--ra-text')],
+                        },
+                        offsetX: 8,
+                    },
+                    legend: {
+                        show: false,
+                    },
+                    // Reuse only theme tokens that actually exist in the dashboard
+                    // palette; this avoids invisible bars caused by missing vars.
+                    colors: [
+                        cssVar('--ra-approved'),
+                        cssVar('--ra-pending'),
+                        cssVar('--ra-text-dim'),
+                        cssVar('--ra-approved-dim'),
+                        cssVar('--ra-line'),
+                    ],
                 }));
             }
 
@@ -1552,17 +1845,66 @@
                     return;
                 }
                 document.getElementById('chartAgenda').innerHTML = '';
+                // Wrap long agenda labels into short line groups so they stay readable
+                // without forcing the chart into extreme diagonal text.
+                const wrapAgendaLabel = (label) => {
+                    const words = String(label || '').split(/\s+/).filter(Boolean);
+                    const lines = [];
+                    for (let i = 0; i < words.length; i += 2) {
+                        lines.push(words.slice(i, i + 2).join(' '));
+                    }
+                    return lines;
+                };
                 renderChart('agenda', 'chartAgenda', baseChartOptions({
-                    chart: { type: 'bar', height: 230, toolbar: { show: false } },
-                    plotOptions: { bar: { borderRadius: 2, columnWidth: '50%' } },
-                    series: [{ name: 'Proposals', data: rows.map((r) => Number(r.total_proposals || 0)) }],
+                    chart: {
+                        type: 'bar',
+                        // Increase chart height so wrapped agenda labels have room to breathe.
+                        height: 360,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 2,
+                            columnWidth: '50%'
+                        }
+                    },
+                    series: [{
+                        name: 'Proposals',
+                        data: rows.map((r) => Number(r.total_proposals || 0))
+                    }],
                     xaxis: {
                         categories: rows.map((r) => r.agenda_label),
-                        labels: { style: { fontSize: '9px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
-                        axisBorder: { color: cssVar('--ra-line') },
-                        axisTicks: { color: cssVar('--ra-line') },
+                        labels: {
+                            rotate: 0,
+                            trim: false,
+                            hideOverlappingLabels: false,
+                            style: {
+                                /* Enlarge agenda category labels for easier reading. */
+                                fontSize: '14px',
+                                colors: cssVar('--ra-text-faint'),
+                                fontFamily: MONO
+                            },
+                            formatter: (value) => wrapAgendaLabel(value),
+                        },
+                        axisBorder: {
+                            color: cssVar('--ra-line')
+                        },
+                        axisTicks: {
+                            color: cssVar('--ra-line')
+                        },
                     },
-                    yaxis: { labels: { style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO } } },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: cssVar('--ra-text-faint'),
+                                fontFamily: MONO,
+                                /* Enlarge the vertical scale labels to match the agenda labels. */
+                                fontSize: '15px'
+                            }
+                        }
+                    },
                     colors: ['#6E84A8'],
                 }));
             }
@@ -1601,7 +1943,12 @@
                 rows.forEach((row) => {
                     const campusName = row.campus_name || 'Unknown campus';
                     if (!campusMap.has(campusName)) {
-                        campusMap.set(campusName, { campus_name: campusName, total_proposals: 0, completed_proposals: 0, programs: [] });
+                        campusMap.set(campusName, {
+                            campus_name: campusName,
+                            total_proposals: 0,
+                            completed_proposals: 0,
+                            programs: []
+                        });
                     }
                     const group = campusMap.get(campusName);
                     group.total_proposals += Number(row.total_proposals || 0);
@@ -1622,23 +1969,29 @@
                     return;
                 }
                 tbody.innerHTML = groupProgramsByCampus(rows).map((group) => `
-                    <tr class="ra-campus-summary">
+                    <tr class="ra-campus-header">
                         <td>
                             <div class="ra-campus-name">${escapeHtml(group.campus_name)}</div>
                             <div class="ra-campus-meta">${fmtInt(group.programs.length)} program${group.programs.length === 1 ? '' : 's'}</div>
                         </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    ${group.programs.map((program) => `
+                                                    <tr class="ra-program-row">
+                                                        <td></td>
+                                                        <td class="ra-program-name">${escapeHtml(program.program_name)}</td>
+                                                        <td class="ra-metric ra-metric-total">${fmtInt(program.total_proposals)}</td>
+                                                        <td class="ra-metric ra-metric-completed">${fmtInt(program.completed_proposals)}</td>
+                                                    </tr>
+                                                `).join('')}
+                    <tr class="ra-campus-summary">
                         <td class="ra-campus-meta">Campus total submissions</td>
+                        <td></td>
                         <td class="ra-campus-total">${fmtInt(group.total_proposals)}</td>
                         <td class="ra-campus-total">${fmtInt(group.completed_proposals)}</td>
                     </tr>
-                    ${group.programs.map((program) => `
-                        <tr class="ra-program-row">
-                            <td>Program</td>
-                            <td class="ra-program-name">${escapeHtml(program.program_name)}</td>
-                            <td class="ra-metric ra-metric-total">${fmtInt(program.total_proposals)}</td>
-                            <td class="ra-metric ra-metric-completed">${fmtInt(program.completed_proposals)}</td>
-                        </tr>
-                    `).join('')}
                 `).join('');
             }
 
@@ -1653,7 +2006,8 @@
                 try {
                     activeYear = year;
                     document.getElementById('raGlobalError').style.display = 'none';
-                    document.getElementById('raLastUpdated').textContent = year ? `loading ${year}...` : 'loading all years...';
+                    document.getElementById('raLastUpdated').textContent = year ? `loading ${year}...` :
+                        'loading all years...';
 
                     const data = await fetchDashboard(year);
                     setYearOptions(data.proposals_by_year || []);
@@ -1678,7 +2032,8 @@
                     document.getElementById('raLastUpdated').textContent = 'offline';
                     document.querySelector('.ra-dot').style.background = '#C2705E';
                     ['proposalKpiTotal', 'proposalKpiCompleted', 'proposalKpiPending',
-                     'proposalKpiInProgress', 'proposalKpiCampuses'].forEach((id) => setTextIfExists(id, '—'));
+                        'proposalKpiInProgress', 'proposalKpiCampuses'
+                    ].forEach((id) => setTextIfExists(id, '—'));
                 }
             }
 
@@ -1693,28 +2048,37 @@
 
             function setupRailMenu() {
                 const panelTargets = {
-                    overview:      '#overviewDashboard',
-                    proposals:     '#proposalsDashboard',
-                    fundings:      '#fundingsDashboard',
-                    publications:  '#publicationsDashboard',
+                    overview: '#overviewDashboard',
+                    proposals: '#proposalsDashboard',
+                    fundings: '#fundingsDashboard',
+                    publications: '#publicationsDashboard',
                 };
 
                 function showDashboardPanel(tabName) {
-                    const activeSel = panelTargets[tabName] || '#proposalsDashboard';
+                    // Default invalid or missing tab names back to Overview so
+                    // the dashboard still opens in a safe, predictable state.
+                    const activeSel = panelTargets[tabName] || '#overviewDashboard';
                     document.querySelectorAll('.ra-dashboard-panel').forEach((panel) => {
                         panel.classList.toggle('is-active', `#${panel.id}` === activeSel);
                     });
                 }
 
                 function activateDashboardTab(tabName) {
+                    const safeTabName = panelTargets[tabName] ? tabName : 'overview';
                     document.querySelectorAll('.ra-tab').forEach((item) => {
-                        item.classList.toggle('is-active', item.dataset.tab === tabName);
+                        item.classList.toggle('is-active', item.dataset.tab === safeTabName);
                     });
                     document.querySelectorAll('.ra-topnav-link').forEach((item) => {
-                        item.classList.toggle('is-active', item.dataset.tab === tabName);
+                        item.classList.toggle('is-active', item.dataset.tab === safeTabName);
                     });
-                    showDashboardPanel(tabName);
-                    if (tabName === 'proposals') loadDashboard(activeYear);
+                    // Persist the selected tab immediately so a reload restores
+                    // the user's current place in the dashboard.
+                    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, safeTabName);
+                    // Mirror the active tab into the URL so browser refreshes and
+                    // shared links can reopen the same panel deterministically.
+                    window.history.replaceState(null, '', `#${safeTabName}`);
+                    showDashboardPanel(safeTabName);
+                    if (safeTabName === 'proposals') loadDashboard(activeYear);
                 }
 
                 document.querySelectorAll('.ra-tab, .ra-topnav-link').forEach((tab) => {
@@ -1725,7 +2089,30 @@
             async function init() {
                 applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'light');
                 setupRailMenu();
+                // Restore the saved tab before any async data loads so the
+                // refreshed page paints the correct panel immediately.
+                const panelTargets = {
+                    overview: '#overviewDashboard',
+                    proposals: '#proposalsDashboard',
+                    fundings: '#fundingsDashboard',
+                    publications: '#publicationsDashboard',
+                };
+                const initialTab = readSavedDashboardTab(panelTargets);
+                document.querySelectorAll('.ra-tab').forEach((item) => {
+                    item.classList.toggle('is-active', item.dataset.tab === initialTab);
+                });
+                document.querySelectorAll('.ra-topnav-link').forEach((item) => {
+                    item.classList.toggle('is-active', item.dataset.tab === initialTab);
+                });
+                document.querySelectorAll('.ra-dashboard-panel').forEach((panel) => {
+                    panel.classList.toggle('is-active', `#${panel.id}` === panelTargets[initialTab]);
+                });
                 await loadDashboard(activeYear);
+                // Reapply through the shared tab activator so storage, hash, and
+                // panel-specific loaders all stay in sync after initialization.
+                document.querySelector(
+                        `.ra-topnav-link[data-tab="${initialTab}"], .ra-tab[data-tab="${initialTab}"]`)
+                    ?.dispatchEvent(new Event('click'));
             }
 
             document.addEventListener('DOMContentLoaded', init);

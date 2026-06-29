@@ -6,7 +6,21 @@ import pymysql
 import pymysql.cursors
 from dotenv import load_dotenv
 
-load_dotenv()
+# Override pre-exported shell variables so the FastAPI service follows the
+# project's .env files consistently when the user restarts uvicorn.
+load_dotenv(override=True)
+
+
+def _normalize_publications_database(name: Optional[str]) -> str:
+    """
+    Map the known publications DB aliases used in this project to the database
+    that is actually queryable in the user's local MySQL instance.
+    """
+    if not name:
+        return "publishedpapers"
+    if name in {"publications", "publications.sql"}:
+        return "publishedpapers"
+    return name
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "127.0.0.1"),
@@ -18,13 +32,17 @@ DB_CONFIG = {
     "cursorclass": pymysql.cursors.DictCursor,
 }
 
-# Second connection: the RIES publications/outputs database
+# Second connection: the publications database.
+# Prefer PUBLICATIONS_DB_* so the Python service follows the current .env,
+# while still accepting the older RIES_DB_* names as a fallback.
 RIES_DB_CONFIG = {
-    "host": os.getenv("RIES_DB_HOST", "127.0.0.1"),
-    "port": int(os.getenv("RIES_DB_PORT", "3306")),
-    "user": os.getenv("RIES_DB_USERNAME", "root"),
-    "password": os.getenv("RIES_DB_PASSWORD", ""),
-    "database": os.getenv("RIES_DB_DATABASE", "published_paper"),
+    "host": os.getenv("PUBLICATIONS_DB_HOST") or os.getenv("RIES_DB_HOST", "127.0.0.1"),
+    "port": int(os.getenv("PUBLICATIONS_DB_PORT") or os.getenv("RIES_DB_PORT", "3306")),
+    "user": os.getenv("PUBLICATIONS_DB_USERNAME") or os.getenv("RIES_DB_USERNAME", "root"),
+    "password": os.getenv("PUBLICATIONS_DB_PASSWORD") or os.getenv("RIES_DB_PASSWORD", ""),
+    "database": _normalize_publications_database(
+        os.getenv("PUBLICATIONS_DB_DATABASE") or os.getenv("RIES_DB_DATABASE", "publishedpapers")
+    ),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
@@ -35,7 +53,7 @@ FUNDING_DB_CONFIG = {
     "port": int(os.getenv("FUNDING_DB_PORT", "3306")),
     "user": os.getenv("FUNDING_DB_USERNAME", "root"),
     "password": os.getenv("FUNDING_DB_PASSWORD", ""),
-    "database": os.getenv("FUNDING_DB_DATABASE", "soulsuedu_ries"),
+    "database": os.getenv("FUNDING_DB_DATABASE", "RIES"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
@@ -76,7 +94,7 @@ def run_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dic
 
 
 def run_ries_query(sql: str, params: Optional[Union[tuple, dict]] = None) -> list[dict]:
-    """Same as run_query, but against the published_paper database."""
+    """Same as run_query, but against the publications database."""
     with get_ries_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(sql, params)

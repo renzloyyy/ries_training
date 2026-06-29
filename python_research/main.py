@@ -188,22 +188,22 @@ def dashboard_summary(year: Optional[int] = Query(default=None, ge=2000, le=2100
 
 
 # ---------------------------------------------------------------------------
-# Publications — clean_publications dataset (published_paper database)
+# Publications — research_publications dataset (publications database)
 # ---------------------------------------------------------------------------
 
-# These endpoints all target the `clean_publications` table which holds the
-# curated, de-duplicated record of papers actually published by the university.
-# is_primary_record = 1 filtering is baked into every query in queries_ries.py.
+# These endpoints currently target the `research_publications` table, and the
+# date normalization is handled inside queries_ries.py because the source stores
+# publication dates as free-text month/year values.
 
 _PUB_KEYS = [
-    "pub_by_year",
-    "pub_monthly_trend",
-    "pub_by_campus",
-    "pub_by_indexing_tier",
-    "pub_campus_indexing",
-    "pub_year_campus",
-    "pub_top_journals",
-    "pub_average_pages",
+    "pub_by_year_clean",
+    "pub_monthly_all",
+    "pub_campus_contribution",
+    "pub_by_indexing_clean",
+    "pub_campus_indexing_clean",
+    "pub_year_campus_clean",
+    "pub_top_journals_clean",
+    "pub_quarterly_clean",
     "pub_data_quality",
 ]
 """Query keys bundled by the /dashboard endpoint (excludes year-filter and

@@ -1,0 +1,52 @@
+USE research_warehouse;
+
+-- Regression training dataset
+-- X variable: research_duration_days
+-- Y variable: publication_count (to be added once publications are linked by proposal_id)
+-- This current query builds the completed-research base table.
+
+SELECT
+    f.fact_id,
+    f.proposal_id,
+    f.proposal_title,
+    f.status_code,
+
+    ds.full_date AS proposal_date,
+    ds.year AS proposal_year,
+    ds.month_name AS proposal_month,
+
+    da.full_date AS completion_date,
+    da.year AS completion_year,
+    da.month_name AS completion_month,
+
+    DATEDIFF(da.full_date, ds.full_date) AS research_duration_days,
+
+    c.campus_name,
+    p.program_name,
+    rf.research_format_name,
+    s.sdg_code,
+    s.sdg_name,
+    a.agenda_label
+
+FROM fact_research_proposal f
+LEFT JOIN dim_date ds
+    ON f.dim_date_submission_id = ds.date_id
+LEFT JOIN dim_date da
+    ON f.dim_date_approval_id = da.date_id
+LEFT JOIN dim_campus c
+    ON f.dim_campus_id = c.campus_id
+LEFT JOIN dim_program p
+    ON f.dim_program_id = p.program_id
+LEFT JOIN dim_research_format rf
+    ON f.dim_research_format_id = rf.research_format_id
+LEFT JOIN dim_sdg s
+    ON f.dim_sdg_id = s.sdg_id
+LEFT JOIN dim_agenda a
+    ON f.dim_agenda_id = a.agenda_id
+
+WHERE f.status_code = 'C'
+  AND ds.full_date IS NOT NULL
+  AND da.full_date IS NOT NULL
+  AND DATEDIFF(da.full_date, ds.full_date) >= 0
+
+ORDER BY research_duration_days DESC;

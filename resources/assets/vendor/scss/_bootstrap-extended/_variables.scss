@@ -330,10 +330,11 @@ $caret-spacing: .5em !default;
 
 // scss-docs-start font-variables
 $font-family-sans-serif:
-  "Public Sans",
+  // Use a local system stack so text stays stable even when Google Fonts is unavailable.
+  "Segoe UI",
+  system-ui,
   -apple-system,
   blinkmacsystemfont,
-  "Segoe UI",
   "Oxygen",
   "Ubuntu",
   "Cantarell",

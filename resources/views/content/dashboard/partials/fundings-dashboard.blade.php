@@ -271,11 +271,20 @@
                 chart: { type: 'donut', height: 230 },
                 labels: rows.map((r) => r.program_category),
                 series: rows.map((r) => Number(r.total_allocated_fund || 0)),
+                // Put the callouts in the side legend so category names remain
+                // readable without crowding the donut slices.
+                dataLabels: {
+                    enabled: false,
+                },
                 stroke: { colors: [cssVar('--ra-panel')], width: 2 },
                 legend: {
-                    position: 'bottom',
-                    fontSize: '11px',
+                    position: 'right',
+                    fontSize: '12px',
                     labels: { colors: cssVar('--ra-text-dim') },
+                    formatter: (seriesName, opts) => {
+                        const pct = Number(opts.w.globals.seriesPercent[opts.seriesIndex] || 0);
+                        return `${seriesName} (${Math.round(pct)}%)`;
+                    },
                 },
                 tooltip: { y: { formatter: (v) => fmtCurrency(v) } },
             }));
@@ -297,7 +306,7 @@
                 xaxis: {
                     categories: rows.map((r) => r.campus_name),
                     labels: {
-                        style: { fontSize: '9px', colors: cssVar('--ra-text-faint'), fontFamily: MONO },
+                        style: { fontSize: '11px', colors: cssVar('--ra-text-faint'), fontFamily: MONO },
                         rotate: -45,
                     },
                     axisBorder: { color: cssVar('--ra-line') },
@@ -331,7 +340,7 @@
                 xaxis: {
                     categories,
                     tickAmount: 8,
-                    labels: { style: { fontSize: '10px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
+                    labels: { style: { fontSize: '11px', colors: cssVar('--ra-text-faint'), fontFamily: MONO } },
                     axisBorder: { color: cssVar('--ra-line') },
                     axisTicks: { color: cssVar('--ra-line') },
                 },
@@ -370,13 +379,13 @@
                 xaxis: {
                     categories: rows.map((r) => r.research_format),
                     labels: {
-                        style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO, fontSize: '10px' },
+                        style: { colors: cssVar('--ra-text-faint'), fontFamily: MONO, fontSize: '11px' },
                         formatter: (v) => fmtCurrency(v),
                     },
                     axisBorder: { color: cssVar('--ra-line') },
                     axisTicks: { color: cssVar('--ra-line') },
                 },
-                yaxis: { labels: { style: { colors: cssVar('--ra-text-dim'), fontSize: '11px' } } },
+                yaxis: { labels: { style: { colors: cssVar('--ra-text-dim'), fontSize: '12px' } } },
                 tooltip: { x: { formatter: (v) => fmtCurrency(v) } },
                 colors: [cssVar('--ra-approved')],
             }));
@@ -395,11 +404,20 @@
                 chart: { type: 'donut', height: 300 },
                 labels: rows.map((r) => r.funding_agency),
                 series: rows.map((r) => Number(r.total_allocated_fund || 0)),
+                // Put agency callouts into the side legend so the chart stays
+                // readable even when agency names are long.
+                dataLabels: {
+                    enabled: false,
+                },
                 stroke: { colors: [cssVar('--ra-panel')], width: 2 },
                 legend: {
-                    position: 'bottom',
-                    fontSize: '12px',
+                    position: 'right',
+                    fontSize: '13px',
                     labels: { colors: cssVar('--ra-text-dim') },
+                    formatter: (seriesName, opts) => {
+                        const pct = Number(opts.w.globals.seriesPercent[opts.seriesIndex] || 0);
+                        return `${seriesName} (${Math.round(pct)}%)`;
+                    },
                 },
                 tooltip: { y: { formatter: (v) => fmtCurrency(v) } },
                 plotOptions: {
